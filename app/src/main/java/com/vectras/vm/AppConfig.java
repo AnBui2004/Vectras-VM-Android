@@ -30,13 +30,14 @@ public class AppConfig {
     public static final String vectrasRepo = "https://github.com/epicstudios856/Vectras-VM-Android";
     public static final String updateJson = vectrasRaw + "UpdateConfig.json";
     public static final String blogJson = vectrasRaw + "news_list.json";
-    public static final String storeJson = vectrasRaw + "store_list.json";
+    // public static final String storeJson = vectrasRaw + "store_list.json";
+    public static final String storeJson = "https://nguyenbaoanbui-f8a71.web.app/vectrasvm/store_list.json";
 
-    public static final String releaseUrl = "https://vectrasvm.blackstorm.cc/vectras-vm/Releases/";
+    public static final String releaseUrl = "https://nguyenbaoanbui-f8a71.web.app/vectrasvm";
 
     public static String getSetupFiles() {
         String abi = Build.SUPPORTED_ABIS[0];
-        return releaseUrl + vectrasVersion + "/packages/vectras-vm-" + abi + ".tar.gz";
+        return releaseUrl + "/vectras-vm-" + abi + ".tar.gz";
     }
 
     public static final String romsJson(Activity activity) {
