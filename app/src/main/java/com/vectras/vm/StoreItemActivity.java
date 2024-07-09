@@ -211,8 +211,12 @@ public class StoreItemActivity extends AppCompatActivity {
 	private ProgressDialog mProgressDialog;
 
 	private void startDownload() {
-		String url = link;
-		new DownloadFileAsync().execute(url);
+		//String url = link;
+		//new DownloadFileAsync().execute(url);
+		Intent i = new Intent();
+		i.setAction(Intent.ACTION_VIEW);
+		i.setData(Uri.parse(link));
+		startActivity(i);
 	}
 
 	@Override

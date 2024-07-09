@@ -117,7 +117,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
             public void onClick(View view) {
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("message/rfc822");
-                i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"noureldeenelsayed856@gmail.com"});
+                i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"anbuigo2004@gmail.com"});
                 i.putExtra(Intent.EXTRA_SUBJECT, "Vectras User: " + Build.BRAND);
                 i.putExtra(Intent.EXTRA_TEXT   , "Device Model: \n" + Build.MODEL + "\n");
                 try {
@@ -176,12 +176,12 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         int id = v.getId();
             if (id == TG) {
-                String tg = "https://t.me/vectras_os";
+                String tg = "https://nguyenbaoanbui-86deb.web.app/goto/community.html";
                 Intent f = new Intent(Intent.ACTION_VIEW);
                 f.setData(Uri.parse(tg));
                 startActivity(f);
             } else if (id == YT) {
-                String tw = "https://www.youtube.com/@XOURELDEEN";
+                String tw = "https://nguyenbaoanbui-86deb.web.app/goto/community.html";
                 Intent w = new Intent(Intent.ACTION_VIEW);
                 w.setData(Uri.parse(tw));
                 startActivity(w);
@@ -191,12 +191,12 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
                 g.setData(Uri.parse(gt));
                 startActivity(g);
             } else if (id == IG) {
-                String ig = "https://www.instagram.com/vectrasvm";
+                String ig = "https://nguyenbaoanbui-86deb.web.app/goto/community.html";
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(ig));
                 startActivity(i);
             } else if (id == FB) {
-                String fb = "https://www.facebook.com/profile.php?id=61555122773211";
+                String fb = "https://nguyenbaoanbui-86deb.web.app/goto/community.html";
                 Intent f = new Intent(Intent.ACTION_VIEW);
                 f.setData(Uri.parse(fb));
                 startActivity(f);

@@ -20,7 +20,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-import com.vectras.qemu.MainSettingsManager;
 import com.vectras.qemu.MainVNCActivity;
 import com.vectras.vm.MainActivity;
 import com.vectras.vm.R;
@@ -189,10 +188,8 @@ public class Terminal {
                 qemuProcess.destroyForcibly();
             else
                 qemuProcess.destroy();
-            if (!MainSettingsManager.getVncExternal(MainActivity.activity)) {
-                MainVNCActivity.activity.finish();
-                MainVNCActivity.started = false;
-            }
+            MainVNCActivity.activity.finish();
+            MainVNCActivity.started = false;
             qemuProcess = null; // Set it to null after destroying it
             Log.d(TAG, "QEMU process destroyed.");
         } else {

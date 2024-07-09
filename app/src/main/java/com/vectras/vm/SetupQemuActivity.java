@@ -66,31 +66,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
 
         tarPath = getExternalFilesDir("data") + "/data.tar.gz";
 
-        alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-        alertDialog.setTitle("BOOTSTRAP REQUIRED!");
-        alertDialog.setMessage("U can choose between auto download and setup or manual setup by choosing bootstrap file.");
-        alertDialog.setCancelable(false);
-        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "AUTO SETUP", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                startDownload();
-                return;
-            }
-        });
-        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "MANUAL SETUP", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("*/*");
-
-                // Optionally, specify a URI for the file that should appear in the
-                // system file picker when it loads.
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.DIRECTORY_DOWNLOADS);
-                }
-
-                startActivityForResult(intent, 1001);
-            }
-        });
+        checkabi();
 
         File tarGZ = new File(tarPath);
         if (tarGZ.exists()) {
@@ -256,7 +232,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         @Override
         protected void onPreExecute() {
             progressDialog = new ProgressDialog(context, R.style.MainDialogTheme);
-            progressDialog.setTitle("Downloading \"data.tar.gz\"...");
+            progressDialog.setTitle("Downloading... Please do not disconnect from the network.");
             progressDialog.setMessage(null);
             progressDialog.setIndeterminate(true);
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -357,6 +333,46 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 " rm " + tarPath + ";" +
                 " mkdir -p ~/.vnc && echo -e \"555555\\n555555\" | vncpasswd -f > ~/.vnc/passwd && chmod 0600 ~/.vnc/passwd;" +
                 " echo \"installation successful! xssFjnj58Id\"");
+    }
+
+    private void checkabi () {
+        if (AppConfig.getSetupFiles().contains("arm64-v8a") || AppConfig.getSetupFiles().contains("x86_64")) {
+            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+            alertDialog.setTitle("BOOTSTRAP REQUIRED!");
+            alertDialog.setMessage("You can choose between auto download and setup or manual setup by choosing bootstrap file.");
+            alertDialog.setCancelable(false);
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "AUTO SETUP", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    startDownload();
+                    return;
+                }
+            });
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "MANUAL SETUP", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+
+                    // Optionally, specify a URI for the file that should appear in the
+                    // system file picker when it loads.
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.DIRECTORY_DOWNLOADS);
+                    }
+
+                    startActivityForResult(intent, 1001);
+                }
+            });
+        } else {
+            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+            alertDialog.setTitle("Oops!");
+            alertDialog.setMessage("Your device or Android build does not support 64-bit. To use Vectras VM, your device or Android build must have 64-bit support.");
+            alertDialog.setCancelable(false);
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+        }
     }
 
     public String getPath(Uri uri) {

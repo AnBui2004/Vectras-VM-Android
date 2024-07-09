@@ -13,7 +13,7 @@
         android:layout_height="40dp"
         android:contentDescription="@string/free_palistine"
         android:scaleType="centerInside"
-        app:srcCompat="@drawable/free_palestine" />
+        app:srcCompat="@drawable/gbp" />
 
     <TextView
         android:id="@+id/appNameTxt"

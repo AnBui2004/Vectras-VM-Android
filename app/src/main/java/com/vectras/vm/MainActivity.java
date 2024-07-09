@@ -453,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (id == R.id.navigation_data_explorer) {
                     startActivity(new Intent(activity, DataExplorerActivity.class));
                 } else if (id == R.id.navigation_item_donate) {
-                    String tw = "https://www.buymeacoffee.com/vectrasvm/";
+                    String tw = "https://nguyenbaoanbui-f8a71.web.app/vectrasvm/coffee.html";
                     Intent w = new Intent(Intent.ACTION_VIEW);
                     w.setData(Uri.parse(tw));
                     startActivity(w);

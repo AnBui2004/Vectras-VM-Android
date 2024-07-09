@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vectras VM</string>
-    <string name="app_version" translatable="false">v2.9.1c</string>
+    <string name="app_version" translatable="false">v2.9.1d</string>
     <string name="qemu_version" translatable="false">qemu-8.2.1-3dfx</string>
     <string name="str_home">Home</string>
     <string name="str_logger">Logger</string>
@@ -509,7 +509,7 @@
     <string name="error">ERROR!</string>
     <string name="done">DONE!</string>
     <string name="are_removed_successfully">" are removed successfully!"</string>
-    <string name="free_palestine">FREE PALESTINE</string>
+    <string name="teams">Vectras VM team and Nguyen Bao An Bui</string>
     <string name="repository">Repository</string>
     <string name="telegram_channel">Telegram Channel</string>
     <string name="youtube">Youtube</string>
@@ -523,4 +523,5 @@
     <string name="cpu">CPU</string>
     <string name="save_changes">SAVE CHANGES</string>
     <string name="qemu_create_cmd">QEMU CREATE CMD</string>
+    <string name="getit">Get</string>
 </resources>

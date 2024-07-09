@@ -20,24 +20,24 @@ public class AppConfig {
 
     // App Config
     public static final String vectrasVersion = "2.9.0";
-    public static final String vectrasWebsite = "https://vectrasvm.blackstorm.cc/";
-    public static final String vectrasHelp = "https://vectrasvm.blackstorm.cc/how.html";
-    public static final String vectrasRaw = "https://vectrasvm.blackstorm.cc/vectras-vm/data/";
+    public static final String vectrasWebsite = "https://nguyenbaoanbui-f8a71.web.app/vectrasvm/";
+    public static final String vectrasHelp = vectrasWebsite + "how.html";
+    public static final String vectrasRaw = vectrasWebsite + "data/";
     public static final String vectrasLicense = vectrasRaw + "LICENSE.md";
     public static final String vectrasPrivacy = vectrasRaw + "PRIVACYANDPOLICY.md";
     public static final String vectrasTerms = vectrasRaw + "TERMSOFSERVICE.md";
     public static final String vectrasInfo = vectrasRaw + "info.md";
-    public static final String vectrasRepo = "https://github.com/epicstudios856/Vectras-VM-Android";
+    public static final String vectrasRepo = "https://github.com/AnBui2004/Vectras-VM-Android";
     public static final String updateJson = vectrasRaw + "UpdateConfig.json";
     public static final String blogJson = vectrasRaw + "news_list.json";
     // public static final String storeJson = vectrasRaw + "store_list.json";
-    public static final String storeJson = "https://nguyenbaoanbui-f8a71.web.app/vectrasvm/store_list.json";
+    public static final String storeJson = vectrasWebsite + "store_list.json";
 
-    public static final String releaseUrl = "https://nguyenbaoanbui-f8a71.web.app/vectrasvm";
+    public static final String releaseUrl = vectrasWebsite;
 
     public static String getSetupFiles() {
         String abi = Build.SUPPORTED_ABIS[0];
-        return releaseUrl + "/vectras-vm-" + abi + ".tar.gz";
+        return releaseUrl + "vectras-vm-" + abi + ".tar.gz";
     }
 
     public static final String romsJson(Activity activity) {

@@ -77,7 +77,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="8dp"
-                            app:srcCompat="@drawable/free_palestine" />
+                            app:srcCompat="@drawable/gbp" />
 
                         <TextView
                             android:id="@+id/textView2"
@@ -85,7 +85,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:padding="4dp"
-                            android:text="@string/free_palestine"
+                            android:text="@string/teams"
                             android:textSize="16sp" />
                     </LinearLayout>
                 </LinearLayout>
