@@ -86,9 +86,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 
 public class MainActivity extends AppCompatActivity {
     public static String curRomName;
@@ -109,6 +114,11 @@ public class MainActivity extends AppCompatActivity {
     public TextView usedRam;
     public TextView freeRam;
     private final Timer _timer = new Timer();
+    private AlertDialog alertDialog;
+    private ArrayList<HashMap<String, Objects>> mmap = new ArrayList<>();
+    private String contentjson = "";
+    public static int idatasize = 0;
+    private boolean doneonstart = false;
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -155,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
         refreshRoms.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                errorjsondialog();
                 loadDataVbi();
                 mMainAdapter.notifyItemRangeChanged(0, mMainAdapter.data.size());
                 refreshRoms.setRefreshing(false);
@@ -670,7 +681,7 @@ public class MainActivity extends AppCompatActivity {
             mMainAdapter = new AdapterMainRoms(MainActivity.activity, data);
             mRVMainRoms.setAdapter(mMainAdapter);
             mRVMainRoms.setLayoutManager(new GridLayoutManager(MainActivity.activity, 2));
-
+            MainActivity.idatasize = data.size();
         } catch (JSONException e) {
         }
     }
@@ -876,6 +887,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d("TAG", "The interstitial ad wasn't ready yet.");
         }
+        errorjsondialog();
+        doneonstart = true;
     }
 
     @Override
@@ -1099,6 +1112,87 @@ public class MainActivity extends AppCompatActivity {
 
     public String getPath(Uri uri) {
         return com.vectras.vm.utils.FileUtils.getPath(this, uri);
+    }
+
+    private void errorjsondialog() {
+        if (isFileExists(AppConfig.romsdatajson)) {
+            contentjson = readFile(AppConfig.romsdatajson);
+            try {
+                mmap.clear();
+                mmap = new Gson().fromJson(contentjson, new TypeToken<ArrayList<HashMap<String, Object>>>() {
+                }.getType());
+                mdatasize();
+            } catch (Exception e) {
+                alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                alertDialog.setTitle("Oops!");
+                alertDialog.setMessage("An error occurred with the virtual machine list data. Do you want to delete all?");
+                alertDialog.setCancelable(true);
+                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete all", (dialog, which) -> {
+                    writeToFile(AppConfig.romsdatajson, "[]");
+                    loadDataVbi();
+                    mdatasize();
+                });
+                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
+
+                });
+                alertDialog.show();
+            }
+        } else {
+            writeToFile(AppConfig.romsdatajson, "[]");
+            loadDataVbi();
+            mdatasize();
+        }
+    }
+
+    private String readFile(String filePath) {
+        StringBuilder content = new StringBuilder();
+        try (FileInputStream inputStream = new FileInputStream(filePath);
+             BufferedReader reader = new BufferedReader(new
+                     InputStreamReader(inputStream))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return content.toString();
+
+    }
+
+    private boolean isFileExists(String filePath) {
+        File file = new File(filePath);
+        return file.exists();
+    }
+
+    private void writeToFile(String filePath, String content) {
+        File file = new File(filePath);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(file);
+            outputStream.write(content.getBytes());
+            outputStream.close();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void mdatasize() {
+        if (idatasize < 1 && !doneonstart) {
+            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+            alertDialog.setTitle("Nothing here");
+            alertDialog.setMessage("Do you want to create a new virtual machine now?");
+            alertDialog.setCancelable(true);
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Create", (dialog, which) -> {
+                startActivity(new Intent(activity, CustomRomActivity.class));
+            });
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
+
+            });
+            alertDialog.show();
+        }
     }
 
 }

@@ -53,6 +53,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,14 +61,20 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class CustomRomActivity extends AppCompatActivity {
 
@@ -92,6 +99,12 @@ public class CustomRomActivity extends AppCompatActivity {
     boolean modify;
 
     public static DataMainRoms current;
+
+    private AlertDialog alertDialog;
+
+    private ArrayList<HashMap<String, Objects>> mmap = new ArrayList<>();
+
+    private String contentjson = "";
 
     public void onStart() {
         super.onStart();
@@ -162,12 +175,13 @@ public class CustomRomActivity extends AppCompatActivity {
         TextInputLayout cdromLayout = findViewById(R.id.cdromField);
         TextView arch = findViewById(R.id.textArch);
         arch.setText(MainSettingsManager.getArch(this));
+        ImageView ivIcon = findViewById(R.id.ivIcon);
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/jpeg");
+                intent.setType("image/*");
 
                 // Optionally, specify a URI for the file that should appear in the
                 // system file picker when it loads.
@@ -183,7 +197,7 @@ public class CustomRomActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/jpeg");
+                intent.setType("image/*");
 
                 // Optionally, specify a URI for the file that should appear in the
                 // system file picker when it loads.
@@ -306,6 +320,8 @@ public class CustomRomActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                errorjsondialog();
+
                 File isoFile = new File(cdrom.getText().toString());
                 if (isoFile.exists() && !qemu.getText().toString().contains("-drive index=1,media=cdrom,file=")) {
                     isoFile.delete();
@@ -318,16 +334,16 @@ public class CustomRomActivity extends AppCompatActivity {
                     current.itemDrv1 = drive.getText().toString();
                     current.itemExtra = qemu.getText().toString();
                     try {
-                        JSONObject jObj = MainActivity.jArray.getJSONObject(position);
-                        jObj.put("imgName", title.getText().toString());
-                        jObj.put("imgIcon", icon.getText().toString());
-                        jObj.put("imgPath", drive.getText().toString());
-                        jObj.put("imgExtra", qemu.getText().toString());
+                            JSONObject jObj = MainActivity.jArray.getJSONObject(position);
+                            jObj.put("imgName", title.getText().toString());
+                            jObj.put("imgIcon", icon.getText().toString());
+                            jObj.put("imgPath", drive.getText().toString());
+                            jObj.put("imgExtra", qemu.getText().toString());
 
-                        MainActivity.jArray.put(position, jObj);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
+                            MainActivity.jArray.put(position, jObj);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
                     try {
                         Writer output = null;
                         output = new BufferedWriter(new FileWriter(jsonFile));
@@ -338,7 +354,7 @@ public class CustomRomActivity extends AppCompatActivity {
                     } finally {
                         MainActivity.loadDataVbi();
                         finish();
-                        activity.startActivity(new Intent(activity, SplashActivity.class));
+                        //activity.startActivity(new Intent(activity, SplashActivity.class));
                     }
                 } else {
                     String CREDENTIAL_SHARED_PREF = "settings_prefs";
@@ -401,7 +417,7 @@ public class CustomRomActivity extends AppCompatActivity {
                         VectrasStatus.logInfo("Welcome to Vectras ♡");
                     }
                     finish();
-                    activity.startActivity(new Intent(activity, SplashActivity.class));
+                    //activity.startActivity(new Intent(activity, SplashActivity.class));
                 }
             }
         });
@@ -456,6 +472,23 @@ public class CustomRomActivity extends AppCompatActivity {
             }
         });
 
+        ivIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("image/*");
+
+                // Optionally, specify a URI for the file that should appear in the
+                // system file picker when it loads.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.DIRECTORY_DOWNLOADS);
+                }
+
+                startActivityForResult(intent, 1001);
+            }
+        });
+
         modify = getIntent().getBooleanExtra("MODIFY", false);
         if (modify) {
             addRomBtn.setText(R.string.save_changes);
@@ -478,7 +511,7 @@ public class CustomRomActivity extends AppCompatActivity {
             if(imgFile.exists()){
                 Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
-                ImageView ivIcon = findViewById(R.id.ivIcon);
+
 
                 ivIcon.setImageBitmap(myBitmap);
             }
@@ -500,6 +533,10 @@ public class CustomRomActivity extends AppCompatActivity {
             }
             qemu.setText(defQemuParams);
         }
+
+        if (textName.length() > 0) {
+            addRomBtn.setEnabled(true);
+        }
     }
 
     public static class RomsJso extends JSONObject {
@@ -520,6 +557,7 @@ public class CustomRomActivity extends AppCompatActivity {
 
             return obj;
         }
+
     }
 
     byte[] data;
@@ -773,7 +811,7 @@ public class CustomRomActivity extends AppCompatActivity {
                                         try {
 
                                             JSONObject jObj = new JSONObject(FileUtils.readFromFile(MainActivity.activity, new File(AppConfig.maindirpath
-                                                    + selectedFilePath.getName().replace(".cvbi", "") + "/rom-data.json")));
+                                                    + selectedFilePath.getName().replace(".cvbi", "") + "/roms-data.json")));
 
                                             title.setText(jObj.getString("title"));
                                             icon.setText(AppConfig.maindirpath
@@ -830,6 +868,66 @@ public class CustomRomActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void errorjsondialog() {
+        if (isFileExists(AppConfig.romsdatajson)) {
+            contentjson = readFile(AppConfig.romsdatajson);
+            try {
+                mmap.clear();
+                mmap = new Gson().fromJson(contentjson, new TypeToken<ArrayList<HashMap<String, Object>>>() {
+                }.getType());
+            } catch (Exception e) {
+                alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                alertDialog.setTitle("Oops!");
+                alertDialog.setMessage("An error occurred with the virtual machine list data and a new virtual machine cannot be created at this time. To create a new virtual machine, you need to delete all virtual machine list data. Do you want to delete all?");
+                alertDialog.setCancelable(true);
+                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete all", (dialog, which) -> {
+                    writeToFile(AppConfig.romsdatajson, "[]");
+                });
+                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
+
+                });
+                alertDialog.show();
+            }
+        } else {
+
+        }
+    }
+
+    private String readFile(String filePath) {
+        StringBuilder content = new StringBuilder();
+        try (FileInputStream inputStream = new FileInputStream(filePath);
+             BufferedReader reader = new BufferedReader(new
+                     InputStreamReader(inputStream))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return content.toString();
+
+    }
+
+    private boolean isFileExists(String filePath) {
+        File file = new File(filePath);
+        return file.exists();
+    }
+
+    private void writeToFile(String filePath, String content) {
+        File file = new File(filePath);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(file);
+            outputStream.write(content.getBytes());
+            outputStream.close();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
