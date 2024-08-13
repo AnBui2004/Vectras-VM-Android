@@ -524,4 +524,5 @@
     <string name="save_changes">SAVE CHANGES</string>
     <string name="qemu_create_cmd">QEMU CREATE CMD</string>
     <string name="getit">Get</string>
+    <string name="adddrivenote">Make sure you have selected the ROM or CDROM to boot the OS from. You may not need to select it if you have added them to QEMU PARAMS.</string>
 </resources>

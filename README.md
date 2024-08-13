@@ -17,3 +17,5 @@ This is not the official Vectras VM repository, this repository was created to s
 - Fixed the first time virtual machine creation failure.
 - Fixed the Save Changes button being disabled when editing virtual machine information.
 - Do not automatically restart the app when creating a new virtual machine.
+- Fixed black screen when using PowerPC.
+- Added small note about adding ROM and CDROM.

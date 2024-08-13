@@ -498,4 +498,5 @@
     <string name="change_app_locale">تغيير لغة التطبيق</string>
     <string name="are_you_sure_you_want_to_shutdown_vm">هل أنت متأكد أنك تريد إيقاف الآلة الإفتراضية؟</string>
     <string name="getit">يحصل</string>
+    <string name="adddrivenote">تأكد من تحديد القرص المضغوط أو القرص ROM الذي سيتم تشغيل نظام التشغيل منه. قد لا تحتاج إلى تحديده إذا أضفته إلى معلمات QEMU.</string>
 </resources>
