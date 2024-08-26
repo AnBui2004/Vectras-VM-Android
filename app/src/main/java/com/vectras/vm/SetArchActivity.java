@@ -41,23 +41,23 @@ public class SetArchActivity extends AppCompatActivity implements View.OnClickLi
         if (id == R.id.archi386) {
             MainSettingsManager.setArch(this, "I386");
 
+            startActivity(new Intent(activity, CustomRomActivity.class));
             finish();
-            startActivity(new Intent(this, SplashActivity.class));
         } else if (id == R.id.archx86_64) {
             MainSettingsManager.setArch(this, "X86_64");
 
+            startActivity(new Intent(activity, CustomRomActivity.class));
             finish();
-            startActivity(new Intent(this, SplashActivity.class));
         } else if (id == R.id.archarm64) {
             MainSettingsManager.setArch(this, "ARM64");
 
+            startActivity(new Intent(activity, CustomRomActivity.class));
             finish();
-            startActivity(new Intent(this, SplashActivity.class));
         } else if (id == R.id.archppc) {
             MainSettingsManager.setArch(this, "PPC");
 
+            startActivity(new Intent(activity, CustomRomActivity.class));
             finish();
-            startActivity(new Intent(this, SplashActivity.class));
         } else if (id == R.id.webBtn) {
             String qe = "https://www.qemu.org/";
             Intent q = new Intent(Intent.ACTION_VIEW);

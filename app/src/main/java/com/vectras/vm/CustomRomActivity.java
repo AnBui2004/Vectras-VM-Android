@@ -392,7 +392,8 @@ public class CustomRomActivity extends AppCompatActivity {
                             try {
                                 Writer output = null;
                                 output = new BufferedWriter(new FileWriter(jsonFile));
-                                output.write(jArray.toString().replace("\\", "").replace("//", "/"));
+                                //output.write(jArray.toString().replace("\\", "").replace("//", "/"));
+                                output.write(jArray.toString());
                                 output.close();
                             } catch (Exception e) {
                                 UIUtils.toastLong(activity, e.toString());
@@ -409,7 +410,8 @@ public class CustomRomActivity extends AppCompatActivity {
                         try {
                             Writer output = null;
                             output = new BufferedWriter(new FileWriter(jsonFile));
-                            output.write(jsonArray.toString().replace("\\", "").replace("//", "/"));
+                            //output.write(jsonArray.toString().replace("\\", "").replace("//", "/"));
+                            output.write(jsonArray.toString());
                             output.close();
                         } catch (Exception e) {
                             UIUtils.toastLong(activity, e.toString());

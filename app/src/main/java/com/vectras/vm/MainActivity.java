@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(activity, CustomRomActivity.class));
+                startActivity(new Intent(activity, SetArchActivity.class));
             }
         });
         Toolbar mainToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -668,12 +668,12 @@ public class MainActivity extends AppCompatActivity {
                     romsMainData.itemDrv1 = "";
                 }
                 romsMainData.itemExtra = json_data.getString("imgExtra");
-                try {
-                    if (json_data.getString("imgArch").equals(MainSettingsManager.getArch(MainActivity.activity)))
+                //try {
+                    //if (json_data.getString("imgArch").equals(MainSettingsManager.getArch(MainActivity.activity)))
                         data.add(romsMainData);
-                } catch (JSONException ignored) {
-                    data.add(romsMainData);
-                }
+                //} catch (JSONException ignored) {
+                    //data.add(romsMainData);
+                //}
             }
 
             // Setup and Handover data to recyclerview
@@ -1186,7 +1186,7 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.setMessage("Do you want to create a new virtual machine now?");
             alertDialog.setCancelable(true);
             alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Create", (dialog, which) -> {
-                startActivity(new Intent(activity, CustomRomActivity.class));
+                startActivity(new Intent(activity, SetArchActivity.class));
             });
             alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
 

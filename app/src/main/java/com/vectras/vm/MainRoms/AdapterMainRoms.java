@@ -206,6 +206,15 @@ public class AdapterMainRoms extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         myHolder.cdRoms.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                if (current.itemArch.equals("I386")) {
+                    MainSettingsManager.setArch(MainActivity.activity, "I386");
+                } else if (current.itemArch.equals("X86_64")) {
+                    MainSettingsManager.setArch(MainActivity.activity, "X86_64");
+                } else if (current.itemArch.equals("ARM64")) {
+                    MainSettingsManager.setArch(MainActivity.activity, "ARM64");
+                } else if (current.itemArch.equals("PPC")) {
+                    MainSettingsManager.setArch(MainActivity.activity, "PPC");
+                }
                 String env = StartVM.env(MainActivity.activity, current.itemExtra, current.itemPath, current.itemCpu);
                 MainActivity.startVM(current.itemName, env);
             }
