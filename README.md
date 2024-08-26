@@ -19,3 +19,5 @@ This is not the official Vectras VM repository, this repository was created to s
 - Do not automatically restart the app when creating a new virtual machine.
 - Fixed black screen when using PowerPC.
 - Added small note about adding ROM and CDROM.
+- No need to switch architecture.
+- Improved stability when creating new virtual machines.
