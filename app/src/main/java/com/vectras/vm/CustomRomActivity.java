@@ -2,6 +2,7 @@ package com.vectras.vm;
 
 import static android.content.Intent.ACTION_OPEN_DOCUMENT;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -33,6 +35,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -541,6 +544,12 @@ public class CustomRomActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkpermissions();
+    }
+
     public static class RomsJso extends JSONObject {
 
         public JSONObject makeJSONObject(String imgName, String imgIcon, String imgArch, String imgPath, String imgExtra) {
@@ -930,6 +939,29 @@ public class CustomRomActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void checkpermissions() {
+        if (!VectrasApp.checkpermissionsgranted(this)) {
+            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+            alertDialog.setTitle("Allow permissions");
+            alertDialog.setMessage("You need to grant permission to access the storage before use.");
+            alertDialog.setCancelable(false);
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Allow", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    if (shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        intent.setData(Uri.parse("package:" + getPackageName()));
+                        startActivity(intent);
+                        Toast.makeText(getApplicationContext(), "Find and allow access to storage in Settings.", Toast.LENGTH_LONG).show();
+                    } else {
+                        ActivityCompat.requestPermissions(CustomRomActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1000);
+                    }
+                    alertDialog.dismiss();
+                }
+            });
+            alertDialog.show();
         }
     }
 

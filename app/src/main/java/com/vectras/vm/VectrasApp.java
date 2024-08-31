@@ -1,5 +1,6 @@
 package com.vectras.vm;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.app.NotificationChannel;
@@ -9,6 +10,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -25,6 +27,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.color.DynamicColors;
@@ -406,6 +409,14 @@ public class VectrasApp extends Application {
 		@Override
 		public void onBackPressed() {
 			restart();
+		}
+	}
+
+	public static boolean checkpermissionsgranted(Context context) {
+		if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 }

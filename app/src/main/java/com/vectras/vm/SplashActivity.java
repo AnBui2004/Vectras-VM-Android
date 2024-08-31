@@ -67,8 +67,8 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         } else {
         }
 */
-        if (!checkPermission())
-            requestPermission();
+        //if (!checkPermission())
+            //requestPermission();
         MainSettingsManager.setOrientationSetting(activity, 1);
 
         setupFiles();

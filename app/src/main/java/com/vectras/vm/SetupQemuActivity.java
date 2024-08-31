@@ -10,20 +10,25 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.Manifest;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.button.MaterialButton;
@@ -50,6 +55,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
     MaterialButton inBtn;
     ProgressBar progressBar;
     AlertDialog alertDialog;
+    private boolean settingup = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,15 +71,12 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         inBtn.setOnClickListener(this);
 
         tarPath = getExternalFilesDir("data") + "/data.tar.gz";
+    }
 
-        checkabi();
-
-        File tarGZ = new File(tarPath);
-        if (tarGZ.exists()) {
-            setupVectras();
-        } else {
-            alertDialog.show();
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkpermissions();
     }
 
     public void onClick(View v) {
@@ -335,33 +338,45 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 " echo \"installation successful! xssFjnj58Id\"");
     }
 
-    private void checkabi () {
+    private void checkabi() {
         if (AppConfig.getSetupFiles().contains("arm64-v8a") || AppConfig.getSetupFiles().contains("x86_64")) {
-            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-            alertDialog.setTitle("BOOTSTRAP REQUIRED!");
-            alertDialog.setMessage("You can choose between auto download and setup or manual setup by choosing bootstrap file.");
-            alertDialog.setCancelable(false);
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "AUTO SETUP", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    startDownload();
-                    return;
-                }
-            });
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "MANUAL SETUP", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    intent.setType("*/*");
-
-                    // Optionally, specify a URI for the file that should appear in the
-                    // system file picker when it loads.
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.DIRECTORY_DOWNLOADS);
+            if (AppConfig.getSetupFiles().contains("arm64-v8a") && Build.SUPPORTED_ABIS.length == 1 ) {
+                alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                alertDialog.setTitle("Oops!");
+                alertDialog.setMessage("Your phone's CPU does not have the necessary instructions for Vectras VM to work.");
+                alertDialog.setCancelable(false);
+                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
                     }
+                });
+            } else {
+                alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                alertDialog.setTitle("BOOTSTRAP REQUIRED!");
+                alertDialog.setMessage("You can choose between auto download and setup or manual setup by choosing bootstrap file.");
+                alertDialog.setCancelable(false);
+                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "AUTO SETUP", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startDownload();
+                        return;
+                    }
+                });
+                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "MANUAL SETUP", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
+                        intent.addCategory(Intent.CATEGORY_OPENABLE);
+                        intent.setType("*/*");
 
-                    startActivityForResult(intent, 1001);
-                }
-            });
+                        // Optionally, specify a URI for the file that should appear in the
+                        // system file picker when it loads.
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.DIRECTORY_DOWNLOADS);
+                        }
+
+                        startActivityForResult(intent, 1001);
+                    }
+                });
+            }
         } else {
             alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
             alertDialog.setTitle("Oops!");
@@ -372,6 +387,41 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                     finish();
                 }
             });
+        }
+    }
+
+    private void checkpermissions() {
+        if (!VectrasApp.checkpermissionsgranted(this)) {
+            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+            alertDialog.setTitle("Allow permissions");
+            alertDialog.setMessage("You need to grant permission to access the storage before proceeding with the next steps.");
+            alertDialog.setCancelable(false);
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        intent.setData(Uri.parse("package:" + getPackageName()));
+                        startActivity(intent);
+                        Toast.makeText(getApplicationContext(), "Find and allow access to storage in Settings.", Toast.LENGTH_LONG).show();
+                    } else {
+                        ActivityCompat.requestPermissions(SetupQemuActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1000);
+                    }
+                    alertDialog.dismiss();
+                }
+            });
+            alertDialog.show();
+        } else {
+            if (!settingup) {
+                settingup = true;
+                checkabi();
+
+                File tarGZ = new File(tarPath);
+                if (tarGZ.exists()) {
+                    setupVectras();
+                } else {
+                    alertDialog.show();
+                }
+            }
         }
     }
 
