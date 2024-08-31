@@ -21,3 +21,5 @@ This is not the official Vectras VM repository, this repository was created to s
 - Added small note about adding ROM and CDROM.
 - No need to switch architecture.
 - Improved stability when creating new virtual machines.
+- Added dialog about CPU missing necessary instructions.
+- Added dialog asking for permission to access storage.
