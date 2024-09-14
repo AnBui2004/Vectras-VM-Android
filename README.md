@@ -23,3 +23,8 @@ This is not the official Vectras VM repository, this repository was created to s
 - Improved stability when creating new virtual machines.
 - Added dialog about CPU missing necessary instructions.
 - Added dialog asking for permission to access storage.
+- Added UEFI for qemu-system-aarch64.
+- Added a button to completely shutdown Vectras VM.
+- Don't auto-open VNC when qemu is stopped.
+- Don't auto-close VNC when the OS is booting.
+- Added tap and hold shut down button to temporarily exit VNC activity.
