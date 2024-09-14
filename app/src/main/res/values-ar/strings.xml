@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">فيكترا</string>
-    <string name="app_version">v2.9.1h</string>
+    <string name="app_version">v2.9.1i</string>
     <string name="qemu_version">qemu-8.2.1-3dfx</string>
     <string name="str_home">الرئيسية</string>
     <string name="str_logger">سجل</string>
@@ -507,7 +507,7 @@
     <string name="language">اللغة</string>
     <string name="set">تعيين</string>
     <string name="change_app_locale">تغيير لغة التطبيق</string>
-    <string name="are_you_sure_you_want_to_shutdown_vm">هل أنت متأكد أنك تريد إيقاف الآلة الإفتراضية؟</string>
+    <string name="are_you_sure_you_want_to_shutdown_vm">هل أنت متأكد أنك تريد إيقاف الآلة الإفتراضية؟ لترك هذا مع إبقاء كل شيء قيد التشغيل، اضغط مع الاستمرار على زر إيقاف التشغيل.</string>
     <string name="cpu">المعالج</string>
     <string name="save_changes">حفظ التغييرات</string>
     <string name="qemu_create_cmd">إنشاء أمر QEMU</string>

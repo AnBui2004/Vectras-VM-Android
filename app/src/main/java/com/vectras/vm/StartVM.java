@@ -97,6 +97,11 @@ public class StartVM {
         if (MainSettingsManager.getArch(activity).equals("PPC")) {
             bios = "-L ";
             bios += "openbios-ppc";
+        } else if (MainSettingsManager.getArch(activity).equals("ARM64")) {
+            bios = "-pflash ";
+            bios += AppConfig.basefiledir + "QEMU_EFI.img";
+            bios += " -pflash ";
+            bios += AppConfig.basefiledir + "QEMU_VARS.img";
         } else {
             bios = "-bios ";
             bios += AppConfig.basefiledir + "bios-vectras.bin";
@@ -120,9 +125,9 @@ public class StartVM {
             params.add("-nodefaults");
         }
 
-        if (!Objects.equals(MainSettingsManager.getArch(activity), "ARM64")) {
-            params.add(bios);
-        }
+        //if (!Objects.equals(MainSettingsManager.getArch(activity), "ARM64")) {
+        params.add(bios);
+        //}
 
         params.add(boot);
 
@@ -141,12 +146,13 @@ public class StartVM {
             }
 
             if (!MainSettingsManager.getArch(activity).equals("PPC")) {
-                params.add("-monitor");
+                if (!MainSettingsManager.getArch(activity).equals("ARM64")) {
+                    params.add("-monitor");
+                }
             }
-            if (MainSettingsManager.getArch(activity).equals("ARM64"))
-                params.add("stdio");
-            else
-            if (!MainSettingsManager.getArch(activity).equals("PPC")) {
+            if (MainSettingsManager.getArch(activity).equals("ARM64")) {
+                //params.add("stdio");
+            } else if (!MainSettingsManager.getArch(activity).equals("PPC")) {
                 params.add("vc");
             }
         } else if (MainSettingsManager.getVmUi(activity).equals("SPICE")) {

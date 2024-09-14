@@ -710,8 +710,18 @@ public class MainActivity extends AppCompatActivity {
             else
                 appbar.setExpanded(false);
 
-        } else if (id == R.id.arch) {
-            startActivity(new Intent(activity, SetArchActivity.class));
+        } else if (id == R.id.shutdown) {
+            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+            alertDialog.setTitle("Shut down");
+            alertDialog.setMessage("Vectras VM will be completely shut down. This will help fix the error when you run the virtual machine and everything you set up is correct but the black screen error still occurs.");
+            alertDialog.setCancelable(true);
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Shut down", (dialog, which) -> {
+                System.exit(0);
+            });
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
+
+            });
+            alertDialog.show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -838,7 +848,7 @@ public class MainActivity extends AppCompatActivity {
 
         //TEMPORARY FIX FOR VNC CLOSES
         //TODO: FIND FIX FOR CRASHING
-        if (MainSettingsManager.getVmUi(activity).equals("VNC") && MainVNCActivity.started)
+        if (MainSettingsManager.getVmUi(activity).equals("VNC") && MainVNCActivity.started && Terminal.qemuProcess != null)
             startActivity(new Intent(activity, MainVNCActivity.class));
     }
 

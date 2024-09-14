@@ -6,5 +6,10 @@
 		android:icon="@drawable/round_info_24"
 		app:showAsAction="always"
 		android:title="@string/info"/>
+	<item
+		android:id="@+id/shutdown"
+		android:icon="@drawable/power_settings_new_24px"
+		app:showAsAction="always"
+		android:title="@string/shutdown"/>
 
 </menu>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vectras VM</string>
-    <string name="app_version" translatable="false">v2.9.1h</string>
+    <string name="app_version" translatable="false">v2.9.1i</string>
     <string name="qemu_version" translatable="false">qemu-8.2.1-3dfx</string>
     <string name="str_home">Home</string>
     <string name="str_logger">Logger</string>
@@ -19,7 +19,7 @@
     <string name="address_caption">Address</string>
     <string name="alt_check">Alt</string>
     <string name="reset">Reset</string>
-    <string name="shutdown">Shutdown</string>
+    <string name="shutdown">Shut down</string>
     <string name="ctrl_c" translatable="false">Ctrl-c</string>
     <string name="devices">Devices</string>
     <string name="external_mouse">External Mouse</string>
@@ -519,7 +519,7 @@
     <string name="language">LANGUAGE</string>
     <string name="set">SET</string>
     <string name="change_app_locale">CHANGE APP LOCALE</string>
-    <string name="are_you_sure_you_want_to_shutdown_vm">Are you sure you want to shutdown vm?</string>
+    <string name="are_you_sure_you_want_to_shutdown_vm">Are you sure you want to shutdown vm? To leave this but keep everything running, tap and hold the Shut down button.</string>
     <string name="cpu">CPU</string>
     <string name="save_changes">SAVE CHANGES</string>
     <string name="qemu_create_cmd">QEMU CREATE CMD</string>

@@ -313,6 +313,7 @@ public class MainVNCActivity extends VncCanvasActivity {
                                 // Stop the service
                                 MainService.stopService();
                                 Terminal.killQemuProcess();
+                                finish();
                             }
 
                         })
@@ -320,17 +321,25 @@ public class MainVNCActivity extends VncCanvasActivity {
                         .show();
             }
         });
-        keyboardBtn.setOnClickListener(new View.OnClickListener() {
+
+        shutdownBtn.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        toggleKeyboardFlag = UIUtils.onKeyboard(activity, toggleKeyboardFlag, vncCanvas);
-                    }
-                }, 200);
+            public boolean onLongClick(View view) {
+                AlertDialog alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                alertDialog.setTitle("Exit");
+                alertDialog.setMessage("You will be left here but the virtual machine will continue to run.");
+                alertDialog.setCancelable(true);
+                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Exit", (dialog, which) -> {
+                    finish();
+                });
+                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
+
+                });
+                alertDialog.show();
+                return false;
             }
         });
+
         controllersBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

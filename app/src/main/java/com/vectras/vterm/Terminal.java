@@ -2,6 +2,7 @@ package com.vectras.vterm;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,6 +23,7 @@ import java.util.Enumeration;
 
 import com.vectras.qemu.MainVNCActivity;
 import com.vectras.vm.MainActivity;
+import com.vectras.vm.MainService;
 import com.vectras.vm.R;
 
 public class Terminal {
@@ -55,11 +57,18 @@ public class Terminal {
     }
 
     private void showDialog(String message, Activity activity) {
-        AlertDialog dialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme)
-                .setTitle("Execution Result")
-                .setMessage(message)
-                .setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
-                .create();
+        AlertDialog dialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+        dialog.setTitle("Execution Result");
+        dialog.setMessage(message);
+                //.setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                killQemuProcess();
+                MainService.stopService();
+                dialog.dismiss();
+            }
+        });
+        dialog.create();
 
         dialog.show();
     }
@@ -188,7 +197,7 @@ public class Terminal {
                 qemuProcess.destroyForcibly();
             else
                 qemuProcess.destroy();
-            MainVNCActivity.activity.finish();
+            //MainVNCActivity.activity.finish();
             MainVNCActivity.started = false;
             qemuProcess = null; // Set it to null after destroying it
             Log.d(TAG, "QEMU process destroyed.");

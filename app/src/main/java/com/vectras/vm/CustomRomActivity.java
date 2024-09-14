@@ -524,10 +524,10 @@ public class CustomRomActivity extends AppCompatActivity {
             String defQemuParams;
             switch (MainSettingsManager.getArch(MainActivity.activity)) {
                 case "ARM64":
-                    defQemuParams = "-M virt -cpu cortex-a57 -net nic,model=e1000 -net user -vga virtio -monitor stdio -device nec-usb-xhci -device usb-kbd -device usb-mouse -device VGA";
+                    defQemuParams = "-M virt -cpu cortex-a76 -net nic,model=e1000 -net user -device nec-usb-xhci -device usb-kbd -device usb-mouse -device VGA";
                     break;
                 case "PPC":
-                    defQemuParams = "-M mac99 -cpu g3 -smp 1";
+                    defQemuParams = "-M mac99 -cpu g4 -smp 1";
                     break;
                 case "I386":
                     defQemuParams = "-M pc -cpu qemu32,+avx -accel tcg,thread=multi -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet";
