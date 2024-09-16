@@ -28,3 +28,5 @@ This is not the official Vectras VM repository, this repository was created to s
 - Don't auto-open VNC when qemu is stopped.
 - Don't auto-close VNC when the OS is booting.
 - Added tap and hold shut down button to temporarily exit VNC activity.
+- Change the Vectras VM shutdown button to kill all Qemu processes.
+- The Shut down button in VNC activity will kill current Qemu processes.
