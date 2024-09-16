@@ -712,11 +712,11 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (id == R.id.shutdown) {
             alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-            alertDialog.setTitle("Shut down");
-            alertDialog.setMessage("Vectras VM will be completely shut down. This will help fix the error when you run the virtual machine and everything you set up is correct but the black screen error still occurs.");
+            alertDialog.setTitle("Do you want to kill all Qemu processes?");
+            alertDialog.setMessage("All running VMs will be forcibly shut down.");
             alertDialog.setCancelable(true);
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Shut down", (dialog, which) -> {
-                System.exit(0);
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Kill all", (dialog, which) -> {
+                VectrasApp.killallqemuprocesses(getApplicationContext());
             });
             alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
 

@@ -313,6 +313,7 @@ public class MainVNCActivity extends VncCanvasActivity {
                                 // Stop the service
                                 MainService.stopService();
                                 Terminal.killQemuProcess();
+                                VectrasApp.killcurrentqemuprocess(getApplicationContext());
                                 finish();
                             }
 
