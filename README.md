@@ -30,3 +30,7 @@ This is not the official Vectras VM repository, this repository was created to s
 - Added tap and hold shut down button to temporarily exit VNC activity.
 - Change the Vectras VM shutdown button to kill all Qemu processes.
 - The Shut down button in VNC activity will kill current Qemu processes.
+- 32bit support.
+- Added warning dialog if your device does not support 64bit.
+- AUTO SETUP will directly install qemu instead of spending extra time downloading bootstrap file.
+- Added VNC screen open button.
