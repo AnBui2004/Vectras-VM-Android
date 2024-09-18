@@ -340,7 +340,17 @@ public class MainVNCActivity extends VncCanvasActivity {
                 return false;
             }
         });
-
+        keyboardBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        toggleKeyboardFlag = UIUtils.onKeyboard(activity, toggleKeyboardFlag, vncCanvas);
+                    }
+                }, 200);
+            }
+        });
         controllersBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
