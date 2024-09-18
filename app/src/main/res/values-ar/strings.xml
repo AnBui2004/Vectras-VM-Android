@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">فيكترا</string>
-    <string name="app_version">v2.9.1j</string>
-    <string name="qemu_version">qemu-8.2.1-3dfx</string>
+    <string name="app_version">v2.9.1k</string>
+    <string name="qemu_version">أحدث</string>
     <string name="str_home">الرئيسية</string>
     <string name="str_logger">سجل</string>
     <string name="fab_info">بدء المحاكاة</string>
@@ -511,4 +511,9 @@
     <string name="cpu">المعالج</string>
     <string name="save_changes">حفظ التغييرات</string>
     <string name="qemu_create_cmd">إنشاء أمر QEMU</string>
+    <string name="getit">يحصل</string>
+    <string name="adddrivenote">تأكد من تحديد القرص المضغوط أو القرص ROM الذي سيتم تشغيل نظام التشغيل منه. قد لا تحتاج إلى تحديده إذا أضفته إلى معلمات QEMU.</string>
+    <string name="killqemu">اقتل QEMU</string>
+    <string name="installing">جاري التثبيت...</string>
+    <string name="vncdisplay">عرض VNC</string>
 </resources>

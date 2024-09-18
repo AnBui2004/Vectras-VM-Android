@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vectras VM</string>
-    <string name="app_version" translatable="false">v2.9.1j</string>
-    <string name="qemu_version" translatable="false">qemu-8.2.1-3dfx</string>
+    <string name="app_version" translatable="false">v2.9.1k</string>
+    <string name="qemu_version" translatable="false">Latest</string>
     <string name="str_home">Home</string>
     <string name="str_logger">Logger</string>
     <string name="fab_info">Start Emulation</string>
@@ -525,4 +525,7 @@
     <string name="qemu_create_cmd">QEMU CREATE CMD</string>
     <string name="getit">Get</string>
     <string name="adddrivenote">Make sure you have selected the ROM or CDROM to boot the OS from. You may not need to select it if you have added them to QEMU PARAMS.</string>
+    <string name="killqemu">Kill QEMU</string>
+    <string name="installing">Installing...</string>
+    <string name="vncdisplay">VNC display</string>
 </resources>

@@ -522,19 +522,36 @@ public class CustomRomActivity extends AppCompatActivity {
             }
         } else {
             String defQemuParams;
-            switch (MainSettingsManager.getArch(MainActivity.activity)) {
-                case "ARM64":
-                    defQemuParams = "-M virt -cpu cortex-a76 -net nic,model=e1000 -net user -device nec-usb-xhci -device usb-kbd -device usb-mouse -device VGA";
-                    break;
-                case "PPC":
-                    defQemuParams = "-M mac99 -cpu g4 -smp 1";
-                    break;
-                case "I386":
-                    defQemuParams = "-M pc -cpu qemu32,+avx -accel tcg,thread=multi -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet";
-                    break;
-                default:
-                    defQemuParams = "-M pc -cpu qemu64,+avx -accel tcg,thread=multi -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet";
-                    break;
+            if (AppConfig.getSetupFiles().contains("arm64-v8a") || AppConfig.getSetupFiles().contains("x86_64")) {
+                switch (MainSettingsManager.getArch(MainActivity.activity)) {
+                    case "ARM64":
+                        defQemuParams = "-M virt,virtualization=true -cpu cortex-a76 -accel tcg,thread=multi -net nic,model=e1000 -net user -device nec-usb-xhci -device usb-kbd -device usb-mouse -device VGA";
+                        break;
+                    case "PPC":
+                        defQemuParams = "-M mac99 -cpu g4 -accel tcg,thread=multi -smp 1";
+                        break;
+                    case "I386":
+                        defQemuParams = "-M pc -cpu qemu32,+avx -accel tcg,thread=multi -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet";
+                        break;
+                    default:
+                        defQemuParams = "-M pc -cpu qemu64,+avx -accel tcg,thread=multi -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet";
+                        break;
+                }
+            } else {
+                switch (MainSettingsManager.getArch(MainActivity.activity)) {
+                    case "ARM64":
+                        defQemuParams = "-M virt -cpu cortex-a76 -net nic,model=e1000 -net user -device nec-usb-xhci -device usb-kbd -device usb-mouse -device VGA";
+                        break;
+                    case "PPC":
+                        defQemuParams = "-M mac99 -cpu g4 -smp 1";
+                        break;
+                    case "I386":
+                        defQemuParams = "-M pc -cpu qemu32,+avx -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet";
+                        break;
+                    default:
+                        defQemuParams = "-M pc -cpu qemu64,+avx -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet";
+                        break;
+                }
             }
             qemu.setText(defQemuParams);
         }

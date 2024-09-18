@@ -722,6 +722,8 @@ public class MainActivity extends AppCompatActivity {
 
             });
             alertDialog.show();
+        } else if (id == R.id.vncdisplay) {
+            activity.startActivity(new Intent(activity, MainVNCActivity.class));
         }
 
         return super.onOptionsItemSelected(item);

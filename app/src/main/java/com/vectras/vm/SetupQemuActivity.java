@@ -338,55 +338,78 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 " echo \"installation successful! xssFjnj58Id\"");
     }
 
+    private void setupVectrasnew() {
+        inBtn.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        String filesDir = activity.getFilesDir().getAbsolutePath();
+        String cmd = "";
+        cmd += "echo \"http://dl-cdn.alpinelinux.org/alpine/edge/testing\" >> /etc/apk/repositories;";
+        executeShellCommand(cmd);
+        executeShellCommand("set -e;" +
+                " echo 'Starting setup...';" +
+                " apk update;" +
+                " apk add tar libslirp libslirp-dev pulseaudio-dev glib-dev pixman-dev zlib-dev spice-dev" +
+                " libusbredirparser usbredir-dev libiscsi-dev  sdl2 sdl2-dev libepoxy-dev virglrenderer-dev rdma-core" +
+                " libusb ncurses-libs curl libnfs sdl2 gtk+3.0 fuse libpulse libseccomp jack pipewire liburing;" +
+                //" tar -xzvf " + tarPath + " -C /;" +
+                " apk add qemu-system-x86_64 qemu-system-ppc qemu-system-i386 qemu-system-aarch64 qemu-pr-helper qemu-img;" +
+                //" rm " + tarPath + ";" +
+                " mkdir -p ~/.vnc && echo -e \"555555\\n555555\" | vncpasswd -f > ~/.vnc/passwd && chmod 0600 ~/.vnc/passwd;" +
+                " echo \"installation successful! xssFjnj58Id\"");
+    }
+
     private void checkabi() {
-        if (AppConfig.getSetupFiles().contains("arm64-v8a") || AppConfig.getSetupFiles().contains("x86_64")) {
-            if (AppConfig.getSetupFiles().contains("arm64-v8a") && Build.SUPPORTED_ABIS.length == 1 ) {
-                alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-                alertDialog.setTitle("Oops!");
-                alertDialog.setMessage("Your phone's CPU does not have the necessary instructions for Vectras VM to work.");
-                alertDialog.setCancelable(false);
-                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                });
-            } else {
-                alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-                alertDialog.setTitle("BOOTSTRAP REQUIRED!");
-                alertDialog.setMessage("You can choose between auto download and setup or manual setup by choosing bootstrap file.");
-                alertDialog.setCancelable(false);
-                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "AUTO SETUP", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        startDownload();
-                        return;
-                    }
-                });
-                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "MANUAL SETUP", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
-                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                        intent.setType("*/*");
-
-                        // Optionally, specify a URI for the file that should appear in the
-                        // system file picker when it loads.
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.DIRECTORY_DOWNLOADS);
-                        }
-
-                        startActivityForResult(intent, 1001);
-                    }
-                });
-            }
-        } else {
+        if (AppConfig.getSetupFiles().contains("arm64-v8a") && Build.SUPPORTED_ABIS.length == 1 ) {
             alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
             alertDialog.setTitle("Oops!");
-            alertDialog.setMessage("Your device or Android build does not support 64-bit. To use Vectras VM, your device or Android build must have 64-bit support.");
+            alertDialog.setMessage("Your phone's CPU does not have the necessary instructions for Vectras VM to work.");
             alertDialog.setCancelable(false);
             alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    finish();
+                        finish();
+                    }
+            });
+        } else {
+            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+            alertDialog.setTitle("BOOTSTRAP REQUIRED!");
+            alertDialog.setMessage("You can choose between auto download and setup or manual setup by choosing bootstrap file.");
+            alertDialog.setCancelable(false);
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "AUTO SETUP", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    //startDownload();
+                    setupVectrasnew();
+                    return;
                 }
             });
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "MANUAL SETUP", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+
+                    // Optionally, specify a URI for the file that should appear in the
+                    // system file picker when it loads.
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.DIRECTORY_DOWNLOADS);
+                    }
+
+                    startActivityForResult(intent, 1001);
+                }
+            });
+        }
+        if (!AppConfig.getSetupFiles().contains("arm64-v8a")) {
+            if (!AppConfig.getSetupFiles().contains("x86_64")) {
+                AlertDialog abiAlertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                abiAlertDialog.setTitle("WARNING!");
+                abiAlertDialog.setMessage("The Android OS or CPU on your device does not support 64bit, which means the VM will have poor performance and be unstable when running.");
+                abiAlertDialog.setCancelable(false);
+                abiAlertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                abiAlertDialog.show();
+            }
         }
     }
 

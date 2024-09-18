@@ -7,9 +7,14 @@
 		app:showAsAction="always"
 		android:title="@string/info"/>
 	<item
+		android:id="@+id/vncdisplay"
+		android:icon="@drawable/desktop_windows_24px"
+		app:showAsAction="always"
+		android:title="@string/vncdisplay"/>
+	<item
 		android:id="@+id/shutdown"
 		android:icon="@drawable/power_settings_new_24px"
 		app:showAsAction="always"
-		android:title="@string/shutdown"/>
+		android:title="@string/killqemu"/>
 
 </menu>
