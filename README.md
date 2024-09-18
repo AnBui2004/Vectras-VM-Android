@@ -34,3 +34,4 @@ This is not the official Vectras VM repository, this repository was created to s
 - Added warning dialog if your device does not support 64bit.
 - AUTO SETUP will directly install qemu instead of spending extra time downloading bootstrap file.
 - Added VNC screen open button.
+- Fixed keyboard not showing up in VNC activity.
