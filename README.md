@@ -35,3 +35,4 @@ This is not the official Vectras VM repository, this repository was created to s
 - AUTO SETUP will directly install qemu instead of spending extra time downloading bootstrap file.
 - Added VNC screen open button.
 - Fixed keyboard not showing up in VNC activity.
+- Audio support with Termux.
