@@ -1,6 +1,7 @@
 package com.vectras.vm;
 
 import static android.content.Intent.ACTION_OPEN_DOCUMENT;
+import static android.content.Intent.ACTION_VIEW;
 import static android.os.Build.VERSION.SDK_INT;
 import static com.vectras.vm.utils.UIUtils.UIAlert;
 
@@ -8,6 +9,8 @@ import android.app.ActivityManager;
 import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -472,6 +475,51 @@ public class MainActivity extends AppCompatActivity {
                     Intent w = new Intent(Intent.ACTION_VIEW);
                     w.setData(Uri.parse(tw));
                     startActivity(w);
+                } else if (id== R.id.setup_sound) {
+                    if (VectrasApp.isAppInstalled("com.termux", getApplicationContext())) {
+                        alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                        alertDialog.setTitle(getResources().getString(R.string.setup_sound));
+                        alertDialog.setMessage(getResources().getString(R.string.setup_sound_guide_content));
+                        alertDialog.setCancelable(false);
+                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.start_setup), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                ClipData clip = ClipData.newPlainText("Setup", "curl -o setup.sh https://raw.githubusercontent.com/AnBui2004/termux/refs/heads/main/installpulseaudio.sh && chmod +rwx setup.sh && ./setup.sh && rm setup.sh");
+                                clipboard.setPrimaryClip(clip);
+                                Intent intent = new Intent();
+                                intent.setAction(ACTION_VIEW);
+                                intent.setData(Uri.parse("android-app://com.termux"));
+                                startActivity(intent);
+                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.copied), Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                        });
+                        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                alertDialog.dismiss();
+                            }
+                        });
+                    } else {
+                        alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                        alertDialog.setTitle(getResources().getString(R.string.termux_is_not_installed));
+                        alertDialog.setMessage(getResources().getString(R.string.you_need_to_install_termux));
+                        alertDialog.setCancelable(false);
+                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.install), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent();
+                                intent.setAction(ACTION_VIEW);
+                                intent.setData(Uri.parse("https://github.com/termux/termux-app/releases"));
+                                startActivity(intent);
+                                return;
+                            }
+                        });
+                        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                alertDialog.dismiss();
+                            }
+                        });
+                    }
+                    alertDialog.show();
                 }
                 return false;
             }

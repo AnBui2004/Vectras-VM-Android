@@ -334,6 +334,8 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 " libusb ncurses-libs curl libnfs sdl2 gtk+3.0 fuse libpulse libseccomp jack pipewire liburing;" +
                 " tar -xzvf " + tarPath + " -C /;" +
                 " rm " + tarPath + ";" +
+                " apk add qemu-audio-sdl pulseaudio;" +
+                " echo export PULSE_SERVER=127.0.0.1 >> /etc/profile;" +
                 " mkdir -p ~/.vnc && echo -e \"555555\\n555555\" | vncpasswd -f > ~/.vnc/passwd && chmod 0600 ~/.vnc/passwd;" +
                 " echo \"installation successful! xssFjnj58Id\"");
     }
@@ -352,7 +354,8 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 " libusbredirparser usbredir-dev libiscsi-dev  sdl2 sdl2-dev libepoxy-dev virglrenderer-dev rdma-core" +
                 " libusb ncurses-libs curl libnfs sdl2 gtk+3.0 fuse libpulse libseccomp jack pipewire liburing;" +
                 //" tar -xzvf " + tarPath + " -C /;" +
-                " apk add qemu-system-x86_64 qemu-system-ppc qemu-system-i386 qemu-system-aarch64 qemu-pr-helper qemu-img;" +
+                " apk add qemu-system-x86_64 qemu-system-ppc qemu-system-i386 qemu-system-aarch64 qemu-pr-helper qemu-img qemu-audio-sdl pulseaudio;" +
+                " echo export PULSE_SERVER=127.0.0.1 >> /etc/profile;" +
                 //" rm " + tarPath + ";" +
                 " mkdir -p ~/.vnc && echo -e \"555555\\n555555\" | vncpasswd -f > ~/.vnc/passwd && chmod 0600 ~/.vnc/passwd;" +
                 " echo \"installation successful! xssFjnj58Id\"");

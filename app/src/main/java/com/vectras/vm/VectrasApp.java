@@ -448,4 +448,14 @@ public class VectrasApp extends Application {
 		}
 		vterm.executeShellCommand(env, false, MainActivity.activity);
 	}
+
+	public static boolean isAppInstalled(String packagename, Context context) {
+		PackageManager pm = context.getPackageManager();
+		try {
+			pm.getPackageInfo(packagename,PackageManager.GET_ACTIVITIES);
+			return true;
+		} catch (PackageManager.NameNotFoundException e) {
+			return  false;
+		}
+	}
 }
