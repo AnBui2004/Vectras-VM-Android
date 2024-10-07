@@ -322,107 +322,24 @@ public class CustomRomActivity extends AppCompatActivity {
         addRomBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                errorjsondialog();
-
-                File isoFile = new File(cdrom.getText().toString());
-                if (isoFile.exists() && !qemu.getText().toString().contains("-drive index=1,media=cdrom,file=")) {
-                    isoFile.delete();
-                }
-
-                if (modify) {
-
-                    int position = getIntent().getIntExtra("POS", 0);
-                    final File jsonFile = new File(AppConfig.maindirpath + "roms-data" + ".json");
-                    current.itemDrv1 = drive.getText().toString();
-                    current.itemExtra = qemu.getText().toString();
-                    try {
-                            JSONObject jObj = MainActivity.jArray.getJSONObject(position);
-                            jObj.put("imgName", title.getText().toString());
-                            jObj.put("imgIcon", icon.getText().toString());
-                            jObj.put("imgPath", drive.getText().toString());
-                            jObj.put("imgExtra", qemu.getText().toString());
-
-                            MainActivity.jArray.put(position, jObj);
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
-                        }
-                    try {
-                        Writer output = null;
-                        output = new BufferedWriter(new FileWriter(jsonFile));
-                        output.write(MainActivity.jArray.toString());
-                        output.close();
-                    } catch (Exception e) {
-                        UIUtils.toastLong(MainActivity.activity, e.toString());
-                    } finally {
-                        MainActivity.loadDataVbi();
-                        finish();
-                        //activity.startActivity(new Intent(activity, SplashActivity.class));
-                    }
+                if (!(drive.getText().toString().isEmpty() || drive.getText().toString().isEmpty())) {
+                    startCreateVM();
                 } else {
-                    String CREDENTIAL_SHARED_PREF = "settings_prefs";
-                    SharedPreferences credentials = activity.getSharedPreferences(CREDENTIAL_SHARED_PREF, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = credentials.edit();
-                    editor.putBoolean("isFirstLaunch", Boolean.TRUE);
-                    editor.apply();
-                    loadingPb.setVisibility(View.VISIBLE);
-                    final File jsonFile = new File(AppConfig.maindirpath + "roms-data" + ".json");
-                    RomsJso obj = new RomsJso();
-                    if (jsonFile.exists()) {
-                        try {
-                            List<DataMainRoms> data = new ArrayList<>();
-                            JSONArray jArray = null;
-                            jArray = new JSONArray(FileUtils.readFromFile(MainActivity.activity, jsonFile));
-
-                            try {
-                                // Extract data from json and store into ArrayList as class objects
-                                for (int i = 0; i < jArray.length(); i++) {
-                                    JSONObject json_data = jArray.getJSONObject(i);
-                                    DataMainRoms romsMainData = new DataMainRoms();
-                                    romsMainData.itemName = json_data.getString("imgName");
-                                    romsMainData.itemIcon = json_data.getString("imgIcon");
-                                    romsMainData.itemPath = json_data.getString("imgPath");
-                                    romsMainData.itemExtra = json_data.getString("imgExtra");
-                                    data.add(romsMainData);
-                                }
-
-                            } catch (JSONException e) {
-                                Toast.makeText(MainActivity.activity, e.toString(), Toast.LENGTH_LONG).show();
-                            }
-
-                            JSONObject jsonObject = obj.makeJSONObject(title.getText().toString(), icon.getText().toString(), MainSettingsManager.getArch(activity), drive.getText().toString(), qemu.getText().toString());
-                            jArray.put(jsonObject);
-                            try {
-                                Writer output = null;
-                                output = new BufferedWriter(new FileWriter(jsonFile));
-                                //output.write(jArray.toString().replace("\\", "").replace("//", "/"));
-                                output.write(jArray.toString());
-                                output.close();
-                            } catch (Exception e) {
-                                UIUtils.toastLong(activity, e.toString());
-                                loadingPb.setVisibility(View.GONE);
-                            }
-                        } catch (JSONException e) {
-                            loadingPb.setVisibility(View.GONE);
-                            throw new RuntimeException(e);
-                        }
+                    if (VectrasApp.isHaveADisk(qemu.getText().toString())) {
+                        startCreateVM();
                     } else {
-                        JSONObject jsonObject = obj.makeJSONObject(title.getText().toString(), icon.getText().toString(), MainSettingsManager.getArch(activity), drive.getText().toString(), qemu.getText().toString());
-                        JSONArray jsonArray = new JSONArray();
-                        jsonArray.put(jsonObject);
-                        try {
-                            Writer output = null;
-                            output = new BufferedWriter(new FileWriter(jsonFile));
-                            //output.write(jsonArray.toString().replace("\\", "").replace("//", "/"));
-                            output.write(jsonArray.toString());
-                            output.close();
-                        } catch (Exception e) {
-                            UIUtils.toastLong(activity, e.toString());
-                        }
-                        VectrasStatus.logInfo("Welcome to Vectras ♡");
+                        AlertDialog alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                        alertDialog.setTitle("Problem has been detected");
+                        alertDialog.setMessage("You have not added any storage devices to start using or install an operating system. Do you want to continue creating?");
+                        alertDialog.setCancelable(true);
+                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Continue", (dialog, which) -> {
+                            startCreateVM();
+                        });
+                        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
+
+                        });
+                        alertDialog.show();
                     }
-                    finish();
-                    //activity.startActivity(new Intent(activity, SplashActivity.class));
                 }
             }
         });
@@ -449,6 +366,11 @@ public class CustomRomActivity extends AppCompatActivity {
                     driveLayout.setEnabled(false);
                     iconLayout.setEnabled(false);
                 }
+
+                if (!Objects.requireNonNull(icon.getText()).toString().isEmpty())
+                    return;
+
+                VectrasApp.setIconWithName(ivIcon, title.getText().toString());
             }
 
             @Override
@@ -515,12 +437,12 @@ public class CustomRomActivity extends AppCompatActivity {
 
             if(imgFile.exists()){
                 Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-
-
-
                 ivIcon.setImageBitmap(myBitmap);
+            } else {
+                VectrasApp.setIconWithName(ivIcon, current.itemName);
             }
         } else {
+            title.setText("New VM");
             String defQemuParams;
             if (AppConfig.getSetupFiles().contains("arm64-v8a") || AppConfig.getSetupFiles().contains("x86_64")) {
                 switch (MainSettingsManager.getArch(MainActivity.activity)) {
@@ -565,6 +487,8 @@ public class CustomRomActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         checkpermissions();
+        if (isFilled(title))
+            addRomBtn.setEnabled(true);
     }
 
     public static class RomsJso extends JSONObject {
@@ -979,6 +903,110 @@ public class CustomRomActivity extends AppCompatActivity {
                 }
             });
             alertDialog.show();
+        }
+    }
+
+    private void startCreateVM() {
+        errorjsondialog();
+
+        File isoFile = new File(cdrom.getText().toString());
+        if (isoFile.exists() && !qemu.getText().toString().contains("-drive index=1,media=cdrom,file=")) {
+            isoFile.delete();
+        }
+
+        if (modify) {
+
+            int position = getIntent().getIntExtra("POS", 0);
+            final File jsonFile = new File(AppConfig.maindirpath + "roms-data" + ".json");
+            current.itemDrv1 = drive.getText().toString();
+            current.itemExtra = qemu.getText().toString();
+            try {
+                JSONObject jObj = MainActivity.jArray.getJSONObject(position);
+                jObj.put("imgName", title.getText().toString());
+                jObj.put("imgIcon", icon.getText().toString());
+                jObj.put("imgPath", drive.getText().toString());
+                jObj.put("imgExtra", qemu.getText().toString());
+
+                MainActivity.jArray.put(position, jObj);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                Writer output = null;
+                output = new BufferedWriter(new FileWriter(jsonFile));
+                output.write(MainActivity.jArray.toString());
+                output.close();
+            } catch (Exception e) {
+                UIUtils.toastLong(MainActivity.activity, e.toString());
+            } finally {
+                MainActivity.loadDataVbi();
+                finish();
+                //activity.startActivity(new Intent(activity, SplashActivity.class));
+            }
+        } else {
+            String CREDENTIAL_SHARED_PREF = "settings_prefs";
+            SharedPreferences credentials = activity.getSharedPreferences(CREDENTIAL_SHARED_PREF, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = credentials.edit();
+            editor.putBoolean("isFirstLaunch", Boolean.TRUE);
+            editor.apply();
+            loadingPb.setVisibility(View.VISIBLE);
+            final File jsonFile = new File(AppConfig.maindirpath + "roms-data" + ".json");
+            RomsJso obj = new RomsJso();
+            if (jsonFile.exists()) {
+                try {
+                    List<DataMainRoms> data = new ArrayList<>();
+                    JSONArray jArray = null;
+                    jArray = new JSONArray(FileUtils.readFromFile(MainActivity.activity, jsonFile));
+
+                    try {
+                        // Extract data from json and store into ArrayList as class objects
+                        for (int i = 0; i < jArray.length(); i++) {
+                            JSONObject json_data = jArray.getJSONObject(i);
+                            DataMainRoms romsMainData = new DataMainRoms();
+                            romsMainData.itemName = json_data.getString("imgName");
+                            romsMainData.itemIcon = json_data.getString("imgIcon");
+                            romsMainData.itemPath = json_data.getString("imgPath");
+                            romsMainData.itemExtra = json_data.getString("imgExtra");
+                            data.add(romsMainData);
+                        }
+
+                    } catch (JSONException e) {
+                        Toast.makeText(MainActivity.activity, e.toString(), Toast.LENGTH_LONG).show();
+                    }
+
+                    JSONObject jsonObject = obj.makeJSONObject(title.getText().toString(), icon.getText().toString(), MainSettingsManager.getArch(activity), drive.getText().toString(), qemu.getText().toString());
+                    jArray.put(jsonObject);
+                    try {
+                        Writer output = null;
+                        output = new BufferedWriter(new FileWriter(jsonFile));
+                        //output.write(jArray.toString().replace("\\", "").replace("//", "/"));
+                        output.write(jArray.toString());
+                        output.close();
+                    } catch (Exception e) {
+                        UIUtils.toastLong(activity, e.toString());
+                        loadingPb.setVisibility(View.GONE);
+                    }
+                } catch (JSONException e) {
+                    loadingPb.setVisibility(View.GONE);
+                    throw new RuntimeException(e);
+                }
+            } else {
+                JSONObject jsonObject = obj.makeJSONObject(title.getText().toString(), icon.getText().toString(), MainSettingsManager.getArch(activity), drive.getText().toString(), qemu.getText().toString());
+                JSONArray jsonArray = new JSONArray();
+                jsonArray.put(jsonObject);
+                try {
+                    Writer output = null;
+                    output = new BufferedWriter(new FileWriter(jsonFile));
+                    //output.write(jsonArray.toString().replace("\\", "").replace("//", "/"));
+                    output.write(jsonArray.toString());
+                    output.close();
+                } catch (Exception e) {
+                    UIUtils.toastLong(activity, e.toString());
+                }
+                VectrasStatus.logInfo("Welcome to Vectras ♡");
+            }
+            finish();
+            //activity.startActivity(new Intent(activity, SplashActivity.class));
         }
     }
 

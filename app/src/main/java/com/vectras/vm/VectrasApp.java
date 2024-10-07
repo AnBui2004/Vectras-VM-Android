@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -457,5 +458,26 @@ public class VectrasApp extends Application {
 		} catch (PackageManager.NameNotFoundException e) {
 			return  false;
 		}
+	}
+
+	public static void setIconWithName(ImageView imageview, String name) {
+		String itemName = name.toLowerCase();
+		if (itemName.contains("linux") || itemName.contains("ubuntu")  || itemName.contains("debian") || itemName.contains("arch") || itemName.contains("kali")) {
+			imageview.setImageResource(R.drawable.linux);
+		} else if (itemName.contains("windows")) {
+			imageview.setImageResource(R.drawable.windows);
+		} else if (itemName.contains("macos") || itemName.contains("mac os")) {
+			imageview.setImageResource(R.drawable.macos);
+		} else if (itemName.contains("android")) {
+			imageview.setImageResource(R.drawable.android);
+		} else {
+			imageview.setImageResource(R.drawable.no_machine_image);
+		}
+	}
+
+	public static boolean isHaveADisk(String env) {
+		if (env.contains("-drive") || env.contains("-hda")  || env.contains("-hdb") || env.contains("-cdrom") || env.contains("-fda") || env.contains("-fdb"))
+			return true;
+		return false;
 	}
 }

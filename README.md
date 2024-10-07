@@ -36,3 +36,7 @@ This is not the official Vectras VM repository, this repository was created to s
 - Added VNC screen open button.
 - Fixed keyboard not showing up in VNC activity.
 - Audio support with Termux.
+- Automatically disallow virtual machines from running when your device does not support Multi-threaded TCG.
+- If you do not set a thumbnail for the virtual machine, the thumbnail will be automatically selected to match the virtual machine name.
+- Fixed an issue where the ADD button would be disabled after selecting ROM DRIVE or CDROM.
+- If you click the ADD button while you have not added a hard drive or storage device to the virtual machine, a warning dialog will appear.

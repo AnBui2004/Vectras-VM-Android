@@ -44,6 +44,7 @@ import com.vectras.vm.MainActivity;
 import com.vectras.vm.MainService;
 import com.vectras.vm.R;
 import com.vectras.vm.StartVM;
+import com.vectras.vm.VectrasApp;
 import com.vectras.vm.logger.VectrasStatus;
 import com.vectras.vm.utils.FileUtils;
 import com.vectras.vm.utils.UIUtils;
@@ -98,8 +99,12 @@ public class AdapterMainRoms extends RecyclerView.Adapter<RecyclerView.ViewHolde
         final DataMainRoms current = data.get(position);
         myHolder.textName.setText(current.itemName);
         myHolder.textArch.setText(current.itemArch);
-        Bitmap bmImg = BitmapFactory.decodeFile(current.itemIcon);
-        myHolder.ivIcon.setImageBitmap(bmImg);
+        if (current.itemIcon.isEmpty()){
+            VectrasApp.setIconWithName(myHolder.ivIcon, current.itemName);
+        } else {
+            Bitmap bmImg = BitmapFactory.decodeFile(current.itemIcon);
+            myHolder.ivIcon.setImageBitmap(bmImg);
+        }
         myHolder.optionsBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MainActivity.activity);

@@ -826,6 +826,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void startVM(String vmName, String env) {
+
+        if (AppConfig.getSetupFiles().contains("arm") && !AppConfig.getSetupFiles().contains("arm64")) {
+            if (env.contains("tcg,thread=multi")) {
+                AlertDialog abiAlertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                abiAlertDialog.setTitle("Oops!");
+                abiAlertDialog.setMessage("You cannot run this virtual machine because your Android device or OS does not support 64bit to use Multi-threaded TCG. Please remove it from Qemu Params and try again.");
+                abiAlertDialog.setCancelable(false);
+                abiAlertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                abiAlertDialog.show();
+                return;
+            }
+        }
+
         boolean isRunning = isMyServiceRunning(MainService.class);
 
         ProgressDialog progressDialog = new ProgressDialog(activity, R.style.MainDialogTheme);
