@@ -40,3 +40,10 @@ This is not the official Vectras VM repository, this repository was created to s
 - If you do not set a thumbnail for the virtual machine, the thumbnail will be automatically selected to match the virtual machine name.
 - Fixed an issue where the ADD button would be disabled after selecting ROM DRIVE or CDROM.
 - If you click the ADD button while you have not added a hard drive or storage device to the virtual machine, a warning dialog will appear.
+- New setup method.
+- More stable VNC display.
+- Automatically suggest using Single-threaded TCG if your device is not eligible for Multi-threaded TCG.
+- Do not start the VM when it is detected that it is already running.
+- Removed "-nodefault" to fix audio device error.
+- New update check method.
+- The default name of the new VM is "New VM".
