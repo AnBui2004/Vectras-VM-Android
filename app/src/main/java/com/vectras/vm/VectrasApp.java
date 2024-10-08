@@ -66,6 +66,8 @@ public class VectrasApp extends Application {
 
 	private static Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
+	public static String TerminalOutput ="";
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -479,5 +481,29 @@ public class VectrasApp extends Application {
 		if (env.contains("-drive") || env.contains("-hda")  || env.contains("-hdb") || env.contains("-cdrom") || env.contains("-fda") || env.contains("-fdb"))
 			return true;
 		return false;
+	}
+
+	public static boolean isQemuRunning() {
+		Terminal vterm = new Terminal(MainActivity.activity);
+		vterm.executeShellCommand("ps -e", false, MainActivity.activity);
+		if (TerminalOutput.contains("qemu-system")) {
+			Log.d("VectrasApp.isQemuRunning", "Yes");
+			return true;
+		} else {
+			Log.d("VectrasApp.isQemuRunning", "No");
+			return false;
+		}
+	}
+
+	public static boolean isThisVMRunning(String intemExtra, String itemPath) {
+		Terminal vterm = new Terminal(MainActivity.activity);
+		vterm.executeShellCommand("ps -e", false, MainActivity.activity);
+		if (TerminalOutput.contains(intemExtra) && TerminalOutput.contains(itemPath)) {
+			Log.d("VectrasApp.isThisVMRunning", "Yes");
+			return true;
+		} else {
+			Log.d("VectrasApp.isThisVMRunning", "No");
+			return false;
+		}
 	}
 }

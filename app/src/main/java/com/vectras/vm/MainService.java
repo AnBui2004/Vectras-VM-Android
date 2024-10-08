@@ -66,7 +66,8 @@ public class MainService extends Service {
                     service.stopSelf();
 
                     //TODO: Not Work
-                    Terminal.killQemuProcess();
+                    //Terminal.killQemuProcess();
+                    VectrasApp.killallqemuprocesses(MainActivity.activity);
                 }
 
             }
@@ -82,7 +83,8 @@ public class MainService extends Service {
             stopSelf();
 
             //TODO: Not Work
-            Terminal.killQemuProcess();
+            //Terminal.killQemuProcess();
+            VectrasApp.killallqemuprocesses(MainActivity.activity);
 
             return START_NOT_STICKY;
         }

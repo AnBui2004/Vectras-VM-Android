@@ -121,9 +121,9 @@ public class StartVM {
 
         params.add("-rtc");
         params.add("base=localtime");
-        if (!MainSettingsManager.getArch(activity).equals("PPC")) {
-            params.add("-nodefaults");
-        }
+        //if (!MainSettingsManager.getArch(activity).equals("PPC")) {
+            //params.add("-nodefaults");
+        //}
 
         //if (!Objects.equals(MainSettingsManager.getArch(activity), "ARM64")) {
         params.add(bios);

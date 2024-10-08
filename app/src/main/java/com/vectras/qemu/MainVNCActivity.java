@@ -312,7 +312,7 @@ public class MainVNCActivity extends VncCanvasActivity {
                                 started = false;
                                 // Stop the service
                                 MainService.stopService();
-                                Terminal.killQemuProcess();
+                                //Terminal.killQemuProcess();
                                 VectrasApp.killcurrentqemuprocess(getApplicationContext());
                                 finish();
                             }
@@ -331,6 +331,7 @@ public class MainVNCActivity extends VncCanvasActivity {
                 alertDialog.setMessage("You will be left here but the virtual machine will continue to run.");
                 alertDialog.setCancelable(true);
                 alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Exit", (dialog, which) -> {
+                    started = false;
                     finish();
                 });
                 alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
@@ -793,9 +794,12 @@ public class MainVNCActivity extends VncCanvasActivity {
     }
 
     public void onDestroy() {
+        if (VectrasApp.isQemuRunning() && started) {
+            activity.startActivity(new Intent(activity, MainVNCActivity.class));
+        }
         super.onDestroy();
         this.stopTimeListener();
-        Terminal.killQemuProcess();
+        //Terminal.killQemuProcess();
     }
 
     public void onPause() {
@@ -1263,6 +1267,7 @@ public class MainVNCActivity extends VncCanvasActivity {
             } else
                 l.setVisibility(View.VISIBLE);
         }
+        started = false;
     }
 
     public void onHideToolbar() {

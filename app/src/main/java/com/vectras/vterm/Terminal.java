@@ -26,6 +26,7 @@ import com.vectras.qemu.MainVNCActivity;
 import com.vectras.vm.MainActivity;
 import com.vectras.vm.MainService;
 import com.vectras.vm.R;
+import com.vectras.vm.VectrasApp;
 
 public class Terminal {
     private static final String TAG = "Vterm";
@@ -57,14 +58,16 @@ public class Terminal {
         return null;
     }
 
-    private void showDialog(String message, Activity activity) {
+    private void showDialog(String message, Activity activity, String usercommand) {
+        if (!usercommand.contains("qemu-system") || message.contains("Killed"))
+            return;
         AlertDialog dialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
         dialog.setTitle("Execution Result");
         dialog.setMessage(message);
                 //.setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                killQemuProcess();
+                //killQemuProcess();
                 MainService.stopService();
                 dialog.dismiss();
             }
@@ -174,12 +177,13 @@ public class Terminal {
             } finally {
                 // Switch to main thread after execution
                 new Handler(Looper.getMainLooper()).post(() -> {
+                    VectrasApp.TerminalOutput = output.toString();
                     // If showResultDialog is enabled, show the dialog with the result or errors
                     if (showResultDialog) {
                         String finalOutput = output.toString();
                         String finalErrors = errors.toString();
                         // bcuz there is dumb users bruh
-                        showDialog(finalOutput.isEmpty() ? finalErrors : finalOutput.replace("read interrupted", "Done!"), dialogActivity);
+                        showDialog(finalOutput.isEmpty() ? finalErrors : finalOutput.replace("read interrupted", "Done!"), dialogActivity, userCommand);
                     }
                 });
             }

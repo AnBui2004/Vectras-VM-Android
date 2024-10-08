@@ -54,6 +54,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
     ZoomableTextView vterm;
     MaterialButton inBtn;
     ProgressBar progressBar;
+    TextView title;
     AlertDialog alertDialog;
     private boolean settingup = false;
 
@@ -68,6 +69,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         vterm = findViewById(R.id.tvTerminalOutput);
 
         inBtn = findViewById(R.id.btnInstall);
+        title = findViewById(R.id.title);
         inBtn.setOnClickListener(this);
 
         tarPath = getExternalFilesDir("data") + "/data.tar.gz";
@@ -102,6 +104,18 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         if (textToAdd.contains("xssFjnj58Id")) {
             startActivity(new Intent(this, SplashActivity.class));
             finish();
+        }
+
+        if (textToAdd.contains("Starting setup...")) {
+            title.setText("Getting ready for you...");
+        } else if (textToAdd.contains("Installing packages...")) {
+            title.setText("It won't take long...");
+        } else if (textToAdd.contains("Downloading Qemu...")) {
+            title.setText("Don't disconnect...");
+        } else if (textToAdd.contains("Installing Qemu...")) {
+            title.setText("Keep it up...");
+        } else if (textToAdd.contains("Just a sec...")) {
+            title.setText("Almost there.");
         }
 
         // Scroll to the bottom
@@ -204,6 +218,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                         appendTextAndScroll("Error: " + toastMessage + "\n");
                         Toast.makeText(activity, toastMessage, Toast.LENGTH_LONG).show();
                         inBtn.setVisibility(View.VISIBLE);
+                        title.setText("Failed!");
                     });
                 }
             } catch (IOException | InterruptedException e) {
@@ -213,6 +228,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                     appendTextAndScroll("Error: " + errorMessage + "\n");
                     Toast.makeText(activity, "Error executing command: " + errorMessage, Toast.LENGTH_LONG).show();
                     inBtn.setVisibility(View.VISIBLE);
+                    title.setText("Failed!");
                 });
             }
         }).start(); // Execute the command in a separate thread to prevent blocking the UI thread
@@ -313,6 +329,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
             if (result != null) {
                 Toast.makeText(context, "Download error: " + result, Toast.LENGTH_LONG).show();
                 inBtn.setVisibility(View.VISIBLE);
+                title.setText("Failed!");
             } else
                 setupVectras();
         }
@@ -327,20 +344,23 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         cmd += "echo \"http://dl-cdn.alpinelinux.org/alpine/edge/testing\" >> /etc/apk/repositories;";
         executeShellCommand(cmd);
         executeShellCommand("set -e;" +
-                " echo 'Starting setup...';" +
+                " echo \"Starting setup...\";" +
                 " apk update;" +
+                " echo \"Installing packages...\";" +
                 " apk add tar libslirp libslirp-dev pulseaudio-dev glib-dev pixman-dev zlib-dev spice-dev" +
                 " libusbredirparser usbredir-dev libiscsi-dev  sdl2 sdl2-dev libepoxy-dev virglrenderer-dev rdma-core" +
                 " libusb ncurses-libs curl libnfs sdl2 gtk+3.0 fuse libpulse libseccomp jack pipewire liburing;" +
+                " echo \"Installing Qemu...\";" +
                 " tar -xzvf " + tarPath + " -C /;" +
                 " rm " + tarPath + ";" +
+                " echo \"Just a sec...\";" +
                 " apk add qemu-audio-sdl pulseaudio;" +
                 " echo export PULSE_SERVER=127.0.0.1 >> /etc/profile;" +
                 " mkdir -p ~/.vnc && echo -e \"555555\\n555555\" | vncpasswd -f > ~/.vnc/passwd && chmod 0600 ~/.vnc/passwd;" +
                 " echo \"installation successful! xssFjnj58Id\"");
     }
 
-    private void setupVectrasnew() {
+    private void setupVectras32() {
         inBtn.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         String filesDir = activity.getFilesDir().getAbsolutePath();
@@ -348,15 +368,44 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         cmd += "echo \"http://dl-cdn.alpinelinux.org/alpine/edge/testing\" >> /etc/apk/repositories;";
         executeShellCommand(cmd);
         executeShellCommand("set -e;" +
-                " echo 'Starting setup...';" +
+                " echo \"Starting setup...\";" +
                 " apk update;" +
+                " echo \"Installing packages...\";" +
                 " apk add tar libslirp libslirp-dev pulseaudio-dev glib-dev pixman-dev zlib-dev spice-dev" +
                 " libusbredirparser usbredir-dev libiscsi-dev  sdl2 sdl2-dev libepoxy-dev virglrenderer-dev rdma-core" +
                 " libusb ncurses-libs curl libnfs sdl2 gtk+3.0 fuse libpulse libseccomp jack pipewire liburing;" +
                 //" tar -xzvf " + tarPath + " -C /;" +
+                " echo \"Installing Qemu...\";" +
                 " apk add qemu-system-x86_64 qemu-system-ppc qemu-system-i386 qemu-system-aarch64 qemu-pr-helper qemu-img qemu-audio-sdl pulseaudio;" +
+                " echo \"Just a sec...\";" +
                 " echo export PULSE_SERVER=127.0.0.1 >> /etc/profile;" +
                 //" rm " + tarPath + ";" +
+                " mkdir -p ~/.vnc && echo -e \"555555\\n555555\" | vncpasswd -f > ~/.vnc/passwd && chmod 0600 ~/.vnc/passwd;" +
+                " echo \"installation successful! xssFjnj58Id\"");
+    }
+
+    private void setupVectras64() {
+        inBtn.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        String filesDir = activity.getFilesDir().getAbsolutePath();
+        String cmd = "";
+        cmd += "echo \"http://dl-cdn.alpinelinux.org/alpine/edge/testing\" >> /etc/apk/repositories;";
+        executeShellCommand(cmd);
+        executeShellCommand("set -e;" +
+                " echo \"Starting setup...\";" +
+                " apk update;" +
+                " echo \"Installing packages...\";" +
+                " apk add tar libslirp libslirp-dev pulseaudio-dev glib-dev pixman-dev zlib-dev spice-dev" +
+                " libusbredirparser usbredir-dev libiscsi-dev  sdl2 sdl2-dev libepoxy-dev virglrenderer-dev rdma-core" +
+                " libusb ncurses-libs curl libnfs sdl2 gtk+3.0 fuse libpulse libseccomp jack pipewire liburing;" +
+                " echo \"Downloading Qemu...\";" +
+                " curl -o setup.tar.gz " + AppConfig.getSetupFiles() + ";" +
+                " echo \"Installing Qemu...\";" +
+                " tar -xzvf setup.tar.gz -C /;" +
+                " rm setup.tar.gz;" +
+                " echo \"Just a sec...\";" +
+                " apk add qemu-audio-sdl pulseaudio;" +
+                " echo export PULSE_SERVER=127.0.0.1 >> /etc/profile;" +
                 " mkdir -p ~/.vnc && echo -e \"555555\\n555555\" | vncpasswd -f > ~/.vnc/passwd && chmod 0600 ~/.vnc/passwd;" +
                 " echo \"installation successful! xssFjnj58Id\"");
     }
@@ -380,7 +429,11 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
             alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "AUTO SETUP", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     //startDownload();
-                    setupVectrasnew();
+                    if (AppConfig.getSetupFiles().contains("arm64-v8a") || AppConfig.getSetupFiles().contains("x86_64")) {
+                        setupVectras64();
+                    } else {
+                        setupVectras32();
+                    }
                     return;
                 }
             });

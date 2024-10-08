@@ -221,7 +221,7 @@ public class AdapterMainRoms extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     MainSettingsManager.setArch(MainActivity.activity, "PPC");
                 }
                 String env = StartVM.env(MainActivity.activity, current.itemExtra, current.itemPath, current.itemCpu);
-                MainActivity.startVM(current.itemName, env);
+                MainActivity.startVM(current.itemName, env, current.itemExtra, current.itemPath);
             }
         });
         myHolder.cdRoms.setOnLongClickListener(new View.OnLongClickListener() {

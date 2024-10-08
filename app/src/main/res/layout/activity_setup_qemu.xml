@@ -29,7 +29,7 @@
             style="@style/MaterialAlertDialog.Material3.Title.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/installing" />
+            android:text="@string/wating_for_you" />
 
         <LinearLayout
             android:id="@+id/mainTerminal"

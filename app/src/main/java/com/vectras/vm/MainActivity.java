@@ -664,7 +664,9 @@ public class MainActivity extends AppCompatActivity {
                         final JSONObject obj = new JSONObject(result);
                         PackageInfo pinfo = getAppInfo(getApplicationContext());
                         int versionCode = pinfo.versionCode;
-                        if (versionCode < obj.getInt("versionCode")) {
+                        String versionName = pinfo.versionName;
+
+                        if (versionCode < obj.getInt("versionCode") || !versionName.equals(obj.getString("versionName"))) {
                             AlertDialog.Builder alert = new AlertDialog.Builder(activity, R.style.MainDialogTheme);
                             alert.setTitle("Install the latest version")
                                     .setMessage(Html.fromHtml(obj.getString("Message") + "<br><br>update size:<br>" + obj.getString("size")))
@@ -771,7 +773,11 @@ public class MainActivity extends AppCompatActivity {
             });
             alertDialog.show();
         } else if (id == R.id.vncdisplay) {
-            activity.startActivity(new Intent(activity, MainVNCActivity.class));
+            if (VectrasApp.isQemuRunning()) {
+                activity.startActivity(new Intent(activity, MainVNCActivity.class));
+            } else {
+                Toast.makeText(getApplicationContext(), "There is nothing here because there is no VM running.", Toast.LENGTH_LONG).show();
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -825,15 +831,26 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    public static void startVM(String vmName, String env) {
+    public static void startVM(String vmName, String env, String itemExtra, String itemPath) {
+
+        if (VectrasApp.isThisVMRunning(itemExtra, itemPath)) {
+            Toast.makeText(activity, "This VM is already running.", Toast.LENGTH_LONG).show();
+            activity.startActivity(new Intent(activity, MainVNCActivity.class));
+            return;
+        }
 
         if (AppConfig.getSetupFiles().contains("arm") && !AppConfig.getSetupFiles().contains("arm64")) {
             if (env.contains("tcg,thread=multi")) {
                 AlertDialog abiAlertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
                 abiAlertDialog.setTitle("Oops!");
-                abiAlertDialog.setMessage("You cannot run this virtual machine because your Android device or OS does not support 64bit to use Multi-threaded TCG. Please remove it from Qemu Params and try again.");
+                abiAlertDialog.setMessage("The virtual machine cannot run because your phone's CPU or Android OS does not support 64bit to use Multi-threaded TCG. Do you want to continue running the virtual machine with Single-threaded TCG?");
                 abiAlertDialog.setCancelable(false);
-                abiAlertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                abiAlertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Continue", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startVM(vmName, env.replace("tcg,thread=multi", "tcg,thread=single"), itemExtra, itemPath);
+                    }
+                });
+                abiAlertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
@@ -915,7 +932,7 @@ public class MainActivity extends AppCompatActivity {
 
         //TEMPORARY FIX FOR VNC CLOSES
         //TODO: FIND FIX FOR CRASHING
-        if (MainSettingsManager.getVmUi(activity).equals("VNC") && MainVNCActivity.started && Terminal.qemuProcess != null)
+        if (MainSettingsManager.getVmUi(activity).equals("VNC") && MainVNCActivity.started && VectrasApp.isQemuRunning())
             startActivity(new Intent(activity, MainVNCActivity.class));
     }
 
@@ -944,8 +961,8 @@ public class MainActivity extends AppCompatActivity {
 
         //TEMPORARY FIX FOR VNC CLOSES
         //TODO: FIND FIX FOR CRASHING
-        if (MainSettingsManager.getVmUi(activity).equals("VNC") && MainVNCActivity.started)
-            startActivity(new Intent(activity, MainVNCActivity.class));
+        //if (MainSettingsManager.getVmUi(activity).equals("VNC") && MainVNCActivity.started)
+            //startActivity(new Intent(activity, MainVNCActivity.class));
 
         InterstitialAd.load(this, "ca-app-pub-3568137780412047/7745973511", adRequest,
                 new InterstitialAdLoadCallback() {
