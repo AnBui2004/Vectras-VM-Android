@@ -22,6 +22,7 @@ public class AppConfig {
     public static final String vectrasVersion = "2.9.0";
     public static final String vectrasWebsite = "https://nguyenbaoanbui-f8a71.web.app/vectrasvm/";
     public static final String vectrasHelp = vectrasWebsite + "how.html";
+    public static final String community = "https://nguyenbaoanbui-86deb.web.app/community/";
     public static final String vectrasRaw = vectrasWebsite + "data/";
     public static final String vectrasLicense = vectrasRaw + "LICENSE.md";
     public static final String vectrasPrivacy = vectrasRaw + "PRIVACYANDPOLICY.md";

@@ -1213,7 +1213,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void errorjsondialog() {
-        if (isFileExists(AppConfig.romsdatajson)) {
+        if (VectrasApp.isFileExists(AppConfig.romsdatajson)) {
             contentjson = readFile(AppConfig.romsdatajson);
             try {
                 mmap.clear();
@@ -1226,7 +1226,7 @@ public class MainActivity extends AppCompatActivity {
                 alertDialog.setMessage("An error occurred with the virtual machine list data. Do you want to delete all?");
                 alertDialog.setCancelable(true);
                 alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete all", (dialog, which) -> {
-                    writeToFile(AppConfig.romsdatajson, "[]");
+                    VectrasApp.writeToFile(AppConfig.maindirpath, "roms-data.json", "[]");
                     loadDataVbi();
                     mdatasize();
                 });
@@ -1236,7 +1236,7 @@ public class MainActivity extends AppCompatActivity {
                 alertDialog.show();
             }
         } else {
-            writeToFile(AppConfig.romsdatajson, "[]");
+            VectrasApp.writeToFile(AppConfig.maindirpath, "roms-data.json", "[]");
             loadDataVbi();
             mdatasize();
         }
@@ -1258,25 +1258,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private boolean isFileExists(String filePath) {
-        File file = new File(filePath);
-        return file.exists();
-    }
-
-    private void writeToFile(String filePath, String content) {
-        File file = new File(filePath);
-        FileOutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(file);
-            outputStream.write(content.getBytes());
-            outputStream.close();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void mdatasize() {
         if (idatasize < 1 && !doneonstart) {
             alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
@@ -1294,26 +1275,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkpermissions() {
-        if (!VectrasApp.checkpermissionsgranted(this)) {
-            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-            alertDialog.setTitle("Allow permissions");
-            alertDialog.setMessage("You need to grant permission to access the storage before use.");
-            alertDialog.setCancelable(false);
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Allow", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        intent.setData(Uri.parse("package:" + getPackageName()));
-                        startActivity(intent);
-                        Toast.makeText(getApplicationContext(), "Find and allow access to storage in Settings.", Toast.LENGTH_LONG).show();
-                    } else {
-                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1000);
-                    }
-                    alertDialog.dismiss();
-                }
-            });
-            alertDialog.show();
-        } else {
+        if (VectrasApp.checkpermissionsgranted(activity, true)) {
             errorjsondialog();
         }
     }

@@ -1,6 +1,7 @@
 package com.vectras.vm;
 
 import static android.content.Intent.ACTION_OPEN_DOCUMENT;
+import static android.content.Intent.ACTION_VIEW;
 
 import static com.vectras.vm.utils.UIUtils.UIAlert;
 
@@ -19,6 +20,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.Settings;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -55,14 +57,44 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
     MaterialButton inBtn;
     ProgressBar progressBar;
     TextView title;
+
+    LinearLayout linearsimplesetupui;
+    LinearLayout linearstartsetup;
+    MaterialButton buttonautosetup;
+    MaterialButton buttonmanualsetup;
+    LinearLayout linearsettingup;
+    TextView textviewsettingup;
+    LinearLayout linearsetupfailed;
+    MaterialButton buttonsetuptryagain;
+    MaterialButton buttonsetupshowlog;
+    TextView textviewshowadvancedsetup;
+
     AlertDialog alertDialog;
     private boolean settingup = false;
+    private boolean libprooterror = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_qemu);
         activity = this;
+
+        linearsimplesetupui = findViewById(R.id.linearsimplesetupui);
+        linearstartsetup = findViewById(R.id.linearstartsetup);
+        buttonautosetup = findViewById(R.id.buttonautosetup);
+        buttonmanualsetup = findViewById(R.id.buttonmanualsetup);
+        linearsettingup = findViewById(R.id.linearsettingup);
+        textviewsettingup = findViewById(R.id.textviewsettingup);
+        linearsetupfailed = findViewById(R.id.linearsetupfailed);
+        buttonsetuptryagain = findViewById(R.id.buttonsetuptryagain);
+        buttonsetupshowlog = findViewById(R.id.buttonsetupshowlog);
+        textviewshowadvancedsetup = findViewById(R.id.textviewshowadvancedsetup);
+
+        buttonautosetup.setOnClickListener(this);
+        buttonmanualsetup.setOnClickListener(this);
+        buttonsetuptryagain.setOnClickListener(this);
+        buttonsetupshowlog.setOnClickListener(this);
+        textviewshowadvancedsetup.setOnClickListener(this);
 
         progressBar = findViewById(R.id.progressBar);
 
@@ -89,6 +121,34 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 tarGZ.delete();
             }
             alertDialog.show();
+        } else if (id == R.id.buttonautosetup) {
+            if (AppConfig.getSetupFiles().contains("arm64-v8a") || AppConfig.getSetupFiles().contains("x86_64")) {
+                setupVectras64();
+            } else {
+                setupVectras32();
+            }
+            simpleSetupUIControler(1);
+        } else if (id == R.id.buttonmanualsetup) {
+            Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("*/*");
+
+            // Optionally, specify a URI for the file that should appear in the
+            // system file picker when it loads.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.DIRECTORY_DOWNLOADS);
+            }
+
+            startActivityForResult(intent, 1001);
+        } else if (id == R.id.buttonsetuptryagain) {
+            simpleSetupUIControler(0);
+        } else if (id == R.id.buttonsetupshowlog) {
+            linearsimplesetupui.setVisibility(View.GONE);
+        } else if (id == R.id.textviewshowadvancedsetup) {
+            linearsimplesetupui.setVisibility(View.GONE);
+            if (linearstartsetup.getVisibility() == View.VISIBLE) {
+                alertDialog.show();
+            }
         }
     }
 
@@ -104,18 +164,31 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         if (textToAdd.contains("xssFjnj58Id")) {
             startActivity(new Intent(this, SplashActivity.class));
             finish();
+        } else if (textToAdd.contains("libproot.so --help")){
+            libprooterror = true;
         }
 
         if (textToAdd.contains("Starting setup...")) {
             title.setText("Getting ready for you...");
+            textviewsettingup.setText("Getting ready for you...\nPlease don't disconnect the network.");
         } else if (textToAdd.contains("Installing packages...")) {
             title.setText("It won't take long...");
+            textviewsettingup.setText("Completed 10%\nIt won't take long...");
+        } else if (textToAdd.contains("100/")) {
+            textviewsettingup.setText("Completed 30%\nIt won't take long...");
+        } else if (textToAdd.contains("200/")) {
+            textviewsettingup.setText("Completed 50%\nIt won't take long...");
         } else if (textToAdd.contains("Downloading Qemu...")) {
             title.setText("Don't disconnect...");
+            textviewsettingup.setText("Completed 75%\nDon't disconnect...");
         } else if (textToAdd.contains("Installing Qemu...")) {
             title.setText("Keep it up...");
+            textviewsettingup.setText("Completed 80%\nKeep it up...");
+        } else if (textToAdd.contains("qemu-system")) {
+            textviewsettingup.setText("Completed 95%\nKeep it up...");
         } else if (textToAdd.contains("Just a sec...")) {
             title.setText("Almost there.");
+            textviewsettingup.setText("Almost there.");
         }
 
         // Scroll to the bottom
@@ -219,7 +292,28 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                         Toast.makeText(activity, toastMessage, Toast.LENGTH_LONG).show();
                         inBtn.setVisibility(View.VISIBLE);
                         title.setText("Failed!");
+                        simpleSetupUIControler(2);
                     });
+                } else if (libprooterror){
+                    AlertDialog alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                    alertDialog.setTitle("Oops!");
+                    alertDialog.setMessage("A serious problem has occurred! This problem is caused by the CPU or Android operating system on your device. You can join our community to learn more.");
+                    alertDialog.setCancelable(false);
+                    alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Join our community", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent();
+                            intent.setAction(ACTION_VIEW);
+                            intent.setData(Uri.parse(AppConfig.community));
+                            startActivity(intent);
+                        }
+                    });
+                    alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+
+                    alertDialog.show();
                 }
             } catch (IOException | InterruptedException e) {
                 // Handle exceptions by printing the stack trace in the terminal output
@@ -229,6 +323,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                     Toast.makeText(activity, "Error executing command: " + errorMessage, Toast.LENGTH_LONG).show();
                     inBtn.setVisibility(View.VISIBLE);
                     title.setText("Failed!");
+                    simpleSetupUIControler(2);
                 });
             }
         }).start(); // Execute the command in a separate thread to prevent blocking the UI thread
@@ -337,6 +432,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void setupVectras() {
+        simpleSetupUIControler(1);
         inBtn.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         String filesDir = activity.getFilesDir().getAbsolutePath();
@@ -421,7 +517,23 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                         finish();
                     }
             });
+            alertDialog.show();
         } else {
+            if (!AppConfig.getSetupFiles().contains("arm64-v8a")) {
+                if (!AppConfig.getSetupFiles().contains("x86_64")) {
+                    AlertDialog abiAlertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                    abiAlertDialog.setTitle("WARNING!");
+                    abiAlertDialog.setMessage("The Android OS or CPU on your device does not support 64bit, which means the VM will have poor performance and be unstable when running.");
+                    abiAlertDialog.setCancelable(false);
+                    abiAlertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    abiAlertDialog.show();
+                }
+            }
+
             alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
             alertDialog.setTitle("BOOTSTRAP REQUIRED!");
             alertDialog.setMessage("You can choose between auto download and setup or manual setup by choosing bootstrap file.");
@@ -453,43 +565,10 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 }
             });
         }
-        if (!AppConfig.getSetupFiles().contains("arm64-v8a")) {
-            if (!AppConfig.getSetupFiles().contains("x86_64")) {
-                AlertDialog abiAlertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-                abiAlertDialog.setTitle("WARNING!");
-                abiAlertDialog.setMessage("The Android OS or CPU on your device does not support 64bit, which means the VM will have poor performance and be unstable when running.");
-                abiAlertDialog.setCancelable(false);
-                abiAlertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-                abiAlertDialog.show();
-            }
-        }
     }
 
     private void checkpermissions() {
-        if (!VectrasApp.checkpermissionsgranted(this)) {
-            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-            alertDialog.setTitle("Allow permissions");
-            alertDialog.setMessage("You need to grant permission to access the storage before proceeding with the next steps.");
-            alertDialog.setCancelable(false);
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        intent.setData(Uri.parse("package:" + getPackageName()));
-                        startActivity(intent);
-                        Toast.makeText(getApplicationContext(), "Find and allow access to storage in Settings.", Toast.LENGTH_LONG).show();
-                    } else {
-                        ActivityCompat.requestPermissions(SetupQemuActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1000);
-                    }
-                    alertDialog.dismiss();
-                }
-            });
-            alertDialog.show();
-        } else {
+        if (VectrasApp.checkpermissionsgranted(activity, true)) {
             if (!settingup) {
                 settingup = true;
                 checkabi();
@@ -498,9 +577,27 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 if (tarGZ.exists()) {
                     setupVectras();
                 } else {
-                    alertDialog.show();
+                    if (linearsimplesetupui.getVisibility() == View.GONE) {
+                        alertDialog.show();
+                    }
                 }
             }
+        }
+    }
+
+    private void simpleSetupUIControler(int status) {
+        if (status == 0) {
+            linearstartsetup.setVisibility(View.VISIBLE);
+            linearsettingup.setVisibility(View.GONE);
+            linearsetupfailed.setVisibility(View.GONE);
+        } else if (status == 1) {
+            linearstartsetup.setVisibility(View.GONE);
+            linearsettingup.setVisibility(View.VISIBLE);
+            linearsetupfailed.setVisibility(View.GONE);
+        } else if (status == 2) {
+            linearstartsetup.setVisibility(View.GONE);
+            linearsettingup.setVisibility(View.GONE);
+            linearsetupfailed.setVisibility(View.VISIBLE);
         }
     }
 
@@ -565,10 +662,14 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                     }
                 }).start();
             } else {
-                alertDialog.show();
+                if (linearsimplesetupui.getVisibility() == View.GONE) {
+                    alertDialog.show();
+                }
                 UIAlert(activity, "INVALID FILE", "please select vectras-vm-" + abi + ".tar.gz file");
             }
         } else
+        if (linearsimplesetupui.getVisibility() == View.GONE) {
             alertDialog.show();
+        }
     }
 }

@@ -47,3 +47,5 @@ This is not the official Vectras VM repository, this repository was created to s
 - Removed "-nodefault" to fix audio device error.
 - New update check method.
 - The default name of the new VM is "New VM".
+- Fixed a bug where the file containing the virtual machine list data could not be created.
+- New simple setup interface.

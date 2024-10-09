@@ -29,11 +29,13 @@ public class SetArchActivity extends AppCompatActivity implements View.OnClickLi
         Button archarm64 = findViewById(R.id.archarm64);
         Button archppc = findViewById(R.id.archppc);
         Button web = findViewById(R.id.webBtn);
+        Button buttongetcm = findViewById(R.id.buttongetcm);
         archi386.setOnClickListener(this);
         archx86_64.setOnClickListener(this);
         archarm64.setOnClickListener(this);
         archppc.setOnClickListener(this);
         web.setOnClickListener(this);
+        buttongetcm.setOnClickListener(this);
     }
 
     public void onClick(View v) {
@@ -63,6 +65,11 @@ public class SetArchActivity extends AppCompatActivity implements View.OnClickLi
             Intent q = new Intent(Intent.ACTION_VIEW);
             q.setData(Uri.parse(qe));
             startActivity(q);
+        } else if (id == R.id.buttongetcm) {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("android-app://com.anbui.cqcm.app"));
+            startActivity(intent);
         }
     }
 }

@@ -836,7 +836,7 @@ public class CustomRomActivity extends AppCompatActivity {
                 alertDialog.setMessage("An error occurred with the virtual machine list data and a new virtual machine cannot be created at this time. To create a new virtual machine, you need to delete all virtual machine list data. Do you want to delete all?");
                 alertDialog.setCancelable(true);
                 alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete all", (dialog, which) -> {
-                    writeToFile(AppConfig.romsdatajson, "[]");
+                    VectrasApp.writeToFile(AppConfig.maindirpath, "roms-data.json", "[]");
                 });
                 alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
 
@@ -869,40 +869,9 @@ public class CustomRomActivity extends AppCompatActivity {
         return file.exists();
     }
 
-    private void writeToFile(String filePath, String content) {
-        File file = new File(filePath);
-        FileOutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(file);
-            outputStream.write(content.getBytes());
-            outputStream.close();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void checkpermissions() {
-        if (!VectrasApp.checkpermissionsgranted(this)) {
-            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-            alertDialog.setTitle("Allow permissions");
-            alertDialog.setMessage("You need to grant permission to access the storage before use.");
-            alertDialog.setCancelable(false);
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Allow", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    if (shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        intent.setData(Uri.parse("package:" + getPackageName()));
-                        startActivity(intent);
-                        Toast.makeText(getApplicationContext(), "Find and allow access to storage in Settings.", Toast.LENGTH_LONG).show();
-                    } else {
-                        ActivityCompat.requestPermissions(CustomRomActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1000);
-                    }
-                    alertDialog.dismiss();
-                }
-            });
-            alertDialog.show();
+        if (!VectrasApp.checkpermissionsgranted(activity, true)) {
+
         }
     }
 

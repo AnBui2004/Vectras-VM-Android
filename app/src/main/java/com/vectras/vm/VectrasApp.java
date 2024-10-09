@@ -1,5 +1,7 @@
 package com.vectras.vm;
 
+import static androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
@@ -8,15 +10,18 @@ import android.app.NotificationManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -26,8 +31,11 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -40,6 +48,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -416,11 +425,48 @@ public class VectrasApp extends Application {
 		}
 	}
 
-	public static boolean checkpermissionsgranted(Context context) {
-		if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+	public static boolean checkpermissionsgranted(Activity activity, boolean request) {
+		if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 			return true;
 		} else {
+			if (request) {
+				AlertDialog alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+				alertDialog.setTitle("Allow permissions");
+				alertDialog.setMessage("You need to grant permission to access the storage before use.");
+				alertDialog.setCancelable(false);
+				alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Allow", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						if (activity.shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+							Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+							intent.setData(Uri.parse("package:" + activity.getPackageName()));
+							activity.startActivity(intent);
+							Toast.makeText(activity, "Find and allow access to storage in Settings.", Toast.LENGTH_LONG).show();
+						} else {
+							ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1000);
+						}
+						alertDialog.dismiss();
+					}
+				});
+				alertDialog.show();
+			}
 			return false;
+		}
+	}
+
+	public static boolean isFileExists(String filePath) {
+		File file = new File(filePath);
+		return file.exists();
+	}
+
+	public static void writeToFile(String folderPath, String fileName, String content) {
+		File file = new File(folderPath, fileName);
+		FileOutputStream outputStream = null;
+		try {
+			outputStream = new FileOutputStream(file);
+			outputStream.write(content.getBytes());
+			outputStream.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
