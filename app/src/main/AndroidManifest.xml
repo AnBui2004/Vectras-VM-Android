@@ -5,21 +5,19 @@
 
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
-
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -37,20 +35,24 @@
         android:name=".VectrasApp"
         android:allowBackup="true"
         android:banner="@mipmap/tv_banner"
+        android:extractNativeLibs="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
-        android:requestLegacyExternalStorage="true"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:extractNativeLibs="true">
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".EditActivity"
+            android:exported="false" />
         <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:hardwareAccelerated="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -63,9 +65,8 @@
             android:name=".SetupQemuActivity"
             android:exported="true"
             android:hardwareAccelerated="true"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            tools:ignore="DiscouragedApi,LockedOrientationActivity" /> <!--stupid android issue-->
+            tools:ignore="DiscouragedApi" /> <!-- stupid android issue -->
         <activity
             android:name=".RomsManagerActivity"
             android:exported="true"
@@ -103,8 +104,8 @@
             android:name="com.vectras.qemu.MainVNCActivity"
             android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.FullScreen"
             android:screenOrientation="landscape"
+            android:theme="@style/Theme.FullScreen"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name="com.vectras.qemu.MainSettingsManager"
@@ -112,23 +113,24 @@
             android:label="Settings"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="com.vectras.vm.CustomRomActivity"
+            android:name=".CustomRomActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="com.vectras.vm.DataExplorerActivity"
+            android:name=".DataExplorerActivity"
             android:label="Data Explorer"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="com.vectras.vm.SetArchActivity"
+            android:name=".SetArchActivity"
             android:label="Set Qemu Version"
             android:theme="@style/AppTheme" />
 
         <service
             android:name=".MainService"
-            android:exported="false"/>
-
-        <!-- This (or rather, value 2.1 or higher) is needed to make the Samsung Galaxy S8 mark the
-        app with "This app is optimized to run in full screen." -->
+            android:exported="false" />
+        <!--
+ This (or rather, value 2.1 or higher) is needed to make the Samsung Galaxy S8 mark the
+        app with "This app is optimized to run in full screen."
+        -->
         <meta-data
             android:name="android.max_aspect"
             android:value="10.0" />
@@ -140,6 +142,7 @@
             android:value="true" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3568137780412047~1296857222"/>
+            android:value="ca-app-pub-3568137780412047~1296857222" />
     </application>
+
 </manifest>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vectras VM</string>
-    <string name="app_version" translatable="false">v2.9.1p</string>
+    <string name="app_version" translatable="false">v2.9.1q</string>
     <string name="qemu_version" translatable="false">Stable</string>
     <string name="str_home">Home</string>
     <string name="str_logger">Logger</string>
@@ -163,7 +163,8 @@
     <string name="input_mode_touchpad_pan_trackball_mouse">Touch Pan; Trackball Mouse</string>
     <string name="input_mode_dpad_pan_touchpad_mouse">Touch Mouse; D-Pad Pan</string>
     <string name="input_mode_touch_pan_zoom_mouse">Touch Mouse Pan and Zoom</string>
-    <string name="input_mode_touchpad">Touchpad</string><string name="keep_password_button">Keep</string>
+    <string name="input_mode_touchpad">Touchpad</string>
+    <string name="keep_password_button">Keep</string>
     <string name="intro_dont_show">Don\'t show again</string>
     <string name="keys_caption">Keys</string>
     <string name="list_caption">List</string>
@@ -536,4 +537,23 @@
     <string name="you_need_to_install_termux">You need to install Termux before setting up.</string>
     <string name="wating_for_you">Waiting for you...</string>
     <string name="suggested_use_of_create_command">We recommend that you use the Create command to make creating a virtual machine simpler and easier.</string>
+    <string name="oops">Oops!</string>
+    <string name="cpu_does_not_have_the_necessary_instructions">CPU on your device does not have the necessary instructions for Vectras VM to work.</string>
+    <string name="warning">Warning!</string>
+    <string name="cpu_not_support_64">The Android OS or CPU on your device does not support 64 bit, which means the VM will have poor performance and be unstable when running.</string>
+    <string name="an_error_occurred_with_the_vm_list_data">An error occurred with the virtual machine list data. Do you want to delete all?</string>
+    <string name="delete_all">Delete all</string>
+    <string name="need_fix_json_before_create">An error occurred with the virtual machine list data and a new virtual machine cannot be created at this time. To create a new virtual machine, you need to delete all virtual machine list data. Do you want to delete all?</string>
+    <string name="problem_has_been_detected">Problem has been detected</string>
+    <string name="you_have_not_added_any_storage_devices">You have not added any storage devices to start using or install an operating system. Do you want to continue creating?</string>
+    <string name="continuetext">Continue</string>
+    <string name="need_set_name">You need to give this virtual machine a new name.</string>
+    <string name="can_not_use_mttcg">The virtual machine cannot run because CPU or Android OS on your phone does not support 64bit to use Multi-threaded TCG. Do you want to continue running the virtual machine with Single-threaded TCG?</string>
+    <string name="VM_is_already_running">This VM is already running.</string>
+    <string name="delete_all_vm_content">All virtual machines will be erased including all your ROMs. Do you want to continue?</string>
+    <string name="delete_all_vm">Delete all VM</string>
+    <string name="create">Create</string>
+    <string name="nothing_here">Nothing here</string>
+    <string name="create_vm_now">Do you want to create a new virtual machine now?</string>
+    <string name="nothing_here_home">Nothing here.\nTap the Create button at the bottom to start creating a new virtual machine.</string>
 </resources>

@@ -508,29 +508,11 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
 
     private void checkabi() {
         if (AppConfig.getSetupFiles().contains("arm64-v8a") && Build.SUPPORTED_ABIS.length == 1 ) {
-            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-            alertDialog.setTitle("Oops!");
-            alertDialog.setMessage("Your phone's CPU does not have the necessary instructions for Vectras VM to work.");
-            alertDialog.setCancelable(false);
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-            });
-            alertDialog.show();
+            VectrasApp.oneDialog(getResources().getString(R.string.oops), getResources().getString(R.string.cpu_does_not_have_the_necessary_instructions), false, true, activity);
         } else {
             if (!AppConfig.getSetupFiles().contains("arm64-v8a")) {
                 if (!AppConfig.getSetupFiles().contains("x86_64")) {
-                    AlertDialog abiAlertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-                    abiAlertDialog.setTitle("WARNING!");
-                    abiAlertDialog.setMessage("The Android OS or CPU on your device does not support 64bit, which means the VM will have poor performance and be unstable when running.");
-                    abiAlertDialog.setCancelable(false);
-                    abiAlertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    });
-                    abiAlertDialog.show();
+                    VectrasApp.oneDialog(getResources().getString(R.string.warning), getResources().getString(R.string.cpu_not_support_64), true, false, activity);
                 }
             }
 

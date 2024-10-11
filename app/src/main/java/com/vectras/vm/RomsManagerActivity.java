@@ -377,7 +377,7 @@ public class RomsManagerActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             UIUtils.toastLong(activity, e.toString());
                         }
-                        MainActivity.activity.finish();
+                        //MainActivity.activity.finish();
                     } else {
                         JSONObject jsonObject = obj.makeJSONObject(selectedName, AppConfig.maindirpath + "icons/" + selectedPath.replace(".IMG", ".jpg"), MainSettingsManager.getArch(activity), AppConfig.maindirpath + selectedPath, selectedExtra);
                         JSONArray jsonArray = new JSONArray();

@@ -43,6 +43,10 @@
         android:icon="@drawable/volume_up_24px"
         android:title="@string/setup_sound"/>
     <item
+        android:id="@+id/deletealldata"
+        android:icon="@drawable/delete_24px"
+        android:title="@string/delete_all_vm"/>
+    <item
         android:id="@+id/navigation_item_help"
         android:icon="@drawable/round_help_24"
         android:title="@string/help"/>

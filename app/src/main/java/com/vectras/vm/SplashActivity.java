@@ -11,6 +11,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.net.ConnectivityManager;
@@ -23,6 +24,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,6 +55,12 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         super.onCreate(bundle);
         activity = this;
         setContentView(R.layout.activity_splash);
+
+        TextView textversionname;
+        textversionname = findViewById(R.id.versionname);
+        PackageInfo pinfo = MainActivity.activity.getAppInfo(getApplicationContext());
+        textversionname.setText(pinfo.versionName);
+
         setupFolders();
         SharedPreferences prefs = getSharedPreferences(CREDENTIAL_SHARED_PREF, Context.MODE_PRIVATE);
 
@@ -107,11 +115,6 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         File downloadsDir = new File(AppConfig.downloadsFolder);
         if (!downloadsDir.exists()) {
             downloadsDir.mkdirs();
-        }
-
-        File qcow2Dir = new File(FileUtils.getExternalFilesDirectory(activity).getPath() + "/QCOW2");
-        if (!qcow2Dir.exists()) {
-            qcow2Dir.mkdirs();
         }
 
         File jsonFile = new File(AppConfig.maindirpath

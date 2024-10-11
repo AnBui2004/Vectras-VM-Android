@@ -49,3 +49,12 @@ This is not the official Vectras VM repository, this repository was created to s
 - The default name of the new VM is "New VM".
 - Fixed a bug where the file containing the virtual machine list data could not be created.
 - New simple setup interface.
+- Allow landscape rotation on setup screen.
+- Only detect issue when clicking ADD button on new virtual machine creation screen.
+- New Qemu params editing screen for easier editing.
+- Changed some icons to match the feature.
+- Changed location to create new qcow2 file.
+- Screen suggests to create new virtual machine if no virtual machine in list.
+- Added option to delete all virtual machines.
+- New Gilroy font.
+- Added Arabic language support for some features.

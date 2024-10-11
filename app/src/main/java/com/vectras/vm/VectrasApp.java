@@ -12,6 +12,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -40,9 +41,12 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.color.DynamicColors;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.vectras.qemu.MainSettingsManager;
 import com.vectras.vterm.Terminal;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -52,16 +56,20 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VectrasApp extends Application {
@@ -97,7 +105,7 @@ public class VectrasApp extends Application {
 		if (language.contains("ar")) {
 			overrideFont("DEFAULT", R.font.cairo_regular);
 		} else {
-			overrideFont("DEFAULT", R.font.quicksand);
+			overrideFont("DEFAULT", R.font.gilroy);
 		}
 
 	}
@@ -453,9 +461,43 @@ public class VectrasApp extends Application {
 		}
 	}
 
+	public static boolean checkJSONIsNormal(String _filepath) {
+		ArrayList<HashMap<String, Objects>> mmap = new ArrayList<>();
+		String contentjson = "";
+		if (VectrasApp.isFileExists(_filepath)) {
+			contentjson = readFile(_filepath);
+			try {
+				mmap.clear();
+				mmap = new Gson().fromJson(contentjson, new TypeToken<ArrayList<HashMap<String, Object>>>() {
+				}.getType());
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
 	public static boolean isFileExists(String filePath) {
 		File file = new File(filePath);
 		return file.exists();
+	}
+
+	public static String readFile(String filePath) {
+		StringBuilder content = new StringBuilder();
+		try (FileInputStream inputStream = new FileInputStream(filePath);
+			 BufferedReader reader = new BufferedReader(new
+					 InputStreamReader(inputStream))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				content.append(line).append("\n");
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return content.toString();
+
 	}
 
 	public static void writeToFile(String folderPath, String fileName, String content) {
@@ -467,6 +509,21 @@ public class VectrasApp extends Application {
 			outputStream.close();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	public static void deleteDirectory(String _pathToDelete) {
+		File _dir = new File(_pathToDelete);
+		if (_dir.isDirectory()) {
+			String[] children = _dir.list();
+			for (int i = 0; i < children.length; i++) {
+				File temp = new File(_dir, children[i]);
+				deleteDirectory(String.valueOf(temp));
+			}
+		}
+		boolean success = _dir.delete();
+		if (!success) {
+			Log.e("ERROR", "Deletion failed. " + _dir);
 		}
 	}
 
@@ -551,5 +608,22 @@ public class VectrasApp extends Application {
 			Log.d("VectrasApp.isThisVMRunning", "No");
 			return false;
 		}
+	}
+
+	public static void oneDialog(String _title, String _message, boolean _cancel, boolean _finish, Activity _activity) {
+		AlertDialog alertDialog = new AlertDialog.Builder(_activity, R.style.MainDialogTheme).create();
+		alertDialog.setTitle(_title);
+		alertDialog.setMessage(_message);
+		if (!_cancel) {
+			alertDialog.setCancelable(false);
+		}
+		alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				if (_finish) {
+					_activity.finish();
+				}
+			}
+		});
+		alertDialog.show();
 	}
 }

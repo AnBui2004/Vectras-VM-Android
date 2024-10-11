@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">فيكترا</string>
-    <string name="app_version">v2.9.1p</string>
+    <string name="app_version">v2.9.1q</string>
     <string name="qemu_version">مستقر</string>
     <string name="str_home">الرئيسية</string>
     <string name="str_logger">سجل</string>
@@ -524,4 +524,23 @@
     <string name="you_need_to_install_termux">تحتاج إلى تثبيت Termux قبل الإعداد.</string>
     <string name="wating_for_you">في انتظاركم...</string>
     <string name="suggested_use_of_create_command">نوصي باستخدام الأمر "إنشاء" لتسهيل عملية إنشاء الأجهزة الافتراضية.</string>
+    <string name="oops">أُووبس!</string>
+    <string name="cpu_does_not_have_the_necessary_instructions">لا تحتوي وحدة المعالجة المركزية الموجودة على جهازك على الإرشادات اللازمة لتشغيل Vectras VM.</string>
+    <string name="warning">تحذير!</string>
+    <string name="cpu_not_support_64">لا يدعم نظام التشغيل Android أو وحدة المعالجة المركزية على جهازك 64 بت، مما يعني أن الجهاز الافتراضي سيكون لديه أداء ضعيف وغير مستقر عند التشغيل.</string>
+    <string name="an_error_occurred_with_the_vm_list_data">حدث خطأ في بيانات قائمة الأجهزة الظاهرية. هل تريد حذف الكل؟</string>
+    <string name="delete_all">حذف الكل</string>
+    <string name="need_fix_json_before_create">حدث خطأ في بيانات قائمة الأجهزة الظاهرية ولا يمكن إنشاء جهاز ظاهري جديد في هذا الوقت. لإنشاء جهاز ظاهري جديد، تحتاج إلى حذف جميع بيانات قائمة الأجهزة الظاهرية. هل تريد حذف الكل؟</string>
+    <string name="problem_has_been_detected">تم اكتشاف المشكلة</string>
+    <string name="you_have_not_added_any_storage_devices">لم تقم بإضافة أي أجهزة تخزين لبدء استخدام نظام التشغيل أو تثبيته. هل تريد الاستمرار في الإنشاء؟</string>
+    <string name="continuetext">يكمل</string>
+    <string name="need_set_name">يجب عليك إعطاء هذا الجهاز الظاهري اسمًا جديدًا.</string>
+    <string name="can_not_use_mttcg">لا يمكن تشغيل الآلة الافتراضية لأن وحدة المعالجة المركزية أو نظام التشغيل Android على هاتفك لا يدعم 64 بت لاستخدام TCG متعدد الخيوط. هل تريد الاستمرار في تشغيل الآلة الافتراضية باستخدام TCG أحادي الخيط؟</string>
+    <string name="VM_is_already_running">هذه الآلة الافتراضية قيد التشغيل بالفعل.</string>
+    <string name="delete_all_vm_content">سيتم حذف جميع الأجهزة الافتراضية بما في ذلك جميع أقراص ROM الخاصة بك. هل تريد الاستمرار؟</string>
+    <string name="delete_all_vm">حذف كافة الأجهزة الافتراضية</string>
+    <string name="create">يخلق</string>
+    <string name="nothing_here">لا يوجد شيء هنا</string>
+    <string name="create_vm_now">هل تريد إنشاء جهاز افتراضي جديد الآن؟</string>
+    <string name="nothing_here_home">لا يوجد شيء هنا./nانقر فوق الزر "إنشاء" في الأسفل لبدء إنشاء جهاز افتراضي جديد.</string>
 </resources>

@@ -357,6 +357,7 @@ public class AdapterMainRoms extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             output = new BufferedWriter(new FileWriter(jsonFile));
                             output.write(MainActivity.jArray.toString().replace("\\", "").replace("//", "/"));
                             output.close();
+                            MainActivity.loadDataVbi();
                         } catch (Exception e) {
                             UIUtils.toastLong(MainActivity.activity, e.toString());
                         }

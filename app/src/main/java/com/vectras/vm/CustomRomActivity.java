@@ -87,6 +87,7 @@ public class CustomRomActivity extends AppCompatActivity {
     public TextInputEditText cdrom;
     public TextInputEditText qemu;
     public Button addRomBtn;
+    boolean iseditparams = false;
 
     public ProgressBar loadingPb;
 
@@ -176,6 +177,7 @@ public class CustomRomActivity extends AppCompatActivity {
         TextInputLayout iconLayout = findViewById(R.id.iconField);
         TextInputLayout driveLayout = findViewById(R.id.driveField);
         TextInputLayout cdromLayout = findViewById(R.id.cdromField);
+        TextInputLayout qemuLayout = findViewById(R.id.qemuField);
         TextView arch = findViewById(R.id.textArch);
         arch.setText(MainSettingsManager.getArch(this));
         ImageView ivIcon = findViewById(R.id.ivIcon);
@@ -247,6 +249,10 @@ public class CustomRomActivity extends AppCompatActivity {
         driveLayout.setEndIconOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                File vDir = new File(com.vectras.vm.AppConfig.maindirpath + "IMG");
+                if (!vDir.exists()) {
+                    vDir.mkdirs();
+                }
                 CreateImageDialogFragment dialogFragment = new CreateImageDialogFragment();
                 dialogFragment.customRom = true;
                 dialogFragment.show(getSupportFragmentManager(), "CreateImageDialogFragment");
@@ -322,20 +328,22 @@ public class CustomRomActivity extends AppCompatActivity {
         addRomBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!(drive.getText().toString().isEmpty() || drive.getText().toString().isEmpty())) {
+                if (title.getText().toString().isEmpty()) {
+                    VectrasApp.oneDialog(getResources().getString(R.string.oops), getResources().getString(R.string.need_set_name),true, false, activity);
+                } else if ((!drive.getText().toString().isEmpty()) || (!cdrom.getText().toString().isEmpty())) {
                     startCreateVM();
                 } else {
                     if (VectrasApp.isHaveADisk(qemu.getText().toString())) {
                         startCreateVM();
                     } else {
                         AlertDialog alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-                        alertDialog.setTitle("Problem has been detected");
-                        alertDialog.setMessage("You have not added any storage devices to start using or install an operating system. Do you want to continue creating?");
+                        alertDialog.setTitle(getResources().getString(R.string.problem_has_been_detected));
+                        alertDialog.setMessage(getResources().getString(R.string.you_have_not_added_any_storage_devices));
                         alertDialog.setCancelable(true);
-                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Continue", (dialog, which) -> {
+                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.continuetext), (dialog, which) -> {
                             startCreateVM();
                         });
-                        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
+                        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), (dialog, which) -> {
 
                         });
                         alertDialog.show();
@@ -343,6 +351,29 @@ public class CustomRomActivity extends AppCompatActivity {
                 }
             }
         });
+
+        qemu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                iseditparams = true;
+                Intent intent = new Intent();
+                intent.setClass(getApplicationContext(), EditActivity.class);
+                intent.putExtra("content", Objects.requireNonNull(qemu.getText()).toString());
+                startActivity(intent);
+            }
+        });
+
+        qemuLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                iseditparams = true;
+                Intent intent = new Intent();
+                intent.setClass(getApplicationContext(), EditActivity.class);
+                intent.putExtra("content", Objects.requireNonNull(qemu.getText()).toString());
+                startActivity(intent);
+            }
+        });
+
         TextView textName = findViewById(R.id.textName);
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
@@ -353,19 +384,6 @@ public class CustomRomActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 textName.setText(title.getText().toString());
-                if (isFilled(title)) {
-                    if (isFilled(icon) && isFilled(drive) && isFilled(cdrom))
-                        addRomBtn.setEnabled(true);
-                    cdromLayout.setEnabled(true);
-                    driveLayout.setEnabled(true);
-                    iconLayout.setEnabled(true);
-                } else {
-                    if (!isFilled(icon) && !isFilled(drive) && !isFilled(cdrom))
-                        addRomBtn.setEnabled(false);
-                    cdromLayout.setEnabled(false);
-                    driveLayout.setEnabled(false);
-                    iconLayout.setEnabled(false);
-                }
 
                 if (!Objects.requireNonNull(icon.getText()).toString().isEmpty())
                     return;
@@ -375,11 +393,7 @@ public class CustomRomActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                //if (isFilled(title) && isFilled(icon) && isFilled(drive))
-                if (isFilled(title))
-                    addRomBtn.setEnabled(true);
-                else
-                    addRomBtn.setEnabled(false);
+
             }
         };
         title.addTextChangedListener(afterTextChangedListener);
@@ -392,7 +406,7 @@ public class CustomRomActivity extends AppCompatActivity {
         tIQemu.setEndIconOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String qcc = "https://play.google.com/store/apps/details?id=com.anbui.cqcm.app";
+                String qcc = "android-app://com.anbui.cqcm.app";
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(qcc));
                 startActivity(i);
@@ -477,18 +491,16 @@ public class CustomRomActivity extends AppCompatActivity {
             }
             qemu.setText(defQemuParams);
         }
-
-        if (textName.length() > 0) {
-            addRomBtn.setEnabled(true);
-        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         checkpermissions();
-        if (isFilled(title))
-            addRomBtn.setEnabled(true);
+        if (iseditparams) {
+            iseditparams = false;
+            qemu.setText(EditActivity.result);
+        }
     }
 
     public static class RomsJso extends JSONObject {
@@ -615,7 +627,6 @@ public class CustomRomActivity extends AppCompatActivity {
                                 public void run() {
                                     loadingPb.setVisibility(View.GONE);
                                     custom.setVisibility(View.VISIBLE);
-                                    addRomBtn.setEnabled(isFilled(title) && isFilled(icon) && isFilled(drive));
                                 }
                             };
                             activity.runOnUiThread(runnable);
@@ -627,7 +638,6 @@ public class CustomRomActivity extends AppCompatActivity {
                             public void run() {
                                 loadingPb.setVisibility(View.GONE);
                                 custom.setVisibility(View.VISIBLE);
-                                addRomBtn.setEnabled(isFilled(title) && isFilled(icon) && isFilled(drive) && isFilled(cdrom));
                                 UIUtils.UIAlert(activity, "error", e.toString());
                             }
                         };
@@ -686,7 +696,6 @@ public class CustomRomActivity extends AppCompatActivity {
                                     public void run() {
                                         loadingPb.setVisibility(View.GONE);
                                         custom.setVisibility(View.VISIBLE);
-                                        addRomBtn.setEnabled(isFilled(title) && isFilled(icon) && isFilled(drive) && isFilled(cdrom));
                                     }
                                 };
                                 activity.runOnUiThread(runnable);
@@ -698,7 +707,6 @@ public class CustomRomActivity extends AppCompatActivity {
                                 public void run() {
                                     loadingPb.setVisibility(View.GONE);
                                     custom.setVisibility(View.VISIBLE);
-                                    addRomBtn.setEnabled(isFilled(title) && isFilled(icon) && isFilled(drive) && isFilled(cdrom));
                                     UIUtils.UIAlert(activity, "error", e.toString());
                                 }
                             };
@@ -825,24 +833,20 @@ public class CustomRomActivity extends AppCompatActivity {
 
     private void errorjsondialog() {
         if (isFileExists(AppConfig.romsdatajson)) {
-            contentjson = readFile(AppConfig.romsdatajson);
-            try {
-                mmap.clear();
-                mmap = new Gson().fromJson(contentjson, new TypeToken<ArrayList<HashMap<String, Object>>>() {
-                }.getType());
-            } catch (Exception e) {
+            if (!VectrasApp.checkJSONIsNormal(AppConfig.romsdatajson)) {
                 alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-                alertDialog.setTitle("Oops!");
-                alertDialog.setMessage("An error occurred with the virtual machine list data and a new virtual machine cannot be created at this time. To create a new virtual machine, you need to delete all virtual machine list data. Do you want to delete all?");
+                alertDialog.setTitle(getResources().getString(R.string.oops));
+                alertDialog.setMessage(getResources().getString(R.string.need_fix_json_before_create));
                 alertDialog.setCancelable(true);
-                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete all", (dialog, which) -> {
+                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.delete_all), (dialog, which) -> {
                     VectrasApp.writeToFile(AppConfig.maindirpath, "roms-data.json", "[]");
                 });
-                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
+                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), (dialog, which) -> {
 
                 });
                 alertDialog.show();
             }
+
         } else {
 
         }

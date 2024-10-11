@@ -120,11 +120,9 @@ public class MainActivity extends AppCompatActivity {
     public TextView totalRam;
     public TextView usedRam;
     public TextView freeRam;
+    public static LinearLayout linearnothinghere;
     private final Timer _timer = new Timer();
     private AlertDialog alertDialog;
-    private ArrayList<HashMap<String, Objects>> mmap = new ArrayList<>();
-    private String contentjson = "";
-    public static int idatasize = 0;
     private boolean doneonstart = false;
 
     @Override
@@ -133,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
         activity = this;
         RamInfo.activity = this;
         setContentView(R.layout.activity_main);
-
         setupFolders();
 
         NotificationManager notificationManager = (NotificationManager) activity.getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -150,6 +147,8 @@ public class MainActivity extends AppCompatActivity {
         appbar.setExpanded(false);
 
         extVncLayout = findViewById(R.id.extVnc);
+
+        linearnothinghere = findViewById(R.id.linearnothinghere);
 
         TextView tvLogin = findViewById(R.id.tvLogin);
         tvLogin.setText("LOGIN --> " + Config.defaultVNCHost + ":" + (5900 + Config.defaultVNCPort)/* + "\nPASSWORD --> " + Config.defaultVNCPasswd*/);
@@ -480,7 +479,6 @@ public class MainActivity extends AppCompatActivity {
                         alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
                         alertDialog.setTitle(getResources().getString(R.string.setup_sound));
                         alertDialog.setMessage(getResources().getString(R.string.setup_sound_guide_content));
-                        alertDialog.setCancelable(false);
                         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.start_setup), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
@@ -503,7 +501,6 @@ public class MainActivity extends AppCompatActivity {
                         alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
                         alertDialog.setTitle(getResources().getString(R.string.termux_is_not_installed));
                         alertDialog.setMessage(getResources().getString(R.string.you_need_to_install_termux));
-                        alertDialog.setCancelable(false);
                         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.install), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 Intent intent = new Intent();
@@ -520,6 +517,27 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }
                     alertDialog.show();
+                } else if (id == R.id.deletealldata) {
+                    alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                    alertDialog.setTitle(getResources().getString(R.string.delete_all_vm));
+                    alertDialog.setMessage(getResources().getString(R.string.delete_all_vm_content));
+                    alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.delete_all), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            VectrasApp.killallqemuprocesses(getApplicationContext());
+                            VectrasApp.deleteDirectory(AppConfig.maindirpath);
+                            File vDir = new File(com.vectras.vm.AppConfig.maindirpath);
+                            vDir.mkdirs();
+                            errorjsondialog();
+                        }
+                    });
+                    alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            alertDialog.dismiss();
+                        }
+                    });
+                    alertDialog.show();
+
+
                 }
                 return false;
             }
@@ -735,7 +753,6 @@ public class MainActivity extends AppCompatActivity {
             mMainAdapter = new AdapterMainRoms(MainActivity.activity, data);
             mRVMainRoms.setAdapter(mMainAdapter);
             mRVMainRoms.setLayoutManager(new GridLayoutManager(MainActivity.activity, 2));
-            MainActivity.idatasize = data.size();
         } catch (JSONException e) {
         }
     }
@@ -842,15 +859,14 @@ public class MainActivity extends AppCompatActivity {
         if (AppConfig.getSetupFiles().contains("arm") && !AppConfig.getSetupFiles().contains("arm64")) {
             if (env.contains("tcg,thread=multi")) {
                 AlertDialog abiAlertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-                abiAlertDialog.setTitle("Oops!");
-                abiAlertDialog.setMessage("The virtual machine cannot run because your phone's CPU or Android OS does not support 64bit to use Multi-threaded TCG. Do you want to continue running the virtual machine with Single-threaded TCG?");
-                abiAlertDialog.setCancelable(false);
-                abiAlertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Continue", new DialogInterface.OnClickListener() {
+                abiAlertDialog.setTitle(activity.getResources().getString(R.string.oops));
+                abiAlertDialog.setMessage(activity.getResources().getString(R.string.can_not_use_mttcg));
+                abiAlertDialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getResources().getString(R.string.continuetext), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         startVM(vmName, env.replace("tcg,thread=multi", "tcg,thread=single"), itemExtra, itemPath);
                     }
                 });
-                abiAlertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                abiAlertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
@@ -1214,26 +1230,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void errorjsondialog() {
         if (VectrasApp.isFileExists(AppConfig.romsdatajson)) {
-            contentjson = readFile(AppConfig.romsdatajson);
-            try {
-                mmap.clear();
-                mmap = new Gson().fromJson(contentjson, new TypeToken<ArrayList<HashMap<String, Object>>>() {
-                }.getType());
-                mdatasize();
-            } catch (Exception e) {
+            if (!VectrasApp.checkJSONIsNormal(AppConfig.romsdatajson)) {
                 alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-                alertDialog.setTitle("Oops!");
-                alertDialog.setMessage("An error occurred with the virtual machine list data. Do you want to delete all?");
+                alertDialog.setTitle(getResources().getString(R.string.oops));
+                alertDialog.setMessage(getResources().getString(R.string.an_error_occurred_with_the_vm_list_data));
                 alertDialog.setCancelable(true);
-                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete all", (dialog, which) -> {
+                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.delete_all), (dialog, which) -> {
                     VectrasApp.writeToFile(AppConfig.maindirpath, "roms-data.json", "[]");
                     loadDataVbi();
                     mdatasize();
                 });
-                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
+                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), (dialog, which) -> {
 
                 });
                 alertDialog.show();
+            } else {
+                loadDataVbi();
+                mdatasize();
             }
         } else {
             VectrasApp.writeToFile(AppConfig.maindirpath, "roms-data.json", "[]");
@@ -1259,18 +1272,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mdatasize() {
-        if (idatasize < 1 && !doneonstart) {
-            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-            alertDialog.setTitle("Nothing here");
-            alertDialog.setMessage("Do you want to create a new virtual machine now?");
-            alertDialog.setCancelable(true);
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Create", (dialog, which) -> {
-                startActivity(new Intent(activity, SetArchActivity.class));
-            });
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
+        if (MainActivity.data.isEmpty()) {
+            if (!doneonstart) {
+                alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                alertDialog.setTitle(getResources().getString(R.string.nothing_here));
+                alertDialog.setMessage("Do you want to create a new virtual machine now?");
+                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.create), (dialog, which) -> {
+                    startActivity(new Intent(activity, SetArchActivity.class));
+                });
+                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), (dialog, which) -> {
 
-            });
-            alertDialog.show();
+                });
+                alertDialog.show();
+            }
+            linearnothinghere.setVisibility(View.VISIBLE);
+        } else {
+            linearnothinghere.setVisibility(View.GONE);
         }
     }
 
