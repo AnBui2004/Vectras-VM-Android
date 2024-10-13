@@ -58,3 +58,4 @@ This is not the official Vectras VM repository, this repository was created to s
 - Added option to delete all virtual machines.
 - New Gilroy font.
 - Added Arabic language support for some features.
+- Support creating virtual machines with Create command (https://play.google.com/store/apps/details?id=com.anbui.cqcm.app).
