@@ -20,6 +20,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
@@ -44,6 +45,7 @@ import com.google.android.material.color.DynamicColors;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.vectras.qemu.MainSettingsManager;
+import com.vectras.vm.utils.FileUtils;
 import com.vectras.vterm.Terminal;
 
 import java.io.BufferedReader;
@@ -479,6 +481,18 @@ public class VectrasApp extends Application {
 		}
 	}
 
+	public static boolean checkJSONIsNormalFromString(String _content) {
+		ArrayList<HashMap<String, Objects>> mmap = new ArrayList<>();
+		try {
+			mmap.clear();
+			mmap = new Gson().fromJson(_content, new TypeToken<ArrayList<HashMap<String, Object>>>() {
+			}.getType());
+				return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	public static boolean isFileExists(String filePath) {
 		File file = new File(filePath);
 		return file.exists();
@@ -625,5 +639,27 @@ public class VectrasApp extends Application {
 			}
 		});
 		alertDialog.show();
+	}
+
+	public static void prepareDataForAppConfig(Activity _activity) {
+		AppConfig.vectrasVersion = "2.9.1";
+		AppConfig.vectrasWebsite = "https://nguyenbaoanbui-f8a71.web.app/vectrasvm/";
+		AppConfig.vectrasHelp = AppConfig.vectrasWebsite + "how.html";
+		AppConfig.community = "https://nguyenbaoanbui-86deb.web.app/community/";
+		AppConfig.vectrasRaw = AppConfig.vectrasWebsite + "data/";
+		AppConfig.vectrasLicense = AppConfig.vectrasRaw + "LICENSE.md";
+		AppConfig.vectrasPrivacy = AppConfig.vectrasRaw + "PRIVACYANDPOLICY.md";
+		AppConfig.vectrasTerms = AppConfig.vectrasRaw + "TERMSOFSERVICE.md";
+		AppConfig.vectrasInfo = AppConfig.vectrasRaw + "info.md";
+		AppConfig.vectrasRepo = "https://github.com/AnBui2004/Vectras-VM-Android";
+		AppConfig.updateJson = AppConfig.vectrasRaw + "UpdateConfig.json";
+		AppConfig.blogJson = AppConfig.vectrasRaw + "news_list.json";
+		AppConfig.storeJson = AppConfig.vectrasWebsite + "store_list.json";
+		AppConfig.releaseUrl = AppConfig.vectrasWebsite;
+		AppConfig.basefiledir = AppConfig.datadirpath(_activity) + "/.qemu/";
+		AppConfig.maindirpath = FileUtils.getExternalFilesDirectory(SplashActivity.activity).getPath() + "/";
+		AppConfig.sharedFolder = AppConfig.maindirpath + "SharedFolder/";
+		AppConfig.downloadsFolder = AppConfig.maindirpath + "Downloads/";
+		AppConfig.romsdatajson = Environment.getExternalStorageDirectory().toString() + "/Documents/VectrasVM/roms-data.json";
 	}
 }

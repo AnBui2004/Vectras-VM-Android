@@ -11,7 +11,7 @@ android {
         minSdk minApi
         targetSdk targetApi
         versionCode 17
-        versionName "v2.9.1q"
+        versionName "v2.9.1r"
 	    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -86,6 +86,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-compress
     implementation 'org.apache.commons:commons-compress:1.25.0'
     implementation 'com.google.firebase:firebase-crashlytics-buildtools:2.9.9'
+    implementation 'androidx.activity:activity:1.9.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     //implementation 'androidx.activity:activity:1.8.0'
     //implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 

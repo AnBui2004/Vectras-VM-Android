@@ -44,6 +44,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".CqcmActivity"
+            android:exported="true" />
+        <activity
             android:name=".EditActivity"
             android:exported="false" />
         <activity

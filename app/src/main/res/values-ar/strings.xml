@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">فيكترا</string>
-    <string name="app_version">v2.9.1q</string>
+    <string name="app_version">v2.9.1r</string>
     <string name="qemu_version">مستقر</string>
     <string name="str_home">الرئيسية</string>
     <string name="str_logger">سجل</string>
@@ -542,5 +542,10 @@
     <string name="create">يخلق</string>
     <string name="nothing_here">لا يوجد شيء هنا</string>
     <string name="create_vm_now">هل تريد إنشاء جهاز افتراضي جديد الآن؟</string>
-    <string name="nothing_here_home">لا يوجد شيء هنا./nانقر فوق الزر "إنشاء" في الأسفل لبدء إنشاء جهاز افتراضي جديد.</string>
+    <string name="nothing_here_home">انقر فوق الزر "إنشاء" في الأسفل لبدء إنشاء جهاز افتراضي جديد.</string>
+    <string name="allow_access_to_storage">السماح بالوصول إلى التخزين</string>
+    <string name="you_need_to_allow_access_to_the_storage_to_continue">يجب عليك السماح بالوصول إلى التخزين للاستمرار.</string>
+    <string name="allow">يسمح</string>
+    <string name="cannot_create_VM_at_this_time">لا يمكن إنشاء VM في هذا الوقت.</string>
+    <string name="no_data">لا يوجد بيانات.</string>
 </resources>

@@ -72,9 +72,10 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         btn_osl.setOnClickListener(this);
         btn_clog.setOnClickListener(this);
 
-        AdView mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        //AdView mAdView = findViewById(R.id.adView);
+        //AdRequest adRequest = new AdRequest.Builder().build();
+        //mAdView.loadAd(adRequest);
+        VectrasApp.prepareDataForAppConfig(this);
         new Thread(new Runnable(){
 
             public void run(){
@@ -136,7 +137,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onInitializationComplete(InitializationStatus initializationStatus) {}
         });
-        InterstitialAd.load(this,"ca-app-pub-3568137780412047/4892595373", adRequest,
+        /*InterstitialAd.load(this,"ca-app-pub-3568137780412047/4892595373", adRequest,
                 new InterstitialAdLoadCallback() {
                     @Override
                     public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
@@ -152,7 +153,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
                         Log.d(TAG, loadAdError.toString());
                         mInterstitialAd = null;
                     }
-                });
+                });*/
         if (mInterstitialAd != null) {
             mInterstitialAd.show(AboutActivity.this);
         } else {

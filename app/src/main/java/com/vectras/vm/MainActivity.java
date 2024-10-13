@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
     private final Timer _timer = new Timer();
     private AlertDialog alertDialog;
     private boolean doneonstart = false;
+    public static boolean isActivate = false;
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -131,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
         activity = this;
         RamInfo.activity = this;
         setContentView(R.layout.activity_main);
+        isActivate = true;
+        VectrasApp.prepareDataForAppConfig(activity);
         setupFolders();
 
         NotificationManager notificationManager = (NotificationManager) activity.getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -547,9 +550,9 @@ public class MainActivity extends AppCompatActivity {
 
         adRequest = new AdRequest.Builder().build();
 
-        AdView mAdView = findViewById(R.id.adView);
-        adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        //AdView mAdView = findViewById(R.id.adView);
+        //adRequest = new AdRequest.Builder().build();
+        //mAdView.loadAd(adRequest);
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
@@ -651,6 +654,12 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         _timer.scheduleAtFixedRate(t, (int) (0), (int) (1000));
+    }
+
+    @Override
+    public void onDestroy() {
+        isActivate = false;
+        super.onDestroy();
     }
 
     public static void clearNotifications() {

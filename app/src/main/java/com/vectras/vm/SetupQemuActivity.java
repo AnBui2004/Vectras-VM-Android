@@ -105,6 +105,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         inBtn.setOnClickListener(this);
 
         tarPath = getExternalFilesDir("data") + "/data.tar.gz";
+        VectrasApp.prepareDataForAppConfig(activity);
     }
 
     @Override

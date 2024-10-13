@@ -19,7 +19,7 @@ import java.util.Objects;
 public class AppConfig {
 
     // App Config
-    public static String vectrasVersion = "2.9.0";
+    public static String vectrasVersion = "2.9.1";
     public static String vectrasWebsite = "https://nguyenbaoanbui-f8a71.web.app/vectrasvm/";
     public static String vectrasHelp = vectrasWebsite + "how.html";
     public static String community = "https://nguyenbaoanbui-86deb.web.app/community/";
@@ -32,16 +32,16 @@ public class AppConfig {
     public static String updateJson = vectrasRaw + "UpdateConfig.json";
     public static String blogJson = vectrasRaw + "news_list.json";
     // public static final String storeJson = vectrasRaw + "store_list.json";
-    public static final String storeJson = vectrasWebsite + "store_list.json";
+    public static String storeJson = vectrasWebsite + "store_list.json";
 
-    public static final String releaseUrl = vectrasWebsite;
+    public static String releaseUrl = vectrasWebsite;
 
     public static String getSetupFiles() {
         String abi = Build.SUPPORTED_ABIS[0];
         return releaseUrl + "vectras-vm-" + abi + ".tar.gz";
     }
 
-    public static final String romsJson(Activity activity) {
+    public static String romsJson(Activity activity) {
         if (Objects.equals(MainSettingsManager.getArch(activity), "X86_64")) {
             return vectrasRaw + "roms-x86_64.json";
         } else if (Objects.equals(MainSettingsManager.getArch(activity), "I386")) {
@@ -61,8 +61,10 @@ public class AppConfig {
         return activity.getExternalFilesDir("data") + "/Vectras";
         //return FileUtils.getExternalFilesDirectory(activity).getPath();
     }
-    public static String basefiledir = datadirpath(SplashActivity.activity) + "/.qemu/";
-    public static String maindirpath = FileUtils.getExternalFilesDirectory(SplashActivity.activity).getPath() + "/";
+    public static String basefiledir = "";
+    public static String maindirpath = "";
+    //public static String basefiledir = datadirpath(SplashActivity.activity) + "/.qemu/";
+    //public static String maindirpath = FileUtils.getExternalFilesDirectory(SplashActivity.activity).getPath() + "/";
     public static String sharedFolder = maindirpath + "SharedFolder/";
     public static String downloadsFolder = maindirpath + "Downloads/";
     public static String romsdatajson = Environment.getExternalStorageDirectory().toString() + "/Documents/VectrasVM/roms-data.json";

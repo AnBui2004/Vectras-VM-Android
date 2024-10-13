@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vectras VM</string>
-    <string name="app_version" translatable="false">v2.9.1q</string>
+    <string name="app_version" translatable="false">v2.9.1r</string>
     <string name="qemu_version" translatable="false">Stable</string>
     <string name="str_home">Home</string>
     <string name="str_logger">Logger</string>
@@ -555,5 +555,10 @@
     <string name="create">Create</string>
     <string name="nothing_here">Nothing here</string>
     <string name="create_vm_now">Do you want to create a new virtual machine now?</string>
-    <string name="nothing_here_home">Nothing here.\nTap the Create button at the bottom to start creating a new virtual machine.</string>
+    <string name="nothing_here_home">Tap the Create button at the bottom to start creating a new virtual machine.</string>
+    <string name="allow_access_to_storage">Allow access to storage</string>
+    <string name="you_need_to_allow_access_to_the_storage_to_continue">You need to allow access to the storage to continue.</string>
+    <string name="allow">Allow</string>
+    <string name="cannot_create_VM_at_this_time">Cannot create VM at this time.</string>
+    <string name="no_data">No data.</string>
 </resources>

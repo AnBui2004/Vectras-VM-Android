@@ -171,6 +171,7 @@ public class RomsManagerActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         activity = this;
+        VectrasApp.prepareDataForAppConfig(activity);
         SharedPreferences prefs = getSharedPreferences(CREDENTIAL_SHARED_PREF, Context.MODE_PRIVATE);
         boolean isAccessed = prefs.getBoolean("isFirstLaunch", false);
         if (!isAccessed && !checkConnection(activity))
