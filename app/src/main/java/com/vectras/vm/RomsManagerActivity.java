@@ -122,7 +122,7 @@ public class RomsManagerActivity extends AppCompatActivity {
     public static String selectedLink = null;
     public static String selectedName = null;
     public static String selectedIcon = null;
-    public static String selecedMachinetype = null;
+    public static String selectedArch = null;
 
     public MaterialButtonToggleGroup filterToggle;
     public MaterialButton windowsToggle;
@@ -511,6 +511,15 @@ public class RomsManagerActivity extends AppCompatActivity {
                     intent.putExtra("rompath", selectedFilePath.getPath());
                 }
                 intent.putExtra("romextra", selectedExtra);
+                if (selectedArch.equals("X86_64")) {
+                    MainSettingsManager.setArch(this, "X86_64");
+                } else if (selectedArch.equals("i386")) {
+                    MainSettingsManager.setArch(this, "I386");
+                } else if (selectedArch.equals("ARM64")) {
+                    MainSettingsManager.setArch(this, "ARM64");
+                } else if (selectedArch.equals("PowerPC")) {
+                    MainSettingsManager.setArch(this, "PPC");
+                }
                 startActivity(intent);
             } else {
                 UIUtils.UIAlert(activity, "Please select " + selectedPath.replace(".IMG", ".vbi") + " file to continue.", "File not supported");

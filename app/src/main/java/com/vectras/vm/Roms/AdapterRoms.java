@@ -102,6 +102,7 @@ public class AdapterRoms extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     RomsManagerActivity.selectedName = current.itemName + " " + current.itemArch;
                     RomsManagerActivity.selectedLink = current.itemUrl;
                     RomsManagerActivity.selectedIcon = current.itemIcon;
+                    RomsManagerActivity.selectedArch = current.itemArch;
                     myHolder.ivIcon.buildDrawingCache();
                     Bitmap bm = myHolder.ivIcon.getDrawingCache();
                     OutputStream fOut = null;
