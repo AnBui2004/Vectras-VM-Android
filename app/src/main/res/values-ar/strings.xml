@@ -548,4 +548,16 @@
     <string name="allow">يسمح</string>
     <string name="cannot_create_VM_at_this_time">لا يمكن إنشاء VM في هذا الوقت.</string>
     <string name="no_data">لا يوجد بيانات.</string>
+    <string name="roms_store">متجر روم</string>
+    <string name="available">متاح</string>
+    <string name="unavailable">غير متاح</string>
+    <string name="installed">تم التثبيت</string>
+    <string name="kill_all">اقتل الجميع</string>
+    <string name="do_you_want_to_kill_all_qemu_processes">هل تريد قتل كافة عمليات Qemu؟</string>
+    <string name="all_running_vms_will_be_forcibly_shut_down">سيتم إيقاف تشغيل جميع أجهزة VM قيد التشغيل قسراً.</string>
+    <string name="total_memory">المجموع: </string>
+    <string name="used_memory">مستخدم: </string>
+    <string name="free_memory">الموضوع: </string>
+    <string name="used">مستخدم</string>
+    <string name="there_is_nothing_here_because_there_is_no_vm_running">لا يوجد شيء هنا لأنه لا يوجد جهاز VM قيد التشغيل.</string>
 </resources>

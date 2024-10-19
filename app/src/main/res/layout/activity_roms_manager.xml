@@ -196,7 +196,7 @@
             android:id="@+id/goBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Continue"
+            android:text="@string/continuetext"
             app:backgroundTint="@drawable/btn_state" />
     </LinearLayout>
 

@@ -7,7 +7,7 @@
     <item
         android:id="@+id/navigation_item_get_rom"
         android:icon="@drawable/hard_disk_24px"
-        android:title="@string/store" />
+        android:title="@string/roms_store" />
     <item
         android:id="@+id/navigation_item_website"
         android:icon="@drawable/round_public_24"

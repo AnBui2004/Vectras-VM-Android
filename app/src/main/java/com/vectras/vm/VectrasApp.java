@@ -552,6 +552,16 @@ public class VectrasApp extends Application {
 		}
 	}
 
+	public static void moveAFile(String _from, String _to) {
+		if (!isFileExists(_from))
+			return;
+		if (!isFileExists(Uri.parse(_to).getLastPathSegment()))
+			writeToFile(Uri.parse(_to).getLastPathSegment(), ".nomedia", "");
+		File from = new File(_from);
+		File to = new File(_to);
+		from.renameTo(to);
+	}
+
 	public static void killallqemuprocesses(Context context) {
 		Terminal vterm = new Terminal(context);
 		vterm.executeShellCommand("killall -9 qemu-system-i386", false, MainActivity.activity);
@@ -654,11 +664,12 @@ public class VectrasApp extends Application {
 
 	public static void prepareDataForAppConfig(Activity _activity) {
 		AppConfig.vectrasVersion = "2.9.1";
-		AppConfig.vectrasWebsite = "https://raw.githubusercontent.com/AnBui2004/Vectras-VM-Android/refs/heads/master/web/";
-		AppConfig.bootstrapfileslink = AppConfig.vectrasWebsite + "/data/setupfiles.json";
+		AppConfig.vectrasWebsite = "https://anbui2004.github.io/vectras/";
+		AppConfig.vectrasWebsiteRaw = "https://raw.githubusercontent.com/AnBui2004/Vectras-VM-Android/refs/heads/master/web/";
+		AppConfig.bootstrapfileslink = AppConfig.vectrasWebsiteRaw + "/data/setupfiles.json";
 		AppConfig.vectrasHelp = AppConfig.vectrasWebsite + "how.html";
 		AppConfig.community = AppConfig.vectrasWebsite + "community.html";
-		AppConfig.vectrasRaw = AppConfig.vectrasWebsite + "data/";
+		AppConfig.vectrasRaw = AppConfig.vectrasWebsiteRaw + "data/";
 		AppConfig.vectrasLicense = AppConfig.vectrasRaw + "LICENSE.md";
 		AppConfig.vectrasPrivacy = AppConfig.vectrasRaw + "PRIVACYANDPOLICY.md";
 		AppConfig.vectrasTerms = AppConfig.vectrasRaw + "TERMSOFSERVICE.md";
@@ -666,7 +677,7 @@ public class VectrasApp extends Application {
 		AppConfig.vectrasRepo = "https://github.com/AnBui2004/Vectras-VM-Android";
 		AppConfig.updateJson = AppConfig.vectrasRaw + "UpdateConfig.json";
 		AppConfig.blogJson = AppConfig.vectrasRaw + "news_list.json";
-		AppConfig.storeJson = AppConfig.vectrasWebsite + "store_list.json";
+		AppConfig.storeJson = AppConfig.vectrasWebsiteRaw + "store_list.json";
 		AppConfig.releaseUrl = AppConfig.vectrasWebsite;
 		AppConfig.basefiledir = AppConfig.datadirpath(_activity) + "/.qemu/";
 		AppConfig.maindirpath = FileUtils.getExternalFilesDirectory(SplashActivity.activity).getPath() + "/";

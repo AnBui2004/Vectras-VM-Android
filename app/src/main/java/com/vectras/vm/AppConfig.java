@@ -20,11 +20,12 @@ public class AppConfig {
 
     // App Config
     public static String vectrasVersion = "2.9.1";
-    public static String vectrasWebsite = "https://raw.githubusercontent.com/AnBui2004/Vectras-VM-Android/refs/heads/master/web/";
+    public static String vectrasWebsite = "https://anbui2004.github.io/vectras/";
+    public static String vectrasWebsiteRaw = "https://raw.githubusercontent.com/AnBui2004/Vectras-VM-Android/refs/heads/master/web/";
     public static String bootstrapfileslink = vectrasWebsite + "/data/setupfiles.json";
     public static String vectrasHelp = vectrasWebsite + "how.html";
     public static String community = vectrasWebsite + "community.html";
-    public static String vectrasRaw = vectrasWebsite + "data/";
+    public static String vectrasRaw = vectrasWebsiteRaw + "data/";
     public static String vectrasLicense = vectrasRaw + "LICENSE.md";
     public static String vectrasPrivacy = vectrasRaw + "PRIVACYANDPOLICY.md";
     public static String vectrasTerms = vectrasRaw + "TERMSOFSERVICE.md";
@@ -33,7 +34,7 @@ public class AppConfig {
     public static String updateJson = vectrasRaw + "UpdateConfig.json";
     public static String blogJson = vectrasRaw + "news_list.json";
     // public static final String storeJson = vectrasRaw + "store_list.json";
-    public static String storeJson = vectrasWebsite + "store_list.json";
+    public static String storeJson = vectrasWebsiteRaw + "store_list.json";
 
     public static String releaseUrl = vectrasWebsite;
 

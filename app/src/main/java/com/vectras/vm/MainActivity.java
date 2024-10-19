@@ -473,7 +473,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (id == R.id.navigation_data_explorer) {
                     startActivity(new Intent(activity, DataExplorerActivity.class));
                 } else if (id == R.id.navigation_item_donate) {
-                    String tw = "https://nguyenbaoanbui-f8a71.web.app/vectrasvm/coffee.html";
+                    String tw = AppConfig.vectrasWebsite + "coffee.html";
                     Intent w = new Intent(Intent.ACTION_VIEW);
                     w.setData(Uri.parse(tw));
                     startActivity(w);
@@ -641,9 +641,9 @@ public class MainActivity extends AppCompatActivity {
                         long totalMemory = miI.totalMem / 1048576L;
                         long usedMemory = totalMemory - freeMemory;
 
-                        totalRam.setText("Total Memory: " + totalMemory + " MB");
-                        usedRam.setText("Used Memory: " + usedMemory + " MB");
-                        freeRam.setText("Free Memory: " + freeMemory + " MB (" + vectrasMemory + " used)");
+                        totalRam.setText(activity.getResources().getString(R.string.total_memory) + totalMemory + " MB");
+                        usedRam.setText(activity.getResources().getString(R.string.used_memory) + usedMemory + " MB");
+                        freeRam.setText(activity.getResources().getString(R.string.free_memory) + freeMemory + " MB (" + vectrasMemory + " " + activity.getResources().getString(R.string.used) + ")");
                         ProgressBar progressBar = findViewById(R.id.progressBar);
                         progressBar.setMax((int) totalMemory);
                         if (SDK_INT >= Build.VERSION_CODES.N) {
@@ -790,13 +790,13 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (id == R.id.shutdown) {
             alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-            alertDialog.setTitle("Do you want to kill all Qemu processes?");
-            alertDialog.setMessage("All running VMs will be forcibly shut down.");
+            alertDialog.setTitle(getResources().getString(R.string.do_you_want_to_kill_all_qemu_processes));
+            alertDialog.setMessage(getResources().getString(R.string.all_running_vms_will_be_forcibly_shut_down));
             alertDialog.setCancelable(true);
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Kill all", (dialog, which) -> {
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.kill_all), (dialog, which) -> {
                 VectrasApp.killallqemuprocesses(getApplicationContext());
             });
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), (dialog, which) -> {
 
             });
             alertDialog.show();
@@ -804,7 +804,7 @@ public class MainActivity extends AppCompatActivity {
             if (VectrasApp.isQemuRunning()) {
                 activity.startActivity(new Intent(activity, MainVNCActivity.class));
             } else {
-                Toast.makeText(getApplicationContext(), "There is nothing here because there is no VM running.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), activity.getResources().getString(R.string.there_is_nothing_here_because_there_is_no_vm_running), Toast.LENGTH_LONG).show();
             }
         }
 

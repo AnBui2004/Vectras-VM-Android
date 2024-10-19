@@ -54,7 +54,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        toolbar.setTitle("About");
+        toolbar.setTitle(getResources().getString(R.string.about));
         //btn
         btn_telegram = (Button) findViewById(R.id.btn_telegram);
         btn_youtube = (Button) findViewById(R.id.btn_youtube);
@@ -183,12 +183,12 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         int id = v.getId();
             if (id == TG) {
-                String tg = "https://nguyenbaoanbui-86deb.web.app/goto/community.html";
+                String tg = AppConfig.vectrasWebsite + "community.html";
                 Intent f = new Intent(Intent.ACTION_VIEW);
                 f.setData(Uri.parse(tg));
                 startActivity(f);
             } else if (id == YT) {
-                String tw = "https://nguyenbaoanbui-86deb.web.app/goto/community.html";
+                String tw = AppConfig.vectrasWebsite + "community.html";
                 Intent w = new Intent(Intent.ACTION_VIEW);
                 w.setData(Uri.parse(tw));
                 startActivity(w);
@@ -198,12 +198,12 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
                 g.setData(Uri.parse(gt));
                 startActivity(g);
             } else if (id == IG) {
-                String ig = "https://nguyenbaoanbui-86deb.web.app/goto/community.html";
+                String ig = AppConfig.vectrasWebsite + "community.html";
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(ig));
                 startActivity(i);
             } else if (id == FB) {
-                String fb = "https://nguyenbaoanbui-86deb.web.app/goto/community.html";
+                String fb = AppConfig.vectrasWebsite + "community.html";
                 Intent f = new Intent(Intent.ACTION_VIEW);
                 f.setData(Uri.parse(fb));
                 startActivity(f);
@@ -224,7 +224,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
                 alertDialog.show();
             } else if (id == OSL) {
                 AlertDialog.Builder alertDialogOSL = new AlertDialog.Builder(this, R.style.MainDialogTheme);
-                alertDialogOSL.setTitle("APP INFO");
+                alertDialogOSL.setTitle(getResources().getString(R.string.info));
                 alertDialogOSL
                         .setMessage(appInfo)
                         .setCancelable(true)

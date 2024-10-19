@@ -137,6 +137,10 @@ public class RomsManagerActivity extends AppCompatActivity {
     private LinearLayout linearnothinghere;
     private Button buttontryagain;
 
+    public static String sAvailable = "";
+    public static String sUnavailable = "";
+    public static String sInstalled = "";
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -189,6 +193,9 @@ public class RomsManagerActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         VectrasApp.prepareDataForAppConfig(activity);
+        sAvailable = getResources().getString(R.string.available);
+        sUnavailable = getResources().getString(R.string.unavailable);
+        sInstalled = getResources().getString(R.string.installed);
         SharedPreferences prefs = getSharedPreferences(CREDENTIAL_SHARED_PREF, Context.MODE_PRIVATE);
         boolean isAccessed = prefs.getBoolean("isFirstLaunch", false);
         //if (!isAccessed && !checkConnection(activity))
@@ -242,7 +249,7 @@ public class RomsManagerActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle("Roms store");
+        setTitle(getResources().getString(R.string.roms_store));
 
         goBtn = (MaterialButton) findViewById(R.id.goBtn);
 
@@ -507,18 +514,25 @@ public class RomsManagerActivity extends AppCompatActivity {
                 intent.putExtra("romname", selectedName);
                 if (selectedExtra.contains(selectedFilePath.getName())) {
                     intent.putExtra("rompath", "");
+                    intent.putExtra("romextra", selectedExtra.replace(selectedFilePath.getName(),selectedFilePath.getPath()));
                 } else {
                     intent.putExtra("rompath", selectedFilePath.getPath());
+                    intent.putExtra("romextra", selectedExtra);
                 }
-                intent.putExtra("romextra", selectedExtra);
-                if (selectedArch.equals("X86_64")) {
-                    MainSettingsManager.setArch(this, "X86_64");
-                } else if (selectedArch.equals("i386")) {
-                    MainSettingsManager.setArch(this, "I386");
-                } else if (selectedArch.equals("ARM64")) {
-                    MainSettingsManager.setArch(this, "ARM64");
-                } else if (selectedArch.equals("PowerPC")) {
-                    MainSettingsManager.setArch(this, "PPC");
+                intent.putExtra("romicon", AppConfig.maindirpath + "icons/" + selectedPath + ".png");
+                switch (selectedArch) {
+                    case "X86_64":
+                        MainSettingsManager.setArch(this, "X86_64");
+                        break;
+                    case "i386":
+                        MainSettingsManager.setArch(this, "I386");
+                        break;
+                    case "ARM64":
+                        MainSettingsManager.setArch(this, "ARM64");
+                        break;
+                    case "PowerPC":
+                        MainSettingsManager.setArch(this, "PPC");
+                        break;
                 }
                 startActivity(intent);
             } else {

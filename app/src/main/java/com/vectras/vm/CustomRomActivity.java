@@ -460,6 +460,7 @@ public class CustomRomActivity extends AppCompatActivity {
                 title.setText(getIntent().getStringExtra("romname"));
                 drive.setText(getIntent().getStringExtra("rompath"));
                 qemu.setText(getIntent().getStringExtra("romextra"));
+                icon.setText(getIntent().getStringExtra("romicon"));
             } else {
                 title.setText("New VM");
                 String defQemuParams;
