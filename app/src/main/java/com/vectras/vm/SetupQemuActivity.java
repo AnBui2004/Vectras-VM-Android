@@ -151,6 +151,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 linearload.setVisibility(View.GONE);
             }
         };
+        net.startRequestNetwork(RequestNetworkController.GET,AppConfig.bootstrapfileslink,"anbui",_net_request_listener);
     }
 
     @Override
@@ -197,6 +198,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
             }
         } else if (id == R.id.buttontryconnectagain) {
             linearload.setVisibility(View.VISIBLE);
+            net.startRequestNetwork(RequestNetworkController.GET,AppConfig.bootstrapfileslink,"anbui",_net_request_listener);
         }
     }
 
@@ -543,7 +545,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 " libusbredirparser usbredir-dev libiscsi-dev  sdl2 sdl2-dev libepoxy-dev virglrenderer-dev rdma-core" +
                 " libusb ncurses-libs curl libnfs sdl2 gtk+3.0 fuse libpulse libseccomp jack pipewire liburing;" +
                 " echo \"Downloading Qemu...\";" +
-                " curl -o setup.tar.gz " + bootstrapfilelink + ";" +
+                " curl -o setup.tar.gz -L " + bootstrapfilelink + ";" +
                 " echo \"Installing Qemu...\";" +
                 " tar -xzvf setup.tar.gz -C /;" +
                 " rm setup.tar.gz;" +

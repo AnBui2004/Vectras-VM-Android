@@ -21,6 +21,7 @@ public class AppConfig {
     // App Config
     public static String vectrasVersion = "2.9.1";
     public static String vectrasWebsite = "https://raw.githubusercontent.com/AnBui2004/Vectras-VM-Android/refs/heads/master/web/";
+    public static String bootstrapfileslink = vectrasWebsite + "/data/setupfiles.json";
     public static String vectrasHelp = vectrasWebsite + "how.html";
     public static String community = vectrasWebsite + "community.html";
     public static String vectrasRaw = vectrasWebsite + "data/";
@@ -68,6 +69,5 @@ public class AppConfig {
     public static String sharedFolder = maindirpath + "SharedFolder/";
     public static String downloadsFolder = maindirpath + "Downloads/";
     public static String romsdatajson = Environment.getExternalStorageDirectory().toString() + "/Documents/VectrasVM/roms-data.json";
-    public static String abi = Build.SUPPORTED_ABIS[0];
 
 }

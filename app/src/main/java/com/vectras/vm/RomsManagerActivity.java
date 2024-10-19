@@ -189,8 +189,8 @@ public class RomsManagerActivity extends AppCompatActivity {
         VectrasApp.prepareDataForAppConfig(activity);
         SharedPreferences prefs = getSharedPreferences(CREDENTIAL_SHARED_PREF, Context.MODE_PRIVATE);
         boolean isAccessed = prefs.getBoolean("isFirstLaunch", false);
-        if (!isAccessed && !checkConnection(activity))
-            UIUtils.UIAlert(activity, "for first time you need internet connection to load app data!", "No internet connection!");
+        //if (!isAccessed && !checkConnection(activity))
+            //UIUtils.UIAlert(activity, "for first time you need internet connection to load app data!", "No internet connection!");
         setContentView(R.layout.activity_roms_manager);
         linearload = findViewById(R.id.linearload);
         linearnothinghere = findViewById(R.id.linearnothinghere);
