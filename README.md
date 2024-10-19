@@ -59,3 +59,6 @@ This is not the official Vectras VM repository, this repository was created to s
 - New Gilroy font.
 - Added Arabic language support for some features.
 - Support creating virtual machines with Create command (https://play.google.com/store/apps/details?id=com.anbui.cqcm.app).
+- ROM Store is back.
+- Improved interface for ROM Store.
+- Vectras VM will now connect to this GitHub repository for online operations.
