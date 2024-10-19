@@ -561,7 +561,7 @@
     <string name="allow">Allow</string>
     <string name="cannot_create_VM_at_this_time">Cannot create VM at this time.</string>
     <string name="no_data">No data.</string>
-    <string name="roms_store">Roms store</string>
+    <string name="roms_store">Rom store</string>
     <string name="available">Available</string>
     <string name="unavailable">Unavailable</string>
     <string name="installed">Installed</string>
