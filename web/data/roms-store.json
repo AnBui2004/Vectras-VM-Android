@@ -9,5 +9,16 @@
         "rom_arch":"X86_64",
         "rom_kernel":"windows",
         "rom_extra":"-cpu n270 -smp 1 -m 2M -vga cirrus -device sb16"
+    },
+        {
+        "rom_name":"Windows 1.01",
+        "rom_icon":"https://upload.wikimedia.org/wikipedia/commons/8/80/Windows_1.01_booting.png",
+        "rom_url":"https://firebasestorage.googleapis.com/v0/b/anbui-71c6e.appspot.com/o/Windows%201.0.ima?alt=media&token=9f10aa43-71f4-418d-b2b8-45cd122cb253",
+        "rom_path":"Windows 1.0.ima",
+        "rom_avail":true,
+        "rom_size":"2MB",
+        "rom_arch":"X86_64",
+        "rom_kernel":"windows",
+        "rom_extra":"-cpu n270 -smp 1 -m 2M -vga cirrus -device sb16"
     }
 ]
