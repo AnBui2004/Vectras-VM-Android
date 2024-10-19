@@ -1,11 +1,11 @@
 [
     {
-        "rom_name":"Windows 10",
-        "rom_icon":"https://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/MSFT-windows-10-window-logo-RW19Kuy?scl=1",
-        "rom_url":"https://anbui.ovh",
-        "rom_path":"a.qcow2",
+        "rom_name":"a.com",
+        "rom_icon":"b.com",
+        "rom_url":"c.com",
+        "rom_path":"d.com",
         "rom_avail":true,
-        "rom_size":"2GB",
+        "rom_size":"e.com",
         "rom_arch":"X86_64",
         "rom_kernel":"windows",
         "rom_extra":"g.com"

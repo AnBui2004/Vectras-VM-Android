@@ -88,6 +88,7 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.zip.ZipEntry;
@@ -286,11 +287,12 @@ public class RomsManagerActivity extends AppCompatActivity {
                 linearload.setVisibility(View.VISIBLE);
                 linearnothinghere.setVisibility(View.GONE);
                 String fileName = "roms-" + MainSettingsManager.getArch(activity) + ".json";
-                net.startRequestNetwork(RequestNetworkController.GET,AppConfig.vectrasRaw + fileName,"anbui",_net_request_listener);
+                net.startRequestNetwork(RequestNetworkController.GET,AppConfig.vectrasRaw + "roms-store.json","anbui",_net_request_listener);
             }
         });
 
         net.startRequestNetwork(RequestNetworkController.GET,AppConfig.vectrasRaw + "roms-store.json","anbui",_net_request_listener);
+        Toast.makeText(getApplicationContext(), AppConfig.vectrasRaw + "roms-store.json", Toast.LENGTH_LONG).show();
     }
 
     private void loadData() {
@@ -501,80 +503,18 @@ public class RomsManagerActivity extends AppCompatActivity {
         if (requestCode == 0 && resultCode == RESULT_OK) {
             Uri content_describer = data.getData();
             File selectedFilePath = new File(getPath(content_describer));
-            if (selectedFilePath.getName().equals(selectedPath.replace(".IMG", ".vbi"))) {
-
-                try {
-                    loadingPb.setVisibility(View.VISIBLE);
-                    goBtn.setEnabled(false);
-                    mRVRoms.setVisibility(View.GONE);
-                    Thread t = new Thread() {
-                        public void run() {
-                            FileInputStream zipFile = null;
-                            try {
-                                zipFile = (FileInputStream) getContentResolver().openInputStream(content_describer);
-                            } catch (FileNotFoundException e) {
-                                throw new RuntimeException(e);
-                            }
-                            File targetDirectory = new File(AppConfig.maindirpath);
-                            ZipInputStream zis = null;
-                            zis = new ZipInputStream(
-                                    new BufferedInputStream(zipFile));
-                            try {
-                                ZipEntry ze;
-                                int count;
-                                byte[] buffer = new byte[8192];
-                                while ((ze = zis.getNextEntry()) != null) {
-                                    File file = new File(targetDirectory, ze.getName());
-                                    File dir = ze.isDirectory() ? file : file.getParentFile();
-                                    if (!dir.isDirectory() && !dir.mkdirs())
-                                        throw new FileNotFoundException("Failed to ensure directory: " +
-                                                dir.getAbsolutePath());
-                                    if (ze.isDirectory())
-                                        continue;
-                                    try (FileOutputStream fout = new FileOutputStream(file)) {
-                                        while ((count = zis.read(buffer)) != -1)
-                                            fout.write(buffer, 0, count);
-                                    }
-                        /* if time should be restored as well
-                        long time = ze.getTime();
-                        if (time > 0)
-                            file.setLastModified(time);
-                        */
-                                }
-                            } catch (IOException e) {
-                                UIUtils.toastLong(activity, e.toString());
-                                File file = new File(targetDirectory, selectedPath.replace(".vbi", ".IMG"));
-                                file.delete();
-                                throw new RuntimeException(e);
-                            } finally {
-                                Runnable runnable = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        loadingPb.setVisibility(View.GONE);
-                                        goBtn.setEnabled(true);
-                                        mRVRoms.setVisibility(View.VISIBLE);
-                                        onFirstStartup();
-                                    }
-                                };
-                                activity.runOnUiThread(runnable);
-                                try {
-                                    zis.close();
-                                } catch (IOException e) {
-                                    UIUtils.toastLong(activity, e.toString());
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        }
-                    };
-                    t.start();
-                } catch (Exception e) {
-                    loadingPb.setVisibility(View.GONE);
-                    goBtn.setEnabled(true);
-                    mRVRoms.setVisibility(View.VISIBLE);
-                    UIUtils.toastLong(activity, e.toString());
-                    throw new RuntimeException(e);
+            if (selectedFilePath.getName().equals(selectedPath)) {
+                Intent intent = new Intent();
+                intent.setClass(getApplicationContext(), CustomRomActivity.class);
+                intent.putExtra("addromnow", "");
+                intent.putExtra("romname", selectedName);
+                if (selectedExtra.contains(selectedFilePath.getName())) {
+                    intent.putExtra("rompath", "");
+                } else {
+                    intent.putExtra("rompath", selectedFilePath);
                 }
-
+                intent.putExtra("romextra", selectedExtra);
+                startActivity(intent);
             } else {
                 UIUtils.UIAlert(activity, "please select " + selectedPath.replace(".IMG", ".vbi") + " file to continue.", "File not supported");
             }
