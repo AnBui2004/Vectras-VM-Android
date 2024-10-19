@@ -493,6 +493,17 @@ public class VectrasApp extends Application {
 		}
 	}
 
+	public static boolean checkJSONMapIsNormalFromString(String _content) {
+		HashMap<String, Object> mmap = new HashMap<>();
+		try {
+			mmap.clear();
+			mmap= new Gson().fromJson(_content, new TypeToken<HashMap<String, Object>>(){}.getType());
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	public static boolean isFileExists(String filePath) {
 		File file = new File(filePath);
 		return file.exists();

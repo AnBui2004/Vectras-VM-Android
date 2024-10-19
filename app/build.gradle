@@ -11,7 +11,7 @@ android {
         minSdk minApi
         targetSdk targetApi
         versionCode 17
-        versionName "v2.9.1r"
+        versionName "v2.9.1s"
 	    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -70,6 +70,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     implementation 'com.google.guava:guava:33.1.0-jre'
     implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
     // Do not increment version higher than 1.0.0-alpha09 since it will break ViewUtils and needs to be looked into
     // noinspection GradleDependency

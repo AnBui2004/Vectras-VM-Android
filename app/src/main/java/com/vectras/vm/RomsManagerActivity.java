@@ -21,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.Html;
@@ -29,8 +30,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.URLUtil;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -83,6 +86,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -96,6 +100,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class RomsManagerActivity extends AppCompatActivity {
+
+    private RequestNetwork net;
+    private RequestNetwork.RequestListener _net_request_listener;
+    private String contentJSON = "";
+
     public static RomsManagerActivity activity;
 
     public static MaterialButton goBtn;
@@ -121,6 +130,10 @@ public class RomsManagerActivity extends AppCompatActivity {
     public MaterialButton otherToggle;
 
     public ProgressBar loadingPb;
+
+    private LinearLayout linearload;
+    private LinearLayout linearnothinghere;
+    private Button buttontryagain;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -171,12 +184,17 @@ public class RomsManagerActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         activity = this;
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         VectrasApp.prepareDataForAppConfig(activity);
         SharedPreferences prefs = getSharedPreferences(CREDENTIAL_SHARED_PREF, Context.MODE_PRIVATE);
         boolean isAccessed = prefs.getBoolean("isFirstLaunch", false);
         if (!isAccessed && !checkConnection(activity))
             UIUtils.UIAlert(activity, "for first time you need internet connection to load app data!", "No internet connection!");
         setContentView(R.layout.activity_roms_manager);
+        linearload = findViewById(R.id.linearload);
+        linearnothinghere = findViewById(R.id.linearnothinghere);
+        buttontryagain = findViewById(R.id.buttontryagain);
         loadingPb = findViewById(R.id.loadingPb);
         filterToggle = findViewById(R.id.filterToggle);
         windowsToggle = findViewById(R.id.windowsToggle);
@@ -224,8 +242,6 @@ public class RomsManagerActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("Roms Manager " + MainSettingsManager.getArch(activity));
 
-        loadData();
-
         goBtn = (MaterialButton) findViewById(R.id.goBtn);
 
         goBtn.setOnClickListener(new View.OnClickListener() {
@@ -245,14 +261,44 @@ public class RomsManagerActivity extends AppCompatActivity {
                 startActivity(new Intent(activity, CustomRomActivity.class));
             }
         });
+
+        net = new RequestNetwork(this);
+        _net_request_listener = new RequestNetwork.RequestListener() {
+            @Override
+            public void onResponse(String tag, String response, HashMap<String, Object> responseHeaders) {
+                contentJSON = response;
+                if (contentJSON.length() == 0)
+                        contentJSON ="[]";
+                loadData();
+                linearload.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onErrorResponse(String tag, String message) {
+                linearload.setVisibility(View.GONE);
+                linearnothinghere.setVisibility(View.VISIBLE);
+            }
+        };
+
+        buttontryagain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                linearload.setVisibility(View.VISIBLE);
+                linearnothinghere.setVisibility(View.GONE);
+                String fileName = "roms-" + MainSettingsManager.getArch(activity) + ".json";
+                net.startRequestNetwork(RequestNetworkController.GET,AppConfig.vectrasRaw + fileName,"anbui",_net_request_listener);
+            }
+        });
+        
+        String fileName = "roms-" + MainSettingsManager.getArch(activity) + ".json";
+        net.startRequestNetwork(RequestNetworkController.GET,AppConfig.vectrasRaw + fileName,"anbui",_net_request_listener);
     }
 
     private void loadData() {
         data = new ArrayList<>();
 
         try {
-            String fileName = "roms-" + MainSettingsManager.getArch(activity) + ".json";
-            JSONArray jArray = new JSONArray(FileUtils.readFromFile(activity, new File(getExternalFilesDir("data") + "/" + fileName)));
+            JSONArray jArray = new JSONArray(contentJSON);
 
             // Extract data from json and store into ArrayList as class objects
             for (int i = 0; i < jArray.length(); i++) {
@@ -605,6 +651,35 @@ public class RomsManagerActivity extends AppCompatActivity {
             startActivity(new Intent(this, SetArchActivity.class));
         }
         activity = this;
+    }
+
+    private String getDataFromUrl(String _url) {
+        Log.d("RomsManagerActivity", _url);
+        try {
+            StringBuilder sb = new StringBuilder();
+            URL url = new URL(_url);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(30000);
+            conn.setReadTimeout(30000);
+            conn.setRequestMethod("GET");
+            conn.connect();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String response;
+
+            while ((response = br.readLine()) != null) {
+                sb.append(response);
+            }
+            return sb.toString();
+        } catch (ExceptionInInitializerError ex) {
+            ex.printStackTrace();
+            return "[]";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "[]";
+
+        }
     }
 
 }

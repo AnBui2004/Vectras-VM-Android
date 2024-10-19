@@ -23,7 +23,60 @@
             android:indeterminate="true"
             android:visibility="gone" />
     </com.google.android.material.appbar.AppBarLayout>
-
+    <LinearLayout
+        android:id="@+id/linearload"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:indeterminate="false"
+            style="?android:progressBarStyle" />
+        <TextView
+            android:id="@+id/textviewsettingup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:gravity="center"
+            android:text="Just a moment..." />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearnothinghere"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/cloud_off_96px" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/oops"
+            android:layout_margin="8dp"
+            android:textSize="18sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Unable to connect to server"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttontryagain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Try again" />
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

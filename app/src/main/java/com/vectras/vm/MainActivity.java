@@ -539,8 +539,10 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                     alertDialog.show();
-
-
+                } else if (id == R.id.navigation_item_get_rom) {
+                    Intent intent = new Intent();
+                    intent.setClass(getApplicationContext(), RomsManagerActivity.class);
+                    startActivity(intent);
                 }
                 return false;
             }

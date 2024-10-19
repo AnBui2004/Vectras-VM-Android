@@ -20,6 +20,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.Settings;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -34,6 +35,10 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.vectras.qemu.MainSettingsManager;
+import com.vectras.vm.utils.FileUtils;
 import com.vectras.vterm.view.ZoomableTextView;
 
 import java.io.BufferedReader;
@@ -49,6 +54,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 
 public class SetupQemuActivity extends AppCompatActivity implements View.OnClickListener {
     Activity activity;
@@ -58,6 +64,9 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
     ProgressBar progressBar;
     TextView title;
 
+    LinearLayout linearload;
+    LinearLayout linearcannotconnecttoserver;
+    Button buttontryconnectagain;
     LinearLayout linearsimplesetupui;
     LinearLayout linearstartsetup;
     MaterialButton buttonautosetup;
@@ -73,12 +82,21 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
     private boolean settingup = false;
     private boolean libprooterror = false;
 
+    private RequestNetwork net;
+    private RequestNetwork.RequestListener _net_request_listener;
+    private String contentJSON = "";
+    private HashMap<String, Object> mmap = new HashMap<>();
+    private String bootstrapfilelink = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_qemu);
         activity = this;
 
+        linearload = findViewById(R.id.linearload);
+        linearcannotconnecttoserver = findViewById(R.id.linearcannotconnecttoserver);
+        buttontryconnectagain = findViewById(R.id.buttontryconnectagain);
         linearsimplesetupui = findViewById(R.id.linearsimplesetupui);
         linearstartsetup = findViewById(R.id.linearstartsetup);
         buttonautosetup = findViewById(R.id.buttonautosetup);
@@ -90,6 +108,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         buttonsetupshowlog = findViewById(R.id.buttonsetupshowlog);
         textviewshowadvancedsetup = findViewById(R.id.textviewshowadvancedsetup);
 
+        buttontryconnectagain.setOnClickListener(this);
         buttonautosetup.setOnClickListener(this);
         buttonmanualsetup.setOnClickListener(this);
         buttonsetuptryagain.setOnClickListener(this);
@@ -106,6 +125,32 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
 
         tarPath = getExternalFilesDir("data") + "/data.tar.gz";
         VectrasApp.prepareDataForAppConfig(activity);
+
+        net = new RequestNetwork(this);
+        _net_request_listener = new RequestNetwork.RequestListener() {
+            @Override
+            public void onResponse(String tag, String response, HashMap<String, Object> responseHeaders) {
+                linearload.setVisibility(View.GONE);
+                contentJSON = response;
+                if (VectrasApp.checkJSONMapIsNormalFromString(contentJSON)) {
+                    mmap.clear();
+                    mmap= new Gson().fromJson(contentJSON, new TypeToken<HashMap<String, Object>>(){}.getType());
+                    if(mmap.containsKey("arm64") && mmap.containsKey("x86_64")) {
+                        if (Build.SUPPORTED_ABIS[0].contains("arm64")) {
+                            bootstrapfilelink = mmap.get("arm64").toString();
+                        } else {
+                            bootstrapfilelink = mmap.get("x86_64").toString();
+                        }
+                        linearcannotconnecttoserver.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onErrorResponse(String tag, String message) {
+                linearload.setVisibility(View.GONE);
+            }
+        };
     }
 
     @Override
@@ -150,6 +195,8 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
             if (linearstartsetup.getVisibility() == View.VISIBLE) {
                 alertDialog.show();
             }
+        } else if (id == R.id.buttontryconnectagain) {
+            linearload.setVisibility(View.VISIBLE);
         }
     }
 
@@ -496,7 +543,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 " libusbredirparser usbredir-dev libiscsi-dev  sdl2 sdl2-dev libepoxy-dev virglrenderer-dev rdma-core" +
                 " libusb ncurses-libs curl libnfs sdl2 gtk+3.0 fuse libpulse libseccomp jack pipewire liburing;" +
                 " echo \"Downloading Qemu...\";" +
-                " curl -o setup.tar.gz " + AppConfig.getSetupFiles() + ";" +
+                " curl -o setup.tar.gz " + bootstrapfilelink + ";" +
                 " echo \"Installing Qemu...\";" +
                 " tar -xzvf setup.tar.gz -C /;" +
                 " rm setup.tar.gz;" +
