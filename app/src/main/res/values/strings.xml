@@ -68,9 +68,9 @@
     <string name="memory_usage">Memory Usage</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="linux" translatable="false">linux</string>
-    <string name="windows" translatable="false">windows</string>
-    <string name="apple" translatable="false">apple</string>
+    <string name="linux" translatable="false">Linux</string>
+    <string name="windows" translatable="false">Windows</string>
+    <string name="apple" translatable="false">Apple</string>
     <string name="external_vnc" translatable="false">EXTERNAL VNC</string>
     <string name="hosted_successfully" translatable="false">HOSTED SUCCESSFULLY!</string>
     <string name="ip" translatable="false">IP: 127.0.0.1:9</string>
@@ -108,8 +108,8 @@
     <string name="export">EXPORT</string>
     <string name="email_verification_sent">Email Verification Sent.</string>
     <string name="sign_out">Sign out</string>
-    <string name="android" translatable="false">android</string>
-    <string name="other" translatable="false">other</string>
+    <string name="android" translatable="false">Android</string>
+    <string name="other" translatable="false">Other</string>
     <string name="guest">Guest</string>
     <string name="hdd1_qcow_img_etc">HDD1 (qcow, img, etc…)</string>
     <string name="default_configuration">-vga std -net nic,model=ne2k_pci -net user</string>

@@ -122,6 +122,7 @@ public class RomsManagerActivity extends AppCompatActivity {
     public static String selectedLink = null;
     public static String selectedName = null;
     public static String selectedIcon = null;
+    public static String selecedMachinetype = null;
 
     public MaterialButtonToggleGroup filterToggle;
     public MaterialButton windowsToggle;
@@ -241,7 +242,7 @@ public class RomsManagerActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle("Roms Manager " + MainSettingsManager.getArch(activity));
+        setTitle("Roms store");
 
         goBtn = (MaterialButton) findViewById(R.id.goBtn);
 
@@ -290,12 +291,10 @@ public class RomsManagerActivity extends AppCompatActivity {
         });
 
         net.startRequestNetwork(RequestNetworkController.GET,AppConfig.vectrasRaw + "roms-store.json","anbui",_net_request_listener);
-        Toast.makeText(getApplicationContext(), AppConfig.vectrasRaw + "roms-store.json", Toast.LENGTH_LONG).show();
     }
 
     private void loadData() {
         data = new ArrayList<>();
-        Toast.makeText(getApplicationContext(), contentJSON, Toast.LENGTH_LONG).show();
         try {
             JSONArray jArray = new JSONArray(contentJSON);
 
@@ -450,9 +449,9 @@ public class RomsManagerActivity extends AppCompatActivity {
             } else {
                 AlertDialog ad;
                 ad = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-                ad.setTitle(selectedPath.replace(".IMG", ".vbi") + " Needs to import");
-                ad.setMessage("press import button and select " + selectedPath.replace(".IMG", ".vbi") + " file.");
-                ad.setButton(Dialog.BUTTON_POSITIVE, "IMPORT", (dialog, which) -> {
+                ad.setTitle(selectedPath);
+                ad.setMessage("Have you downloaded this file yet? If you have, you will need to select it to continue. If not, you can get it.");
+                ad.setButton(Dialog.BUTTON_POSITIVE, "Select that file now", (dialog, which) -> {
                     Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
                     intent.addCategory(Intent.CATEGORY_OPENABLE);
                     intent.setType("*/*");
@@ -465,7 +464,7 @@ public class RomsManagerActivity extends AppCompatActivity {
 
                     startActivityForResult(intent, 0);
                 });
-                ad.setButton(Dialog.BUTTON_NEGATIVE, "DOWNLOAD " + selectedPath.replace(".IMG", ".vbi"), new DialogInterface.OnClickListener() {
+                ad.setButton(Dialog.BUTTON_NEGATIVE, "Get " + selectedPath.replace(".IMG", ".vbi"), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         if (selectedLink != null) {
                             String gt = selectedLink;
@@ -514,7 +513,7 @@ public class RomsManagerActivity extends AppCompatActivity {
                 intent.putExtra("romextra", selectedExtra);
                 startActivity(intent);
             } else {
-                UIUtils.UIAlert(activity, "please select " + selectedPath.replace(".IMG", ".vbi") + " file to continue.", "File not supported");
+                UIUtils.UIAlert(activity, "Please select " + selectedPath.replace(".IMG", ".vbi") + " file to continue.", "File not supported");
             }
 
         }
