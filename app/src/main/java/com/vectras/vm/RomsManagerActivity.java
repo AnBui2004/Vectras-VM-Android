@@ -289,9 +289,8 @@ public class RomsManagerActivity extends AppCompatActivity {
                 net.startRequestNetwork(RequestNetworkController.GET,AppConfig.vectrasRaw + fileName,"anbui",_net_request_listener);
             }
         });
-        
-        String fileName = "roms-" + MainSettingsManager.getArch(activity) + ".json";
-        net.startRequestNetwork(RequestNetworkController.GET,AppConfig.vectrasRaw + fileName,"anbui",_net_request_listener);
+
+        net.startRequestNetwork(RequestNetworkController.GET,AppConfig.vectrasRaw + "roms-store.json","anbui",_net_request_listener);
     }
 
     private void loadData() {
