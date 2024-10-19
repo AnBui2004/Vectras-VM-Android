@@ -285,8 +285,6 @@ public class RomsManagerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 linearload.setVisibility(View.VISIBLE);
-                linearnothinghere.setVisibility(View.GONE);
-                String fileName = "roms-" + MainSettingsManager.getArch(activity) + ".json";
                 net.startRequestNetwork(RequestNetworkController.GET,AppConfig.vectrasRaw + "roms-store.json","anbui",_net_request_listener);
             }
         });
@@ -297,7 +295,7 @@ public class RomsManagerActivity extends AppCompatActivity {
 
     private void loadData() {
         data = new ArrayList<>();
-
+        Toast.makeText(getApplicationContext(), contentJSON, Toast.LENGTH_LONG).show();
         try {
             JSONArray jArray = new JSONArray(contentJSON);
 
@@ -511,7 +509,7 @@ public class RomsManagerActivity extends AppCompatActivity {
                 if (selectedExtra.contains(selectedFilePath.getName())) {
                     intent.putExtra("rompath", "");
                 } else {
-                    intent.putExtra("rompath", selectedFilePath);
+                    intent.putExtra("rompath", selectedFilePath.getPath());
                 }
                 intent.putExtra("romextra", selectedExtra);
                 startActivity(intent);

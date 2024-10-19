@@ -654,9 +654,10 @@ public class VectrasApp extends Application {
 
 	public static void prepareDataForAppConfig(Activity _activity) {
 		AppConfig.vectrasVersion = "2.9.1";
-		AppConfig.vectrasWebsite = "https://nguyenbaoanbui-f8a71.web.app/vectrasvm/";
+		AppConfig.vectrasWebsite = "https://raw.githubusercontent.com/AnBui2004/Vectras-VM-Android/refs/heads/master/web/";
+		AppConfig.bootstrapfileslink = AppConfig.vectrasWebsite + "/data/setupfiles.json";
 		AppConfig.vectrasHelp = AppConfig.vectrasWebsite + "how.html";
-		AppConfig.community = "https://nguyenbaoanbui-86deb.web.app/community/";
+		AppConfig.community = AppConfig.vectrasWebsite + "community.html";
 		AppConfig.vectrasRaw = AppConfig.vectrasWebsite + "data/";
 		AppConfig.vectrasLicense = AppConfig.vectrasRaw + "LICENSE.md";
 		AppConfig.vectrasPrivacy = AppConfig.vectrasRaw + "PRIVACYANDPOLICY.md";
