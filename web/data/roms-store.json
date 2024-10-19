@@ -19,6 +19,6 @@
         "rom_size":"2MB",
         "rom_arch":"X86_64",
         "rom_kernel":"windows",
-        "rom_extra":"-cpu n270 -smp 1 -m 2M -vga cirrus -device sb16"
+        "rom_extra":"-cpu n270 -smp 1 -m 16M -vga cirrus -device sb16 -fda Windows 1.0.ima"
     }
 ]
