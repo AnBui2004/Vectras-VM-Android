@@ -1,7 +1,7 @@
 [
     {
         "rom_name":"MS-DOS",
-        "rom_icon":"https://upload.wikimedia.org/wikipedia/commons/e/ea/Msdos-icon.svg",
+        "rom_icon":"https://upload.wikimedia.org/wikipedia/commons/3/3d/Msdos-icon.png",
         "rom_url":"https://www.mediafire.com/file/8iyxeyyh2yot304/MSDOS.img/file",
         "rom_path":"MSDOS.img",
         "rom_avail":true,

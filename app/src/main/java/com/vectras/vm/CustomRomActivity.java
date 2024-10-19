@@ -461,6 +461,28 @@ public class CustomRomActivity extends AppCompatActivity {
                 drive.setText(getIntent().getStringExtra("rompath"));
                 qemu.setText(getIntent().getStringExtra("romextra"));
                 icon.setText(getIntent().getStringExtra("romicon"));
+                Uri content_describer = Uri.parse(getIntent().getStringExtra("romicon"));
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        FileInputStream File = null;
+                        Bitmap selectedImage = null;
+                        try {
+                            File = (FileInputStream) getContentResolver().openInputStream(content_describer);
+                            selectedImage = BitmapFactory.decodeStream(File);
+                            Bitmap finalSelectedImage = selectedImage;
+                            Runnable runnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    ivIcon.setImageBitmap(finalSelectedImage);
+                                }
+                            };
+                            activity.runOnUiThread(runnable);
+                        } catch (FileNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }).start();
             } else {
                 title.setText("New VM");
                 String defQemuParams;
