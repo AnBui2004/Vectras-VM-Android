@@ -55,6 +55,17 @@
         "rom_extra":""
     },
     {
+        "rom_name":"Arch Linux",
+        "rom_icon":"https://cdn0.iconfinder.com/data/icons/flat-round-system/512/archlinux-512.png",
+        "rom_url":"https://github.com/Stiven2016/vecras-roms/releases/download/roms/arch.for.vectras.vm.x86.cvbi",
+        "rom_path":"arch.for.vectras.vm.x86.cvbi",
+        "rom_avail":true,
+        "rom_size":"500MB",
+        "rom_arch":"X86_64",
+        "rom_kernel":"linux",
+        "rom_extra":""
+    },
+    {
         "rom_name":"Alpine Linux",
         "rom_icon":"https://avatars.githubusercontent.com/u/7600810?s=200&v=4",
         "rom_url":"https://www.mediafire.com/file/v79ivyqdogj7a8l/sda.qcow2/file",
