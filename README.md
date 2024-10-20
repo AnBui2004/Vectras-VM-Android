@@ -66,3 +66,7 @@ This is not the official Vectras VM repository, this repository was created to s
 - Allows you to choose to keep ROM files and CD ROMs when deleting a virtual machine.
 - Automatically exits ROM Store when you're done creating a virtual machine.
 - Added a dialog warning of a fatal error that occurred in Setup.
+- Fixed cvbi file import.
+- ROM Store now supports cvbi.
+- Automatically use default Qemu params if ROM Store does not provide Qemu params information.
+- New folder location to store ROMs.

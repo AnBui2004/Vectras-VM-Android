@@ -279,6 +279,7 @@ public class AdapterMainRoms extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                     UIUtils.toastLong(MainActivity.activity, e.toString());
                                 } finally {
                                 }
+                                VectrasApp.deleteDirectory(AppConfig.maindirpath + "roms/" + current.itemName);
                             }
                         });
                         alertDialog.show();

@@ -471,7 +471,7 @@ public class CustomRomActivity extends AppCompatActivity {
                         ivIcon.setImageBitmap(myBitmap);
                     }
                 }
-                if (getIntent().getStringExtra("rompath").endsWith(".cvbi")) {
+                if (getIntent().getStringExtra("romfilename").endsWith(".cvbi")) {
                     importCVBI(getIntent().getStringExtra("rompath"), getIntent().getStringExtra("romfilename"));
                 } else {
                     drive.setText(getIntent().getStringExtra("rompath"));
