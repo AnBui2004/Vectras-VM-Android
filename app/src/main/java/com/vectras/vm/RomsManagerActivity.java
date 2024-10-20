@@ -522,6 +522,7 @@ public class RomsManagerActivity extends AppCompatActivity {
                 intent.setClass(getApplicationContext(), CustomRomActivity.class);
                 intent.putExtra("addromnow", "");
                 intent.putExtra("romname", selectedName);
+                intent.putExtra("romfilename", selectedPath);
                 if (selectedExtra.contains(selectedFilePath.getName())) {
                     intent.putExtra("rompath", "");
                     intent.putExtra("romextra", selectedExtra.replace(selectedFilePath.getName(),"\"" + selectedFilePath.getPath() + "\""));

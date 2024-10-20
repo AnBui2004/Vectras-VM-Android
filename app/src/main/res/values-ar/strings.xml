@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">فيكترا</string>
-    <string name="app_version">v2.9.1t</string>
+    <string name="app_version">v2.9.1u</string>
     <string name="qemu_version">مستقر</string>
     <string name="str_home">الرئيسية</string>
     <string name="str_logger">سجل</string>
@@ -568,4 +568,5 @@
     <string name="do_you_want_to_keep_this_ROM_file_and_CD_ROM_file">هل تريد الاحتفاظ بهذا الملف ROM وملف CD ROM؟</string>
     <string name="keep">يحفظ</string>
     <string name="remove_all">إزالة الكل</string>
+    <string name="format_not_supported_please_select_file_with_format_cvbi">التنسيق غير مدعوم، يرجى تحديد ملف بتنسيق cvbi.</string>
 </resources>

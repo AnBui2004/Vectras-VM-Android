@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vectras VM</string>
-    <string name="app_version" translatable="false">v2.9.1t</string>
+    <string name="app_version" translatable="false">v2.9.1u</string>
     <string name="qemu_version" translatable="false">Stable</string>
     <string name="str_home">Home</string>
     <string name="str_logger">Logger</string>
@@ -581,4 +581,5 @@
     <string name="do_you_want_to_keep_this_ROM_file_and_CD_ROM_file">Do you want to keep this ROM file and CD ROM file?</string>
     <string name="keep">Keep</string>
     <string name="remove_all">Remove all</string>
+    <string name="format_not_supported_please_select_file_with_format_cvbi">Format not supported, please select file with format cvbi.</string>
 </resources>

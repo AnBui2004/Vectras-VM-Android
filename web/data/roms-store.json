@@ -44,6 +44,17 @@
         "rom_extra":"-cpu n270 -smp 1 -m 16M -vga cirrus -device sb16"
     },
     {
+        "rom_name":"Windows CE 5.0",
+        "rom_icon":"https://upload.wikimedia.org/wikipedia/en/7/72/Wince50.PNG",
+        "rom_url":"https://github.com/Stiven2016/vecras-roms/releases/download/roms/windows.ce.5.0.cvbi",
+        "rom_path":"windows.ce.5.0.cvbi",
+        "rom_avail":true,
+        "rom_size":"9MB",
+        "rom_arch":"X86_64",
+        "rom_kernel":"windows",
+        "rom_extra":""
+    },
+    {
         "rom_name":"Alpine Linux",
         "rom_icon":"https://avatars.githubusercontent.com/u/7600810?s=200&v=4",
         "rom_url":"https://www.mediafire.com/file/v79ivyqdogj7a8l/sda.qcow2/file",
