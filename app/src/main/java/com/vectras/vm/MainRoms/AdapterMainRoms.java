@@ -235,40 +235,53 @@ public class AdapterMainRoms extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     public void onClick(DialogInterface dialog, int which) {
                         File file = new File(current.itemPath);
                         File file2 = new File(current.itemDrv1);
-
                         Pattern pattern = Pattern.compile("-drive index=1,media=cdrom,file='([^']*)'");
                         Matcher matcher = pattern.matcher(current.itemExtra);
 
-                        if (matcher.find()) {
-                            // We found the -drive pattern and its file path.
-                            File cdrom = new File(matcher.group(1));
+                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.activity, R.style.MainDialogTheme).create();
+                        alertDialog.setTitle("Keep files?");
+                        alertDialog.setMessage("Do you want to keep this ROM file and CD ROM file?");
+                        alertDialog.setCancelable(false);
+                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Keep", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
 
-                            try {
-                                boolean deleted = cdrom.delete();
-                                if(!deleted) {
-                                    // The file wasn't successfully deleted.
-                                    // Handle this case, maybe the file didn't exist or was read only.
-                                }
-                            } catch (Exception e) {
-                                UIUtils.toastLong(MainActivity.activity, e.toString());
                             }
-                        } else {
-                            // The pattern wasn't found in the current item's extra text.
-                            // Handle the case where the -drive pattern doesn't match.
-                        }
+                        });
+                        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Remove all", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (matcher.find()) {
+                                    // We found the -drive pattern and its file path.
+                                    File cdrom = new File(matcher.group(1));
 
-                        try {
-                            file.delete();
-                        } catch (Exception e) {
-                            UIUtils.toastLong(MainActivity.activity, e.toString());
-                        } finally {
-                        }
-                        try {
-                            file2.delete();
-                        } catch (Exception e) {
-                            UIUtils.toastLong(MainActivity.activity, e.toString());
-                        } finally {
-                        }
+                                    try {
+                                        boolean deleted = cdrom.delete();
+                                        if(!deleted) {
+                                            // The file wasn't successfully deleted.
+                                            // Handle this case, maybe the file didn't exist or was read only.
+                                        }
+                                    } catch (Exception e) {
+                                        UIUtils.toastLong(MainActivity.activity, e.toString());
+                                    }
+                                } else {
+                                    // The pattern wasn't found in the current item's extra text.
+                                    // Handle the case where the -drive pattern doesn't match.
+                                }
+
+                                try {
+                                    file.delete();
+                                } catch (Exception e) {
+                                    UIUtils.toastLong(MainActivity.activity, e.toString());
+                                } finally {
+                                }
+                                try {
+                                    file2.delete();
+                                } catch (Exception e) {
+                                    UIUtils.toastLong(MainActivity.activity, e.toString());
+                                } finally {
+                                }
+                            }
+                        });
+                        alertDialog.show();
 
                         MainActivity.mMainAdapter = new AdapterMainRoms(MainActivity.activity, MainActivity.data);
                         MainActivity.data.remove(position);

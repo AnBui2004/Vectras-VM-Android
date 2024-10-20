@@ -993,6 +993,9 @@ public class CustomRomActivity extends AppCompatActivity {
                 }
                 VectrasStatus.logInfo("Welcome to Vectras ♡");
             }
+            if (getIntent().hasExtra("addromnow")) {
+                RomsManagerActivity.isFinishNow = true;
+            }
             finish();
             //activity.startActivity(new Intent(activity, SplashActivity.class));
         }

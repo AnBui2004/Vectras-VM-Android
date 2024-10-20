@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vectras VM</string>
-    <string name="app_version" translatable="false">v2.9.1s</string>
+    <string name="app_version" translatable="false">v2.9.1t</string>
     <string name="qemu_version" translatable="false">Stable</string>
     <string name="str_home">Home</string>
     <string name="str_logger">Logger</string>
@@ -242,7 +242,7 @@
 
     <string name="input">input</string>
     <string name="tiny_vterm">Tiny vterm</string>
-    <string name="try_again">TRY AGAIN</string>
+    <string name="try_again">Try again</string>
     <string name="logs">Logs</string>
     <string name="options">Options</string>
     <!--======================XServer XSDL STRINGS====================-->
@@ -568,9 +568,17 @@
     <string name="kill_all">Kill all</string>
     <string name="do_you_want_to_kill_all_qemu_processes">Do you want to kill all Qemu processes?</string>
     <string name="all_running_vms_will_be_forcibly_shut_down">All running VMs will be forcibly shut down.</string>
-    <string name="total_memory">Total: </string>
-    <string name="used_memory">Used: </string>
-    <string name="free_memory">Free: </string>
+    <string name="total_memory">Total:</string>
+    <string name="used_memory">Used:</string>
+    <string name="free_memory">Free:</string>
     <string name="used">used</string>
     <string name="there_is_nothing_here_because_there_is_no_vm_running">There is nothing here because there is no VM running.</string>
+    <string name="just_a_moment">Just a moment...</string>
+    <string name="unable_to_connect_to_server">Unable to connect to server.</string>
+    <string name="join_our_community">Join our community</string>
+    <string name="a_serious_problem_has_occurred">A serious problem has occurred! This problem is caused by the CPU or Android operating system on your device. You can join our community to learn more.</string>
+    <string name="keep_files_question_mark">Keep files?</string>
+    <string name="do_you_want_to_keep_this_ROM_file_and_CD_ROM_file">Do you want to keep this ROM file and CD ROM file?</string>
+    <string name="keep">Keep</string>
+    <string name="remove_all">Remove all</string>
 </resources>

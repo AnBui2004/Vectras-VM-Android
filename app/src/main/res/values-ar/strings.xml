@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">فيكترا</string>
-    <string name="app_version">v2.9.1s</string>
+    <string name="app_version">v2.9.1t</string>
     <string name="qemu_version">مستقر</string>
     <string name="str_home">الرئيسية</string>
     <string name="str_logger">سجل</string>
@@ -555,9 +555,17 @@
     <string name="kill_all">اقتل الجميع</string>
     <string name="do_you_want_to_kill_all_qemu_processes">هل تريد قتل كافة عمليات Qemu؟</string>
     <string name="all_running_vms_will_be_forcibly_shut_down">سيتم إيقاف تشغيل جميع أجهزة VM قيد التشغيل قسراً.</string>
-    <string name="total_memory">المجموع: </string>
-    <string name="used_memory">مستخدم: </string>
-    <string name="free_memory">الموضوع: </string>
+    <string name="total_memory">المجموع:</string>
+    <string name="used_memory">مستخدم:</string>
+    <string name="free_memory">الموضوع:</string>
     <string name="used">مستخدم</string>
     <string name="there_is_nothing_here_because_there_is_no_vm_running">لا يوجد شيء هنا لأنه لا يوجد جهاز VM قيد التشغيل.</string>
+    <string name="just_a_moment">لحظة واحدة...</string>
+    <string name="unable_to_connect_to_server">غير قادر على الاتصال بالخادم.</string>
+    <string name="join_our_community">انضم إلى مجتمعنا</string>
+    <string name="a_serious_problem_has_occurred">حدثت مشكلة خطيرة! هذه المشكلة ناجمة عن وحدة المعالجة المركزية أو نظام التشغيل Android على جهازك. يمكنك الانضمام إلى مجتمعنا لمعرفة المزيد.</string>
+    <string name="keep_files_question_mark">حفظ الملفات؟</string>
+    <string name="do_you_want_to_keep_this_ROM_file_and_CD_ROM_file">هل تريد الاحتفاظ بهذا الملف ROM وملف CD ROM؟</string>
+    <string name="keep">يحفظ</string>
+    <string name="remove_all">إزالة الكل</string>
 </resources>

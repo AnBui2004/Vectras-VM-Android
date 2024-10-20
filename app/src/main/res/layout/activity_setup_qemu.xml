@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:gravity="center"
-            android:text="Just a moment..." />
+            android:text="@string/just_a_moment" />
     </LinearLayout>
     <LinearLayout
         android:id="@+id/linearcannotconnecttoserver"
@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Unable to connect to server"
+            android:text="@string/unable_to_connect_to_server"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp" />
@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:gravity="center_horizontal|center_vertical"
-            android:text="Try again" />
+            android:text="@string/try_again" />
     </LinearLayout>
     <LinearLayout
         android:id="@+id/linearsimplesetupui"

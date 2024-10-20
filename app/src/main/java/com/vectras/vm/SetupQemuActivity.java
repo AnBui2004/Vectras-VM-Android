@@ -224,8 +224,12 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         } else if (textToAdd.contains("Installing packages...")) {
             title.setText("It won't take long...");
             textviewsettingup.setText("Completed 10%\nIt won't take long...");
+        } else if (textToAdd.contains("50/")) {
+            textviewsettingup.setText("Completed 20%\nIt won't take long...");
         } else if (textToAdd.contains("100/")) {
             textviewsettingup.setText("Completed 30%\nIt won't take long...");
+        } else if (textToAdd.contains("150/")) {
+            textviewsettingup.setText("Completed 40%\nIt won't take long...");
         } else if (textToAdd.contains("200/")) {
             textviewsettingup.setText("Completed 50%\nIt won't take long...");
         } else if (textToAdd.contains("Downloading Qemu...")) {
@@ -344,26 +348,27 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                         title.setText("Failed!");
                         simpleSetupUIControler(2);
                     });
-                } else if (libprooterror){
-                    AlertDialog alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-                    alertDialog.setTitle("Oops!");
-                    alertDialog.setMessage("A serious problem has occurred! This problem is caused by the CPU or Android operating system on your device. You can join our community to learn more.");
-                    alertDialog.setCancelable(false);
-                    alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Join our community", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent();
-                            intent.setAction(ACTION_VIEW);
-                            intent.setData(Uri.parse(AppConfig.community));
-                            startActivity(intent);
-                        }
-                    });
-                    alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                    if (libprooterror) {
+                        AlertDialog alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                        alertDialog.setTitle(getResources().getString(R.string.oops));
+                        alertDialog.setMessage(getResources().getString(R.string.a_serious_problem_has_occurred));
+                        alertDialog.setCancelable(false);
+                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.join_our_community), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent();
+                                intent.setAction(ACTION_VIEW);
+                                intent.setData(Uri.parse(AppConfig.community));
+                                startActivity(intent);
+                            }
+                        });
+                        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.close), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
 
-                        }
-                    });
+                            }
+                        });
 
-                    alertDialog.show();
+                        alertDialog.show();
+                    }
                 }
             } catch (IOException | InterruptedException e) {
                 // Handle exceptions by printing the stack trace in the terminal output

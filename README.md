@@ -62,3 +62,7 @@ This is not the official Vectras VM repository, this repository was created to s
 - ROM Store is back.
 - Improved interface for ROM Store.
 - Vectras VM will now connect to this GitHub repository for online operations.
+- Improved stability for ROM Store.
+- Allows you to choose to keep ROM files and CD ROMs when deleting a virtual machine.
+- Automatically exits ROM Store when you're done creating a virtual machine.
+- Added a dialog warning of a fatal error that occurred in Setup.

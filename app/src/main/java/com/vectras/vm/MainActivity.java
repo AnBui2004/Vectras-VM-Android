@@ -641,9 +641,9 @@ public class MainActivity extends AppCompatActivity {
                         long totalMemory = miI.totalMem / 1048576L;
                         long usedMemory = totalMemory - freeMemory;
 
-                        totalRam.setText(activity.getResources().getString(R.string.total_memory) + totalMemory + " MB");
-                        usedRam.setText(activity.getResources().getString(R.string.used_memory) + usedMemory + " MB");
-                        freeRam.setText(activity.getResources().getString(R.string.free_memory) + freeMemory + " MB (" + vectrasMemory + " " + activity.getResources().getString(R.string.used) + ")");
+                        totalRam.setText(activity.getResources().getString(R.string.total_memory) + " " + totalMemory + " MB");
+                        usedRam.setText(activity.getResources().getString(R.string.used_memory) + " " + usedMemory + " MB");
+                        freeRam.setText(activity.getResources().getString(R.string.free_memory) + " " + freeMemory + " MB (" + vectrasMemory + " " + activity.getResources().getString(R.string.used) + ")");
                         ProgressBar progressBar = findViewById(R.id.progressBar);
                         progressBar.setMax((int) totalMemory);
                         if (SDK_INT >= Build.VERSION_CODES.N) {

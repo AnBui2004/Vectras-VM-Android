@@ -78,7 +78,7 @@ public class AdapterRoms extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final MyHolder myHolder = (MyHolder) holder;
         final DataRoms current = data.get(position);
         Glide.with(RomsManagerActivity.activity).load(current.itemIcon).placeholder(R.drawable.no_machine_image).error(R.drawable.no_machine_image).into(myHolder.ivIcon);
-        myHolder.textName.setText(current.itemName + " " + current.itemArch);
+        myHolder.textName.setText(current.itemName);
         myHolder.textSize.setText(current.itemSize);
         myHolder.checkBox.setChecked(position == mSelectedItem);
         if (current.itemAvail) {
@@ -99,7 +99,7 @@ public class AdapterRoms extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     RomsManagerActivity.selected = true;
                     RomsManagerActivity.selectedPath = current.itemPath;
                     RomsManagerActivity.selectedExtra = current.itemExtra;
-                    RomsManagerActivity.selectedName = current.itemName + " " + current.itemArch;
+                    RomsManagerActivity.selectedName = current.itemName;
                     RomsManagerActivity.selectedLink = current.itemUrl;
                     RomsManagerActivity.selectedIcon = current.itemIcon;
                     RomsManagerActivity.selectedArch = current.itemArch;

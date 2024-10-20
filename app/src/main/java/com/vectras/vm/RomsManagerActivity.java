@@ -50,7 +50,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.vectras.qemu.Config;
 import com.vectras.qemu.MainSettingsManager;
+import com.vectras.qemu.MainVNCActivity;
 import com.vectras.vm.AppConfig;
 import com.vectras.vm.Fragment.HomeFragment;
 import com.vectras.vm.MainRoms.AdapterMainRoms;
@@ -140,6 +142,7 @@ public class RomsManagerActivity extends AppCompatActivity {
     public static String sAvailable = "";
     public static String sUnavailable = "";
     public static String sInstalled = "";
+    public static boolean isFinishNow = false;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -298,6 +301,13 @@ public class RomsManagerActivity extends AppCompatActivity {
         });
 
         net.startRequestNetwork(RequestNetworkController.GET,AppConfig.vectrasRaw + "roms-store.json","anbui",_net_request_listener);
+    }
+
+    public void onResume() {
+        super.onResume();
+        if (isFinishNow)
+            finish();
+        isFinishNow = false;
     }
 
     private void loadData() {
@@ -514,7 +524,7 @@ public class RomsManagerActivity extends AppCompatActivity {
                 intent.putExtra("romname", selectedName);
                 if (selectedExtra.contains(selectedFilePath.getName())) {
                     intent.putExtra("rompath", "");
-                    intent.putExtra("romextra", selectedExtra.replace(selectedFilePath.getName(),selectedFilePath.getPath()));
+                    intent.putExtra("romextra", selectedExtra.replace(selectedFilePath.getName(),"\"" + selectedFilePath.getPath() + "\""));
                 } else {
                     intent.putExtra("rompath", selectedFilePath.getPath());
                     intent.putExtra("romextra", selectedExtra);
