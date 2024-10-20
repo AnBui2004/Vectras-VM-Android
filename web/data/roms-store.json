@@ -42,5 +42,16 @@
         "rom_arch":"X86_64",
         "rom_kernel":"windows",
         "rom_extra":"-cpu n270 -smp 1 -m 16M -vga cirrus -device sb16"
+    },
+    {
+        "rom_name":"Alpine Linux",
+        "rom_icon":"https://avatars.githubusercontent.com/u/7600810?s=200&v=4",
+        "rom_url":"https://www.mediafire.com/file/v79ivyqdogj7a8l/sda.img/file",
+        "rom_path":"sda.img",
+        "rom_avail":true,
+        "rom_size":"1.2GB",
+        "rom_arch":"X86_64",
+        "rom_kernel":"linux",
+        "rom_extra":""
     }
 ]
