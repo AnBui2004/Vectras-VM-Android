@@ -31,5 +31,16 @@
         "rom_arch":"X86_64",
         "rom_kernel":"windows",
         "rom_extra":"-cpu n270 -smp 1 -m 16M -vga cirrus -device sb16"
+    },
+    {
+        "rom_name":"Windows 3.0",
+        "rom_icon":"https://classicreload.com/sites/default/files/Microsoft-Windows-2.03.png",
+        "rom_url":"https://firebasestorage.googleapis.com/v0/b/anbui-71c6e.appspot.com/o/Windows%203.0.vdi?alt=media&token=7e266c1b-63b4-40bf-b1a3-f93f1c3f6da5",
+        "rom_path":"Windows 3.0.vdi",
+        "rom_avail":true,
+        "rom_size":"17MB",
+        "rom_arch":"X86_64",
+        "rom_kernel":"windows",
+        "rom_extra":"-cpu n270 -smp 1 -m 16M -vga cirrus -device sb16"
     }
 ]
