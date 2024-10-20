@@ -55,6 +55,17 @@
         "rom_extra":""
     },
     {
+        "rom_name":"Windows 10",
+        "rom_icon":"https://seeklogo.com/images/W/windows-10-icon-logo-5BC5C69712-seeklogo.com.png",
+        "rom_url":"https://www.mediafire.com/file/m1zh38hzahz0s8y/win10vectras.cvbi/file",
+        "rom_path":"win10vectras.cvbi",
+        "rom_avail":true,
+        "rom_size":"4.3GB (From Mhmd Acil)",
+        "rom_arch":"X86_64",
+        "rom_kernel":"windows",
+        "rom_extra":""
+    },
+    {
         "rom_name":"Arch Linux",
         "rom_icon":"https://cdn0.iconfinder.com/data/icons/flat-round-system/512/archlinux-512.png",
         "rom_url":"https://github.com/Stiven2016/vecras-roms/releases/download/roms/arch.for.vectras.vm.x86.cvbi",
@@ -75,5 +86,16 @@
         "rom_arch":"X86_64",
         "rom_kernel":"linux",
         "rom_extra":"-cpu qemu64 -smp sockets=1,cores=2,threads=1 -m 1G -drive file=sda.qcow2,aio=threads,cache=unsafe -vga std -device intel-hda -device hda-duplex -device e1000,netdev=n0 -netdev user,id=n0 -accel tcg,tb-size=2048"
+    },
+    {
+        "rom_name":"Linux Mint 12",
+        "rom_icon":"https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_Linux_Mint.png",
+        "rom_url":"https://www.mediafire.com/file/l99hefn11fx36es/linuxmint12.cvbi/file",
+        "rom_path":"linuxmint12.cvbi",
+        "rom_avail":true,
+        "rom_size":"1.5GB (From Mhmd Acil)",
+        "rom_arch":"X86_64",
+        "rom_kernel":"linux",
+        "rom_extra":""
     }
 ]
