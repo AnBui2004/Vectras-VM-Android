@@ -49,7 +49,7 @@
         "rom_url":"https://github.com/Stiven2016/vecras-roms/releases/download/roms/windows.ce.5.0.cvbi",
         "rom_path":"windows.ce.5.0.cvbi",
         "rom_avail":true,
-        "rom_size":"9MB",
+        "rom_size":"9MB  (From Stiven2016)",
         "rom_arch":"X86_64",
         "rom_kernel":"windows",
         "rom_extra":""
@@ -60,7 +60,7 @@
         "rom_url":"https://github.com/Stiven2016/vecras-roms/releases/download/roms/arch.for.vectras.vm.x86.cvbi",
         "rom_path":"arch.for.vectras.vm.x86.cvbi",
         "rom_avail":true,
-        "rom_size":"500MB",
+        "rom_size":"500MB (From Stiven2016)",
         "rom_arch":"X86_64",
         "rom_kernel":"linux",
         "rom_extra":""
