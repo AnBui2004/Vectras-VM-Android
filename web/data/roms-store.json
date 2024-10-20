@@ -49,7 +49,18 @@
         "rom_url":"https://github.com/Stiven2016/vecras-roms/releases/download/roms/windows.ce.5.0.cvbi",
         "rom_path":"windows.ce.5.0.cvbi",
         "rom_avail":true,
-        "rom_size":"9MB  (From Stiven2016)",
+        "rom_size":"9MB (From Stiven2016)",
+        "rom_arch":"X86_64",
+        "rom_kernel":"windows",
+        "rom_extra":""
+    },
+    {
+        "rom_name":"Windows XP (Micro XP)",
+        "rom_icon":"https://www.getmyos.com/upload/files/2018/10/12/windows_2001_logo_1_abcd7f82240a9d6d4ef94d5c6223130b.png",
+        "rom_url":"https://github.com/Stiven2016/vecras-roms/releases/download/Microx%C3%BC/micro.xp.cvbi",
+        "rom_path":"micro.xp.cvbi",
+        "rom_avail":true,
+        "rom_size":"110MB (From Stiven2016)",
         "rom_arch":"X86_64",
         "rom_kernel":"windows",
         "rom_extra":""
