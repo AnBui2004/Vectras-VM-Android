@@ -9,5 +9,27 @@
         "rom_arch":"X86_64",
         "rom_kernel":"windows",
         "rom_extra":"-cpu n270 -smp 1 -m 2M -vga cirrus -device sb16"
+    },
+    {
+        "rom_name":"Windows 1.01",
+        "rom_icon":"https://upload.wikimedia.org/wikipedia/commons/8/80/Windows_1.01_booting.png",
+        "rom_url":"https://www.mediafire.com/file/4sdhxfkxlj6w5o0/Windows1.0.ima/file",
+        "rom_path":"Windows1.0.ima",
+        "rom_avail":true,
+        "rom_size":"2MB",
+        "rom_arch":"X86_64",
+        "rom_kernel":"windows",
+        "rom_extra":"-cpu n270 -smp 1 -m 16M -vga cirrus -device sb16 -fda Windows1.0.ima"
+    },
+    {
+        "rom_name":"Windows 2.03",
+        "rom_icon":"https://classicreload.com/sites/default/files/Microsoft-Windows-2.03.png",
+        "rom_url":"https://www.mediafire.com/file/c263dbsy4sl67q6/Windows2.0.vdi/file",
+        "rom_path":"Windows2.0.vdi",
+        "rom_avail":true,
+        "rom_size":"14MB",
+        "rom_arch":"X86_64",
+        "rom_kernel":"windows",
+        "rom_extra":"-cpu n270 -smp 1 -m 16M -vga cirrus -device sb16"
     }
 ]
