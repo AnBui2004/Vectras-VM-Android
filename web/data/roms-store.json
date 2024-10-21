@@ -110,6 +110,17 @@
         "rom_extra":"-cpu qemu64 -smp sockets=1,cores=2,threads=1 -m 1G -drive file=KolibriOS.img,aio=threads,cache=unsafe -vga std -device intel-hda -device hda-duplex -device e1000,netdev=n0 -netdev user,id=n0 -accel tcg,tb-size=2048"
     },
     {
+        "rom_name":"KolibriOS (2022)",
+        "rom_icon":"https://avatars.githubusercontent.com/u/19728236?s=280&v=4",
+        "rom_url":"https://drive.google.com/file/d/1OOghfD_GmET2y8YlbfT0cITJFqcqM7yx/view",
+        "rom_path":"KolibriOS.qcow",
+        "rom_avail":true,
+        "rom_size":"103MB (From Nomis_official)",
+        "rom_arch":"X86_64",
+        "rom_kernel":"linux",
+        "rom_extra":"-cpu qemu64 -smp sockets=1,cores=2,threads=1 -m 1G -drive file=KolibriOS.qcow,aio=threads,cache=unsafe -vga std -device intel-hda -device hda-duplex -device e1000,netdev=n0 -netdev user,id=n0 -accel tcg,tb-size=2048"
+    },
+    {
         "rom_name":"Arch Linux",
         "rom_icon":"https://cdn0.iconfinder.com/data/icons/flat-round-system/512/archlinux-512.png",
         "rom_url":"https://github.com/Stiven2016/vecras-roms/releases/download/roms/arch.for.vectras.vm.x86.cvbi",
