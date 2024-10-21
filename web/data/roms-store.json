@@ -77,6 +77,17 @@
         "rom_extra":""
     },
     {
+        "rom_name":"KolibriOS",
+        "rom_icon":"https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_Linux_Mint.png",
+        "rom_url":"https://www.mediafire.com/file/q7suozay9gop3wd/KolibriOS.img/file",
+        "rom_path":"KolibriOS.img",
+        "rom_avail":true,
+        "rom_size":"1.4MB (From Hacks, Coding and more)",
+        "rom_arch":"X86_64",
+        "rom_kernel":"linux",
+        "rom_extra":"-cpu qemu64 -smp sockets=1,cores=2,threads=1 -m 1G -drive file=KolibriOS.img,aio=threads,cache=unsafe -vga std -device intel-hda -device hda-duplex -device e1000,netdev=n0 -netdev user,id=n0 -accel tcg,tb-size=2048"
+    },
+    {
         "rom_name":"Arch Linux",
         "rom_icon":"https://cdn0.iconfinder.com/data/icons/flat-round-system/512/archlinux-512.png",
         "rom_url":"https://github.com/Stiven2016/vecras-roms/releases/download/roms/arch.for.vectras.vm.x86.cvbi",
@@ -108,5 +119,16 @@
         "rom_arch":"X86_64",
         "rom_kernel":"linux",
         "rom_extra":""
+    },
+    {
+        "rom_name":"FydeOS",
+        "rom_icon":"https://www-img.fydeos.com/static/guidelines/Square.png",
+        "rom_url":"https://www.mediafire.com/file/n6yuvedo9fhpvxc/FydeOS-VMware-v18.0-Preview1-io-disk1.vmdk/file",
+        "rom_path":"FydeOS-VMware-v18.0-Preview1-io-disk1.vmdk",
+        "rom_avail":true,
+        "rom_size":"2.1GB (From Hacks, Coding and more)",
+        "rom_arch":"X86_64",
+        "rom_kernel":"linux",
+        "rom_extra":"-cpu qemu64 -smp sockets=1,cores=2,threads=1 -m 1G -drive file=FydeOS-VMware-v18.0-Preview1-io-disk1.vmdk,aio=threads,cache=unsafe -vga std -device intel-hda -device hda-duplex -device e1000,netdev=n0 -netdev user,id=n0 -accel tcg,tb-size=2048"
     }
 ]
