@@ -496,7 +496,7 @@
     <string name="please_wait_dialog">يرجى الانتظار...</string>
     <string name="error">خطأ!</string>
     <string name="done">تم!</string>
-    <string name="are_removed_successfully">تم الإزالة بنجاح!</string>
+    <string name="are_removed_successfully">تم إزالة %1$s بنجاح!</string>
     <string name="free_palestine">فلسطين حرة</string>
     <string name="repository">المستودع</string>
     <string name="telegram_channel">قناة Telegram</string>
