@@ -44,7 +44,7 @@
         "rom_extra":"-cpu n270 -smp 1 -m 16M -vga cirrus -device sb16"
     },
     {
-        "rom_name":"Windows 98 Plus!",
+        "rom_name":"Windows 98",
         "rom_icon":"https://www.getmyos.com/upload/files/2018/10/04/windows_logo_1995_1_21eb221818c6620a5391a14ce1b0fc51.png",
         "rom_url":"https://www.mediafire.com/file/4n8r3re8qh7vf7i/98.qcow2/file",
         "rom_path":"98.qcow2",
@@ -53,6 +53,17 @@
         "rom_arch":"X86_64",
         "rom_kernel":"windows",
         "rom_extra":"-cpu qemu32 -smp sockets=1,cores=1,threads=1 -m 128M -hda 98.qcow2 -vga cirrus -device sb16 -device pcnet,netdev=n0 -netdev user,id=n0 -accel tcg,thread=multi"
+    },
+    {
+        "rom_name":"Windows 98 Plus!",
+        "rom_icon":"https://www.getmyos.com/upload/files/2018/10/04/windows_logo_1995_1_21eb221818c6620a5391a14ce1b0fc51.png",
+        "rom_url":"https://www.mediafire.com/file/8cndpbaaallbqws/98PLUS%2521.qcow2/file",
+        "rom_path":"98PLUS!.qcow2",
+        "rom_avail":true,
+        "rom_size":"537MB (From ketuja)",
+        "rom_arch":"X86_64",
+        "rom_kernel":"windows",
+        "rom_extra":"-cpu qemu32 -smp sockets=1,cores=1,threads=1 -m 128M -hda 98PLUS!.qcow2 -vga cirrus -device sb16 -device pcnet,netdev=n0 -netdev user,id=n0 -accel tcg,thread=multi"
     },
     {
         "rom_name":"Windows CE 5.0",
