@@ -75,3 +75,4 @@ This is not the official Vectras VM repository, this repository was created to s
 - Added ID for VM.
 - Better delete all related files when choosing not to keep files when deleting VM with VM ID.
 - Automatically retain files needed by other virtual machines when you choose not to retain files when deleting a virtual machine.
+- Automatically add information if cvbi file does not contain information from ROM Store.

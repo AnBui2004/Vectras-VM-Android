@@ -949,6 +949,7 @@ public class CustomRomActivity extends AppCompatActivity {
 
     private void importCVBI(String _filepath, String _filename) {
         LinearLayout custom = findViewById(R.id.custom);
+        ImageView ivIcon = findViewById(R.id.ivIcon);
         if (_filepath.endsWith(".cvbi")) {
             //Error code: CR_CVBI1
             if (!VectrasApp.isFileExists(_filepath)) {
@@ -961,6 +962,7 @@ public class CustomRomActivity extends AppCompatActivity {
             }
             loadingPb.setVisibility(View.VISIBLE);
             custom.setVisibility(View.GONE);
+            ivIcon.setEnabled(false);
             Thread t = new Thread() {
                 public void run() {
                     FileInputStream zipFile = null;
@@ -1006,21 +1008,24 @@ public class CustomRomActivity extends AppCompatActivity {
                                 public void run() {
                                     loadingPb.setVisibility(View.GONE);
                                     custom.setVisibility(View.VISIBLE);
+                                    ivIcon.setEnabled(true);
                                     try {
                                         secondVMdirectory = AppConfig.maindirpath + "roms/" + _filename.replace(".cvbi", "");
                                         if (!VectrasApp.isFileExists(AppConfig.maindirpath + "roms/" + _filename.replace(".cvbi", "") + "/rom-data.json")) {
                                             String _getDiskFile = VectrasApp.quickScanDiskFileInFolder(AppConfig.maindirpath + "roms/" + _filename.replace(".cvbi", ""));
                                             if (!_getDiskFile.isEmpty()) {
-                                                ImageView ivIcon = findViewById(R.id.ivIcon);
+                                                //Error code: CR_CVBI2
                                                 if (getIntent().hasExtra("addromnow") && !addromnowdone) {
                                                     addromnowdone = true;
                                                     title.setText(getIntent().getStringExtra("romname"));
                                                     if (getIntent().getStringExtra("romextra").isEmpty()) {
                                                         setDefault();
+                                                        drive.setText(_getDiskFile);
                                                     } else {
                                                         if (getIntent().getStringExtra("romextra").contains(getIntent().getStringExtra("finalromfilename"))) {
                                                             qemu.setText(getIntent().getStringExtra("romextra").replaceAll(getIntent().getStringExtra("finalromfilename"), _getDiskFile));
                                                         } else {
+                                                            drive.setText(_getDiskFile);
                                                             qemu.setText(getIntent().getStringExtra("romextra"));
                                                         }
                                                     }
@@ -1032,9 +1037,8 @@ public class CustomRomActivity extends AppCompatActivity {
                                                             ivIcon.setImageBitmap(myBitmap);
                                                         }
                                                     }
-                                                    drive.setText(getIntent().getStringExtra("rompath"));
                                                 } else {
-                                                    if (title.getText().toString().isEmpty()) {
+                                                    if (title.getText().toString().isEmpty() || title.getText().toString().equals("New VM")) {
                                                         title.setText(_filename.replace(".cvbi", ""));
                                                     }
                                                     if (qemu.getText().toString().isEmpty()) {
@@ -1042,7 +1046,6 @@ public class CustomRomActivity extends AppCompatActivity {
                                                     }
                                                     drive.setText(_getDiskFile);
                                                 }
-                                                //Error code: CR_CVBI2
                                                 VectrasApp.oneDialog(getResources().getString(R.string.oops), getResources().getString(R.string.error_CR_CVBI2), true, false, CustomRomActivity.this);
                                             } else {
                                                 //Error code: CR_CVBI3

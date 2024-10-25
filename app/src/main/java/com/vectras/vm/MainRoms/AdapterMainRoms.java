@@ -299,6 +299,18 @@ public class AdapterMainRoms extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                                 VectrasApp.deleteVMWithName(current.itemName);
 
+                                if (!_romsdata.contains(AppConfig.maindirpath + "roms/" + current.itemName)) {
+                                    VectrasApp.deleteDirectory(AppConfig.maindirpath + "roms/" + current.itemName);
+                                } else {
+                                    isKeptSomeFiles = true;
+                                }
+
+                                if (!_romsdata.contains((AppConfig.maindirpath + "roms/" + current.itemName).replaceAll(" ", "."))) {
+                                    VectrasApp.deleteDirectory((AppConfig.maindirpath + "roms/" + current.itemName).replaceAll(" ", "."));
+                                } else {
+                                    isKeptSomeFiles = true;
+                                }
+
                                 if (isKeptSomeFiles) {
                                     VectrasApp.oneDialog(MainActivity.activity.getString(R.string.keep), MainActivity.activity.getString(R.string.kept_some_files), true, false, MainActivity.activity);
                                 }
