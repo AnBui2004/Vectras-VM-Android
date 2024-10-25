@@ -98,6 +98,7 @@ public class AdapterRoms extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     notifyItemRangeChanged(0, data.size());
                     RomsManagerActivity.selected = true;
                     RomsManagerActivity.selectedPath = current.itemPath;
+                    RomsManagerActivity.selectedFinalRomFileName =current.itemFinalRomFileName;
                     RomsManagerActivity.selectedExtra = current.itemExtra;
                     RomsManagerActivity.selectedName = current.itemName;
                     RomsManagerActivity.selectedLink = current.itemUrl;

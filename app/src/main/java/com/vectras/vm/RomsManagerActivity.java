@@ -125,6 +125,7 @@ public class RomsManagerActivity extends AppCompatActivity {
     public static String selectedName = null;
     public static String selectedIcon = null;
     public static String selectedArch = null;
+    public static String selectedFinalRomFileName = null;
 
     public MaterialButtonToggleGroup filterToggle;
     public MaterialButton windowsToggle;
@@ -323,6 +324,7 @@ public class RomsManagerActivity extends AppCompatActivity {
                 romsData.itemIcon = json_data.getString("rom_icon");
                 romsData.itemUrl = json_data.getString("rom_url");
                 romsData.itemPath = json_data.getString("rom_path");
+                romsData.itemFinalRomFileName = json_data.getString("final_rom_file_name");
                 romsData.itemAvail = json_data.getBoolean("rom_avail");
                 romsData.itemSize = json_data.getString("rom_size");
                 romsData.itemArch = json_data.getString("rom_arch");
@@ -523,6 +525,7 @@ public class RomsManagerActivity extends AppCompatActivity {
                 intent.putExtra("addromnow", "");
                 intent.putExtra("romname", selectedName);
                 intent.putExtra("romfilename", selectedPath);
+                intent.putExtra("finalromfilename", selectedFinalRomFileName);
                 if (selectedExtra.contains(selectedFilePath.getName())) {
                     intent.putExtra("rompath", "");
                     intent.putExtra("romextra", selectedExtra.replace(selectedFilePath.getName(),"\"" + selectedFilePath.getPath() + "\""));

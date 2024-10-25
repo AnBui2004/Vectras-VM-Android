@@ -91,6 +91,7 @@ public class CustomRomActivity extends AppCompatActivity {
     boolean iseditparams = false;
     public String previousName = "";
     public String secondVMdirectory = "";
+    public boolean addromnowdone = false;
 
     public ProgressBar loadingPb;
 
@@ -479,6 +480,7 @@ public class CustomRomActivity extends AppCompatActivity {
                     importCVBI(getIntent().getStringExtra("rompath"), getIntent().getStringExtra("romfilename"));
                 } else {
                     drive.setText(getIntent().getStringExtra("rompath"));
+                    addromnowdone = true;
                 }
             } else {
                 title.setText("New VM");
@@ -1006,15 +1008,44 @@ public class CustomRomActivity extends AppCompatActivity {
                                     custom.setVisibility(View.VISIBLE);
                                     try {
                                         secondVMdirectory = AppConfig.maindirpath + "roms/" + _filename.replace(".cvbi", "");
-                                        //Error code: CR_CVBI2
                                         if (!VectrasApp.isFileExists(AppConfig.maindirpath + "roms/" + _filename.replace(".cvbi", "") + "/rom-data.json")) {
                                             String _getDiskFile = VectrasApp.quickScanDiskFileInFolder(AppConfig.maindirpath + "roms/" + _filename.replace(".cvbi", ""));
                                             if (!_getDiskFile.isEmpty()) {
-                                                title.setText(_filename.replace(".cvbi", ""));
-                                                setDefault();
-                                                drive.setText(_getDiskFile);
+                                                ImageView ivIcon = findViewById(R.id.ivIcon);
+                                                if (getIntent().hasExtra("addromnow") && !addromnowdone) {
+                                                    addromnowdone = true;
+                                                    title.setText(getIntent().getStringExtra("romname"));
+                                                    if (getIntent().getStringExtra("romextra").isEmpty()) {
+                                                        setDefault();
+                                                    } else {
+                                                        if (getIntent().getStringExtra("romextra").contains(getIntent().getStringExtra("finalromfilename"))) {
+                                                            qemu.setText(getIntent().getStringExtra("romextra").replaceAll(getIntent().getStringExtra("finalromfilename"), _getDiskFile));
+                                                        } else {
+                                                            qemu.setText(getIntent().getStringExtra("romextra"));
+                                                        }
+                                                    }
+                                                    icon.setText(getIntent().getStringExtra("romicon"));
+                                                    if (!getIntent().getStringExtra("romicon").isEmpty()) {
+                                                        File imgFile = new File(getIntent().getStringExtra("romicon"));
+                                                        if (imgFile.exists()) {
+                                                            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                                                            ivIcon.setImageBitmap(myBitmap);
+                                                        }
+                                                    }
+                                                    drive.setText(getIntent().getStringExtra("rompath"));
+                                                } else {
+                                                    if (title.getText().toString().isEmpty()) {
+                                                        title.setText(_filename.replace(".cvbi", ""));
+                                                    }
+                                                    if (qemu.getText().toString().isEmpty()) {
+                                                        setDefault();
+                                                    }
+                                                    drive.setText(_getDiskFile);
+                                                }
+                                                //Error code: CR_CVBI2
                                                 VectrasApp.oneDialog(getResources().getString(R.string.oops), getResources().getString(R.string.error_CR_CVBI2), true, false, CustomRomActivity.this);
                                             } else {
+                                                //Error code: CR_CVBI3
                                                 if (getIntent().hasExtra("addromnow")) {
                                                     VectrasApp.oneDialog(getResources().getString(R.string.oops), getResources().getString(R.string.error_CR_CVBI3), false, true, CustomRomActivity.this);
                                                 } else {

@@ -780,9 +780,10 @@ public class VectrasApp extends Application {
 								if (!readFile(_filelist.get((int)(_startRepeat)) + "/vmID.txt").isEmpty()) {
 									if (readFile(_filelist.get((int)(_startRepeat)) + "/vmID.txt").equals(_vmID)) {
 										if (!_romsdata.contains(_filelist.get((int)(_startRepeat)))) {
-											deleteDirectory(_filelist.get((int) (_startRepeat)));
+											deleteDirectory(_filelist.get((int)(_startRepeat)));
 										} else {
 											AdapterMainRoms.isKeptSomeFiles = true;
+											deleteVMIDFileWithName(_vmName);
 										}
 									}
 								}
