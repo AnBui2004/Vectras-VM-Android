@@ -45,6 +45,7 @@ import com.google.android.material.color.DynamicColors;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.vectras.qemu.MainSettingsManager;
+import com.vectras.vm.MainRoms.AdapterMainRoms;
 import com.vectras.vm.utils.FileUtils;
 import com.vectras.vterm.Terminal;
 
@@ -72,6 +73,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VectrasApp extends Application {
@@ -526,6 +528,10 @@ public class VectrasApp extends Application {
 	}
 
 	public static void writeToFile(String folderPath, String fileName, String content) {
+		File vDir = new File(folderPath);
+		if (!vDir.exists()) {
+			vDir.mkdirs();
+		}
 		File file = new File(folderPath, fileName);
 		FileOutputStream outputStream = null;
 		try {
@@ -552,14 +558,63 @@ public class VectrasApp extends Application {
 		}
 	}
 
+	public static void copyAFile(String _sourceFile, String _destFile) {
+		File vDir = new File(_destFile.substring((int)0, (int)(_destFile.lastIndexOf("/"))));
+		if (!vDir.exists()) {
+			vDir.mkdirs();
+		}
+		try {
+			File source = new File(_sourceFile);
+			File dest = new File(_destFile);
+
+			if (!source.exists())
+			{
+				throw new IOException("Source file not found");
+			}
+
+			FileInputStream inStream = new FileInputStream(source);
+			FileOutputStream outStream = new FileOutputStream(dest);
+
+			byte[] buffer = new byte[1024];
+			int length;
+			while ((length = inStream.read(buffer))
+					> 0) {
+				outStream.write(buffer, 0, length);
+			}
+
+			inStream.close();
+			outStream.close();
+		} catch (IOException e) {
+
+		}
+
+	}
+
 	public static void moveAFile(String _from, String _to) {
-		if (!isFileExists(_from))
-			return;
-		if (!isFileExists(Uri.parse(_to).getLastPathSegment()))
-			writeToFile(Uri.parse(_to).getLastPathSegment(), ".nomedia", "");
-		File from = new File(_from);
-		File to = new File(_to);
-		from.renameTo(to);
+		File oldFile = new File(_from);
+		File newFile = new File(_to);
+
+		boolean success = oldFile.renameTo(newFile);
+		if (success) {
+			Log.d("File", "Done!");
+		} else {
+			Log.e("File", "Failed!");
+		}
+
+	}
+
+	public static void listDir(String path, ArrayList<String> list) {
+		File dir = new File(path);
+		if (!dir.exists() || dir.isFile()) return;
+
+		File[] listFiles = dir.listFiles();
+		if (listFiles == null || listFiles.length <= 0) return;
+
+		if (list == null) return;
+		list.clear();
+		for (File file : listFiles) {
+			list.add(file.getAbsolutePath());
+		}
 	}
 
 	public static void killallqemuprocesses(Context context) {
@@ -684,5 +739,114 @@ public class VectrasApp extends Application {
 		AppConfig.sharedFolder = AppConfig.maindirpath + "SharedFolder/";
 		AppConfig.downloadsFolder = AppConfig.maindirpath + "Downloads/";
 		AppConfig.romsdatajson = Environment.getExternalStorageDirectory().toString() + "/Documents/VectrasVM/roms-data.json";
+	}
+	public static String ramdomVMID() {
+		String addAdb = "";
+		Random random = new Random();
+		int randomAbc = random.nextInt(10);
+		if (randomAbc == 0) {
+			addAdb = "a";
+		} else if (randomAbc == 1) {
+			addAdb = "b";
+		} else if (randomAbc == 2) {
+			addAdb = "c";
+		} else if (randomAbc == 3) {
+			addAdb = "d";
+		} else if (randomAbc == 4) {
+			addAdb = "e";
+		} else if (randomAbc == 5) {
+			addAdb = "f";
+		} else if (randomAbc == 6) {
+			addAdb = "g";
+		} else if (randomAbc == 7) {
+			addAdb = "h";
+		} else if (randomAbc == 8) {
+			addAdb = "i";
+		}
+		return addAdb + String.valueOf((long)(random.nextInt(10001)));
+	}
+	public static void deleteVMWithName(String _vmName) {
+		String _romsdata = VectrasApp.readFile(AppConfig.maindirpath + "roms-data.json").replace("\\/", "/");
+		if (isFileExists(AppConfig.maindirpath + "roms/" + _vmName + "/vmID.txt")) {
+			String _vmID = readFile(AppConfig.maindirpath + "roms/" + _vmName + "/vmID.txt");
+			if (!_vmID.isEmpty()) {
+				int _startRepeat = 0;
+				ArrayList<String> _filelist = new ArrayList<>();
+				listDir(AppConfig.maindirpath + "roms/", _filelist);
+				if (!_filelist.isEmpty()) {
+					for (int _repeat = 0; _repeat < (int)(_filelist.size()); _repeat++) {
+						if (_startRepeat < _filelist.size()) {
+							if (isFileExists(_filelist.get((int)(_startRepeat)) + "/vmID.txt")) {
+								if (!readFile(_filelist.get((int)(_startRepeat)) + "/vmID.txt").isEmpty()) {
+									if (readFile(_filelist.get((int)(_startRepeat)) + "/vmID.txt").equals(_vmID)) {
+										if (!_romsdata.contains(_filelist.get((int)(_startRepeat)))) {
+											deleteDirectory(_filelist.get((int) (_startRepeat)));
+										} else {
+											AdapterMainRoms.isKeptSomeFiles = true;
+										}
+									}
+								}
+							}
+						}
+						_startRepeat++;
+					}
+				}
+			}
+		}
+	}
+
+	public static void deleteVMIDFileWithName(String _vmName) {
+		if (isFileExists(AppConfig.maindirpath + "roms/" + _vmName + "/vmID.txt")) {
+			String _vmID = readFile(AppConfig.maindirpath + "roms/" + _vmName + "/vmID.txt");
+			if (!_vmID.isEmpty()) {
+				int _startRepeat = 0;
+				ArrayList<String> _filelist = new ArrayList<>();
+				listDir(AppConfig.maindirpath + "roms/", _filelist);
+				if (!_filelist.isEmpty()) {
+					for (int _repeat = 0; _repeat < (int)(_filelist.size()); _repeat++) {
+						if (_startRepeat < _filelist.size()) {
+							if (isFileExists(_filelist.get((int)(_startRepeat)) + "/vmID.txt")) {
+								if (!readFile(_filelist.get((int)(_startRepeat)) + "/vmID.txt").isEmpty()) {
+									if (readFile(_filelist.get((int)(_startRepeat)) + "/vmID.txt").equals(_vmID)) {
+										moveAFile(_filelist.get((int)(_startRepeat)) + "/vmID.txt", _filelist.get((int)(_startRepeat)) + "/vmID.old.txt");
+									}
+								}
+							}
+						}
+						_startRepeat++;
+					}
+				}
+			}
+		}
+	}
+
+	public static String quickScanDiskFileInFolder(String _foderpath) {
+		if (!_foderpath.isEmpty()) {
+			int _startRepeat = 0;
+			ArrayList<String> _filelist = new ArrayList<>();
+			listDir(_foderpath, _filelist);
+			if (!_filelist.isEmpty()) {
+				for (int _repeat = 0; _repeat < (int)(_filelist.size()); _repeat++) {
+					if (_startRepeat < _filelist.size()) {
+						if (isADiskFile(_filelist.get((int)(_startRepeat)))) {
+							return _filelist.get((int)(_startRepeat));
+                        }
+					}
+					_startRepeat++;
+				}
+			}
+		}
+		return "";
+	}
+
+	public static boolean isADiskFile (String _filepath) {
+		if (_filepath.contains(".")) {
+			String _getFileName = Objects.requireNonNull(Uri.parse(_filepath).getLastPathSegment()).toLowerCase();
+			String _getFileFormat = _getFileName.substring((int)(_getFileName.lastIndexOf(".") + 1), (int)(_getFileName.length()));
+			if ("qcow2,img,vhd,vhdx,vdi,qcow,vmdk,vpc".contains(_getFileFormat)){
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -72,6 +72,7 @@ public class AdapterMainRoms extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public List<DataMainRoms> data = Collections.emptyList();
     int currentPos = 0;
     private int mSelectedItem = -1;
+    public static boolean isKeptSomeFiles = false;
 
     // create constructor to innitilize context and data sent from MainActivity
     public AdapterMainRoms(Context context, List<DataMainRoms> data) {
@@ -244,42 +245,63 @@ public class AdapterMainRoms extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         alertDialog.setCancelable(false);
                         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Keep", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-
+                                VectrasApp.deleteVMIDFileWithName(current.itemName);
                             }
                         });
                         alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Remove all", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
+                                isKeptSomeFiles = false;
+                                String _romsdata = VectrasApp.readFile(AppConfig.maindirpath + "roms-data.json").replace("\\/", "/");
                                 if (matcher.find()) {
                                     // We found the -drive pattern and its file path.
-                                    File cdrom = new File(matcher.group(1));
+                                    if (!_romsdata.contains(matcher.group(1))) {
+                                        File cdrom = new File(matcher.group(1));
 
-                                    try {
-                                        boolean deleted = cdrom.delete();
-                                        if(!deleted) {
-                                            // The file wasn't successfully deleted.
-                                            // Handle this case, maybe the file didn't exist or was read only.
+                                        try {
+                                            boolean deleted = cdrom.delete();
+                                            if(!deleted) {
+                                                // The file wasn't successfully deleted.
+                                                // Handle this case, maybe the file didn't exist or was read only.
+                                            }
+                                        } catch (Exception e) {
+                                            UIUtils.toastLong(MainActivity.activity, e.toString());
                                         }
-                                    } catch (Exception e) {
-                                        UIUtils.toastLong(MainActivity.activity, e.toString());
+                                    } else {
+                                        isKeptSomeFiles = true;
                                     }
+
                                 } else {
                                     // The pattern wasn't found in the current item's extra text.
                                     // Handle the case where the -drive pattern doesn't match.
                                 }
 
-                                try {
-                                    file.delete();
-                                } catch (Exception e) {
-                                    UIUtils.toastLong(MainActivity.activity, e.toString());
-                                } finally {
+                                if (!_romsdata.contains(current.itemPath)) {
+                                    try {
+                                        file.delete();
+                                    } catch (Exception e) {
+                                        UIUtils.toastLong(MainActivity.activity, e.toString());
+                                    } finally {
+                                    }
+                                } else {
+                                    isKeptSomeFiles = true;
                                 }
-                                try {
-                                    file2.delete();
-                                } catch (Exception e) {
-                                    UIUtils.toastLong(MainActivity.activity, e.toString());
-                                } finally {
+
+                                if (!_romsdata.contains(current.itemDrv1)) {
+                                    try {
+                                        file2.delete();
+                                    } catch (Exception e) {
+                                        UIUtils.toastLong(MainActivity.activity, e.toString());
+                                    } finally {
+                                    }
+                                } else {
+                                    isKeptSomeFiles = true;
                                 }
-                                VectrasApp.deleteDirectory(AppConfig.maindirpath + "roms/" + current.itemName);
+
+                                VectrasApp.deleteVMWithName(current.itemName);
+
+                                if (isKeptSomeFiles) {
+                                    VectrasApp.oneDialog(MainActivity.activity.getString(R.string.keep), MainActivity.activity.getString(R.string.kept_some_files), true, false, MainActivity.activity);
+                                }
                             }
                         });
                         alertDialog.show();

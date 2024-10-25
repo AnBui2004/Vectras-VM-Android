@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">فيكترا</string>
-    <string name="app_version">v2.9.1u</string>
+    <string name="app_version">v2.9.1v</string>
     <string name="qemu_version">مستقر</string>
     <string name="str_home">الرئيسية</string>
     <string name="str_logger">سجل</string>
@@ -569,4 +569,9 @@
     <string name="keep">يحفظ</string>
     <string name="remove_all">إزالة الكل</string>
     <string name="format_not_supported_please_select_file_with_format_cvbi">التنسيق غير مدعوم، يرجى تحديد ملف بتنسيق cvbi.</string>
+    <string name="error_CR_CVBI1">حدثت مشكلة ولا يمكن الاستمرار بسبب عدم العثور على ملف cbvi. رمز الخطأ: CR_CVBI1.</string>
+    <string name="error_CR_CVBI2">حدث خطأ. تم الاستخراج بنجاح ولكن ملف cvbi لا يحتوي على معلومات حول هذا القرص المضغوط، لذا سيتم استخدام بعض الإعدادات الافتراضية. رمز الخطأ: CR_CVBI2.</string>
+    <string name="from">من</string>
+    <string name="error_CR_CVBI3">حدث خطأ ولا يمكن الاستمرار. تم الاستخراج بنجاح ولكن ملف cvbi لا يحتوي على معلومات عن هذا القرص المضغوط ولا يحتوي على أي ملفات قرص مضغوط. رمز الخطأ: CR_CVBI3.</string>
+    <string name="kept_some_files">تم الاحتفاظ ببعض الملفات لأن بعض الآلات الافتراضية الأخرى كانت بحاجة إليها.</string>
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vectras VM</string>
-    <string name="app_version" translatable="false">v2.9.1u</string>
+    <string name="app_version" translatable="false">v2.9.1v</string>
     <string name="qemu_version" translatable="false">Stable</string>
     <string name="str_home">Home</string>
     <string name="str_logger">Logger</string>
@@ -582,4 +582,9 @@
     <string name="keep">Keep</string>
     <string name="remove_all">Remove all</string>
     <string name="format_not_supported_please_select_file_with_format_cvbi">Format not supported, please select file with format cvbi.</string>
+    <string name="error_CR_CVBI1">A problem has occurred and cannot continue because the cbvi file was not found. Error code: CR_CVBI1.</string>
+    <string name="error_CR_CVBI2">An error has occurred. Extraction was successful but the cvbi file does not contain information about this ROM so some default settings will be used. Error code: CR_CVBI2.</string>
+    <string name="from">From</string>
+    <string name="error_CR_CVBI3">An error has occurred and cannot continue. The extraction was successful but the cvbi file does not contain information for this ROM and does not contain any ROM files. Error code: CR_CVBI3.</string>
+    <string name="kept_some_files">Some files were retained because some other virtual machine needed them.</string>
 </resources>

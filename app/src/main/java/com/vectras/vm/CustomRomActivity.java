@@ -19,6 +19,7 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -88,6 +89,8 @@ public class CustomRomActivity extends AppCompatActivity {
     public TextInputEditText qemu;
     public Button addRomBtn;
     boolean iseditparams = false;
+    public String previousName = "";
+    public String secondVMdirectory = "";
 
     public ProgressBar loadingPb;
 
@@ -455,6 +458,7 @@ public class CustomRomActivity extends AppCompatActivity {
             } else {
                 VectrasApp.setIconWithName(ivIcon, current.itemName);
             }
+            previousName = current.itemName;
         } else {
             if (getIntent().hasExtra("addromnow")) {
                 title.setText(getIntent().getStringExtra("romname"));
@@ -884,9 +888,25 @@ public class CustomRomActivity extends AppCompatActivity {
             if (getIntent().hasExtra("addromnow")) {
                 RomsManagerActivity.isFinishNow = true;
             }
+
             finish();
             //activity.startActivity(new Intent(activity, SplashActivity.class));
         }
+        if (!previousName.isEmpty() && !title.getText().toString().equals(previousName)) {
+            if (VectrasApp.isFileExists(AppConfig.maindirpath + "roms/" + previousName + "/vmID.txt")) {
+                VectrasApp.copyAFile(AppConfig.maindirpath + "roms/" + previousName + "/vmID.txt", AppConfig.maindirpath + "roms/" + title.getText().toString() + "/vmID.txt");
+            } else {
+                VectrasApp.writeToFile(AppConfig.maindirpath + "roms/" + title.getText().toString(), "/vmID.txt", VectrasApp.ramdomVMID());
+                VectrasApp.copyAFile(AppConfig.maindirpath + "roms/" + title.getText().toString() + "/vmID.txt", AppConfig.maindirpath + previousName + "/vmID.txt");
+            }
+        } else {
+            VectrasApp.writeToFile(AppConfig.maindirpath + "roms/" + title.getText().toString(), "/vmID.txt", VectrasApp.ramdomVMID());
+        }
+        if (!secondVMdirectory.isEmpty() && VectrasApp.isFileExists(AppConfig.maindirpath + "roms/" + title.getText().toString() + "/vmID.txt")) {
+            if (!(AppConfig.maindirpath + "roms/" + title.getText().toString()).equals(secondVMdirectory)) {
+                VectrasApp.copyAFile(AppConfig.maindirpath + "roms/" + title.getText().toString() + "/vmID.txt", secondVMdirectory + "/vmID.txt");
+            }
+       }
     }
 
     private void setDefault() {
@@ -928,6 +948,15 @@ public class CustomRomActivity extends AppCompatActivity {
     private void importCVBI(String _filepath, String _filename) {
         LinearLayout custom = findViewById(R.id.custom);
         if (_filepath.endsWith(".cvbi")) {
+            //Error code: CR_CVBI1
+            if (!VectrasApp.isFileExists(_filepath)) {
+                if (getIntent().hasExtra("addromnow")) {
+                    VectrasApp.oneDialog(getResources().getString(R.string.oops), getResources().getString(R.string.error_CR_CVBI1), false, true, this);
+                } else {
+                    VectrasApp.oneDialog(getResources().getString(R.string.oops), getResources().getString(R.string.error_CR_CVBI1), true, false, this);
+                }
+                return;
+            }
             loadingPb.setVisibility(View.VISIBLE);
             custom.setVisibility(View.GONE);
             Thread t = new Thread() {
@@ -976,6 +1005,24 @@ public class CustomRomActivity extends AppCompatActivity {
                                     loadingPb.setVisibility(View.GONE);
                                     custom.setVisibility(View.VISIBLE);
                                     try {
+                                        secondVMdirectory = AppConfig.maindirpath + "roms/" + _filename.replace(".cvbi", "");
+                                        //Error code: CR_CVBI2
+                                        if (!VectrasApp.isFileExists(AppConfig.maindirpath + "roms/" + _filename.replace(".cvbi", "") + "/rom-data.json")) {
+                                            String _getDiskFile = VectrasApp.quickScanDiskFileInFolder(AppConfig.maindirpath + "roms/" + _filename.replace(".cvbi", ""));
+                                            if (!_getDiskFile.isEmpty()) {
+                                                title.setText(_filename.replace(".cvbi", ""));
+                                                setDefault();
+                                                drive.setText(_getDiskFile);
+                                                VectrasApp.oneDialog(getResources().getString(R.string.oops), getResources().getString(R.string.error_CR_CVBI2), true, false, CustomRomActivity.this);
+                                            } else {
+                                                if (getIntent().hasExtra("addromnow")) {
+                                                    VectrasApp.oneDialog(getResources().getString(R.string.oops), getResources().getString(R.string.error_CR_CVBI3), false, true, CustomRomActivity.this);
+                                                } else {
+                                                    VectrasApp.oneDialog(getResources().getString(R.string.oops), getResources().getString(R.string.error_CR_CVBI3), true, false, CustomRomActivity.this);
+                                                }
+                                            }
+                                            return;
+                                        }
 
                                         JSONObject jObj = new JSONObject(FileUtils.readFromFile(MainActivity.activity, new File(AppConfig.maindirpath
                                                 + "roms/" + _filename.replace(".cvbi", "") + "/rom-data.json")));
@@ -990,7 +1037,7 @@ public class CustomRomActivity extends AppCompatActivity {
                                         Bitmap bmImg = BitmapFactory.decodeFile(AppConfig.maindirpath
                                                 + "roms/" + _filename.replace(".cvbi", "") + "/" + jObj.getString("icon"));
                                         ivIcon.setImageBitmap(bmImg);
-                                        UIUtils.UIAlert(activity, "rom by:\n" + jObj.getString("author") + "\n\n" + Html.fromHtml(jObj.getString("desc")), "DESCRIPTION");
+                                        UIUtils.UIAlert(activity, getResources().getString(R.string.from) + ": " + jObj.getString("author") + "\n\n" + Html.fromHtml(jObj.getString("desc")), getResources().getString(R.string.description) + ":");
                                     } catch (JSONException e) {
                                         throw new RuntimeException(e);
                                     }
