@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">فيكترا</string>
-    <string name="app_version">v2.9.1w</string>
+    <string name="app_version">v2.9.1x</string>
     <string name="qemu_version">مستقر</string>
     <string name="str_home">الرئيسية</string>
     <string name="str_logger">سجل</string>
@@ -542,7 +542,7 @@
     <string name="create">يخلق</string>
     <string name="nothing_here">لا يوجد شيء هنا</string>
     <string name="create_vm_now">هل تريد إنشاء جهاز افتراضي جديد الآن؟</string>
-    <string name="nothing_here_home">انقر فوق الزر "إنشاء" في الأسفل لبدء إنشاء جهاز افتراضي جديد.</string>
+    <string name="nothing_here_home">انقر فوق الزر "إنشاء" في الأسفل لبدء إنشاء جهاز افتراضي جديد. أو…</string>
     <string name="allow_access_to_storage">السماح بالوصول إلى التخزين</string>
     <string name="you_need_to_allow_access_to_the_storage_to_continue">يجب عليك السماح بالوصول إلى التخزين للاستمرار.</string>
     <string name="allow">يسمح</string>
@@ -574,4 +574,8 @@
     <string name="from">من</string>
     <string name="error_CR_CVBI3">حدث خطأ ولا يمكن الاستمرار. تم الاستخراج بنجاح ولكن ملف cvbi لا يحتوي على معلومات عن هذا القرص المضغوط ولا يحتوي على أي ملفات قرص مضغوط. رمز الخطأ: CR_CVBI3.</string>
     <string name="kept_some_files">تم الاحتفاظ ببعض الملفات لأن بعض الآلات الافتراضية الأخرى كانت بحاجة إليها.</string>
+    <string name="clean_up">تنظيف</string>
+    <string name="clean_up_content">سيتم حذف أقراص ROM والملفات والمجلدات التي لم تعد قيد الاستخدام.</string>
+    <string name="go_to_rom_store">انتقل إلى متجر ROM</string>
+    <string name="want_to_learn_more_about_qemu">هل تريد أن تتعلم المزيد عن QEMU؟</string>
 </resources>

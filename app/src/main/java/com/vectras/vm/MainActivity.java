@@ -203,6 +203,18 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(activity, SetArchActivity.class));
             }
         });
+
+        Button gotoromstore = findViewById(R.id.gotoromstorebutton);
+
+        gotoromstore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(getApplicationContext(), RomsManagerActivity.class);
+                startActivity(intent);
+            }
+        });
+
         Toolbar mainToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mainToolbar);
         mainDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -543,6 +555,23 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent();
                     intent.setClass(getApplicationContext(), RomsManagerActivity.class);
                     startActivity(intent);
+                } else if (id == R.id.cleanup) {
+                    alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+                    alertDialog.setTitle(getResources().getString(R.string.clean_up));
+                    alertDialog.setMessage(getResources().getString(R.string.clean_up_content));
+                    alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.clean_up), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            VectrasApp.startCleanUp();
+                            errorjsondialog();
+                            Toast.makeText(getApplicationContext(), activity.getResources().getString(R.string.done), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                    alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            alertDialog.dismiss();
+                        }
+                    });
+                    alertDialog.show();
                 }
                 return false;
             }
