@@ -651,11 +651,25 @@ public class CustomRomActivity extends AppCompatActivity {
 
                 String qemuText = qemu.getText().toString();
                 String cdromParam = "-drive index=1,media=cdrom,file='" + cdromPath + "'";
+                String Patterncompile = "-drive index=1,media=cdrom,file='(.*?)'";
 
-                Pattern pattern = Pattern.compile("-drive index=1,media=cdrom,file='(.*?)'");
+                if (MainSettingsManager.getArch(activity).equals("ARM64")) {
+                    if (!qemu.getText().toString().contains("-device nec-usb-xhci")) {
+                        qemu.setText(qemu.getText().toString() + " -device nec-usb-xhci");
+                    }
+                    cdromParam = "-device usb-storage,drive=cdrom -drive if=none,id=cdrom,format=raw,media=cdrom,file='" + cdromPath + "'";
+                    Patterncompile = "-device usb-storage,drive=cdrom -drive if=none,id=cdrom,format=raw,media=cdrom,file='(.*?)'";
+                } else {
+                    if (MainSettingsManager.getIfType(activity).isEmpty()) {
+                        cdromParam = "-cdrom '" + cdromPath + "'";
+                        Patterncompile = "-cdrom '(.*?)'";
+                    }
+                }
+
+                Pattern pattern = Pattern.compile(Patterncompile);
                 Matcher matcher = pattern.matcher(qemuText);
 
-                if (!qemuText.contains("-drive index=1,media=cdrom,file=")) {
+                if (!qemuText.contains("-drive index=1,media=cdrom,file=") || !qemuText.contains("-cdrom") || !qemuText.contains("-device usb-storage,drive=cdrom -drive if=none,id=cdrom,format=raw,media=cdrom,file=")) {
                     qemu.append(" " + cdromParam);
                 } else {
                     if (matcher.find()) {
@@ -792,7 +806,7 @@ public class CustomRomActivity extends AppCompatActivity {
         errorjsondialog();
 
         File isoFile = new File(cdrom.getText().toString());
-        if (isoFile.exists() && !qemu.getText().toString().contains("-drive index=1,media=cdrom,file=")) {
+        if (isoFile.exists() && (!qemu.getText().toString().contains("-drive index=1,media=cdrom,file=") || !qemu.getText().toString().contains("-cdrom") || !qemu.getText().toString().contains("-device usb-storage,drive=cdrom -drive if=none,id=cdrom,format=raw,media=cdrom,file="))) {
             isoFile.delete();
         }
 

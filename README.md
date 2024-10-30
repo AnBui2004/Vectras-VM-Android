@@ -79,3 +79,8 @@ This is not the official Vectras VM repository, this repository was created to s
 - Added cleanup feature.
 - Added Go to ROM store button on main screen when no virtual machine is created.
 - Changed interface on architecture selection screen.
+- Add Default option for hard drive type.
+- Fix black screen when using hard drive with ARM64.
+- Automatically change hard drive type to match when using with ARM64.
+- Automatically change CDROM to USB Storage when using with ARM64.
+- Flexible conversion of CDROM usage according to the selected hard drive type.

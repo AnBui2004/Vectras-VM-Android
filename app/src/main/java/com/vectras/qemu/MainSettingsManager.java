@@ -577,7 +577,7 @@ public class MainSettingsManager extends AppCompatActivity
 
     public static String getIfType(Activity activity) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-        return prefs.getString("ifType", "ide");
+        return prefs.getString("ifType", "");
     }
 
     public static void setBoot(Activity activity, String boot) {
