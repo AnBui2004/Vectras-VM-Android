@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">فيكترا</string>
-    <string name="app_version">v2.9.1y</string>
+    <string name="app_version">v2.9.1z</string>
     <string name="qemu_version">مستقر</string>
     <string name="str_home">الرئيسية</string>
     <string name="str_logger">سجل</string>
@@ -578,4 +578,5 @@
     <string name="clean_up_content">سيتم حذف أقراص ROM والملفات والمجلدات التي لم تعد قيد الاستخدام.</string>
     <string name="go_to_rom_store">انتقل إلى متجر ROM</string>
     <string name="want_to_learn_more_about_qemu">هل تريد أن تتعلم المزيد عن QEMU؟</string>
+    <string name="file_format_is_not_supported">قد لا تعمل الأشياء لأن تنسيق الملف غير مدعوم. هل تريد المتابعة؟</string>
 </resources>

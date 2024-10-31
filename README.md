@@ -84,3 +84,5 @@ This is not the official Vectras VM repository, this repository was created to s
 - Automatically change hard drive type to match when using with ARM64.
 - Automatically change CDROM to USB Storage when using with ARM64.
 - Flexible conversion of CDROM usage according to the selected hard drive type.
+- Automatically detect hard drive files with incorrect format.
+- Automatically show Nothing here after deleting all virtual machines.

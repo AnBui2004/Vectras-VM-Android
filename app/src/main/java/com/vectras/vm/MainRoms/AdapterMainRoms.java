@@ -333,6 +333,9 @@ public class AdapterMainRoms extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             UIUtils.toastLong(MainActivity.activity, e.toString());
                         }
                         UIUtils.toastLong(MainActivity.activity, current.itemName + context.getString(R.string.are_removed_successfully));
+                        if (!VectrasApp.readFile(AppConfig.maindirpath + "roms-data.json").contains("{")) {
+                            MainActivity.mdatasize2();
+                        }
                         return;
                     }
                 });
