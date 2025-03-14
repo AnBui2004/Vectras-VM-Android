@@ -2,6 +2,7 @@ package com.vectras.vm;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import android.app.ProgressDialog;
 import static android.os.Build.VERSION.SDK_INT;
 
 import android.app.Notification;
@@ -14,6 +15,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -27,11 +29,13 @@ import android.widget.Toast;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.vectras.qemu.MainSettingsManager;
 import com.vectras.vm.utils.FileUtils;
@@ -45,6 +49,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Locale;
 
 public class SplashActivity extends AppCompatActivity implements Runnable {
     public static SplashActivity activity;
@@ -56,10 +61,10 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         activity = this;
         setContentView(R.layout.activity_splash);
 
-        TextView textversionname;
-        textversionname = findViewById(R.id.versionname);
-        PackageInfo pinfo = MainActivity.activity.getAppInfo(getApplicationContext());
-        textversionname.setText(pinfo.versionName);
+        //TextView textversionname;
+        //textversionname = findViewById(R.id.versionname);
+        //PackageInfo pinfo = MainActivity.activity.getAppInfo(getApplicationContext());
+        //textversionname.setText(pinfo.versionName);
         VectrasApp.prepareDataForAppConfig(activity);
         setupFolders();
         SharedPreferences prefs = getSharedPreferences(CREDENTIAL_SHARED_PREF, Context.MODE_PRIVATE);
@@ -80,13 +85,26 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
         MainSettingsManager.setOrientationSetting(activity, 1);
 
         setupFiles();
+
+        updateLocale();
+    }
+
+    private void updateLocale() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String languageCode = sharedPreferences.getString("language", "en");
+
+        Locale locale = new Locale(languageCode);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.setLocale(locale);
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
     }
 
     public void setupFiles() {
         String filesDir = activity.getFilesDir().getAbsolutePath();
         String nativeLibDir = activity.getApplicationInfo().nativeLibraryDir;
 
-        File tmpDir = new File(activity.getFilesDir(), "tmp");
+        File tmpDir = new File(activity.getFilesDir(), "usr/tmp");
         if (!tmpDir.isDirectory()) {
             tmpDir.mkdirs();
             FileUtils.chmod(tmpDir, 0771);
@@ -134,47 +152,9 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
                 e.printStackTrace();
             }
 
-        File binDir = new File(distroDir + "/bin");
-        if (!binDir.exists()) {
-            String CHANNEL_ID = "vectras";
-            String[] cmdline = {"tar", "xf", nativeLibDir + "/libbootstrap.so", "-C", filesDir + "/distro"};
-            try {
-                Runtime.getRuntime().exec(cmdline).waitFor();
-            } catch (IOException | InterruptedException e) {
-                // Prepare an intent that does something when the user clicks the notification.
-                Intent intent = new Intent(activity, activity.getClass()); // Replace TargetActivity with your activity that you want to start.
-                PendingIntent pendingIntent = PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                // Build the notification to show in the notification tray.
-                Notification notification = new NotificationCompat.Builder(activity, CHANNEL_ID) // Replace YOUR_CHANNEL_ID with your actual channel ID
-                        .setContentTitle("Extract Bootstrap")
-                        .setContentText("Error during file extraction.")
-                        .setSmallIcon(R.mipmap.ic_launcher) // Replace this with your notification icon.
-                        .setAutoCancel(true)
-                        .setContentIntent(pendingIntent)
-                        .build();
-
-                // Use the Notification Manager to show the notification.
-                NotificationManager notificationManager = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
-
-                // It's a good practice to create a notification channel.
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    NotificationChannel channel = new NotificationChannel(
-                            CHANNEL_ID,
-                            "Extraction Status",
-                            NotificationManager.IMPORTANCE_DEFAULT
-                    );
-                    notificationManager.createNotificationChannel(channel);
-                }
-
-                // Show the notification. You can use a unique ID (e.g., 0) for each notification if you want to show multiple ones.
-                notificationManager.notify(0, notification);
-            }
-
-        }
-
         com.vectras.qemu.utils.FileInstaller.installFiles(activity, true);
     }
+
 
     public void onStart() {
         super.onStart();
@@ -367,10 +347,15 @@ public class SplashActivity extends AppCompatActivity implements Runnable {
     public void run() {
         String filesDir = activity.getFilesDir().getAbsolutePath();
         SharedPreferences prefs = getSharedPreferences(CREDENTIAL_SHARED_PREF, Context.MODE_PRIVATE);
-        if ((new File(filesDir, "/distro/usr/local/bin/qemu-system-x86_64").exists()) || (new File(filesDir, "/distro/usr/bin/qemu-system-x86_64").exists()))
+        if ((new File(filesDir, "/distro/usr/local/bin/qemu-system-x86_64").exists()) || (new File(filesDir, "/distro/usr/bin/qemu-system-x86_64").exists())) {
             startActivity(new Intent(this, MainActivity.class));
-        else
+        } else {
             startActivity(new Intent(this, SetupQemuActivity.class));
+            //For Android 14+
+            if (Build.VERSION.SDK_INT >= 34) {
+                MainSettingsManager.setVmUi(this, "VNC");
+            }
+        }
         finish();
     }
 }

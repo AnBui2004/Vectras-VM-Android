@@ -30,8 +30,12 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 import androidx.preference.SwitchPreferenceCompat;
 
+import com.vectras.vm.AboutActivity;
+import com.vectras.vm.MainActivity;
 import com.vectras.vm.R;
+import com.vectras.vm.RomsManagerActivity;
 import com.vectras.vm.SplashActivity;
+import com.vectras.vm.StoreActivity;
 import com.vectras.vm.VectrasApp;
 
 import java.util.Arrays;
@@ -131,29 +135,11 @@ public class MainSettingsManager extends AppCompatActivity
 
     }
 
-
     public static class AppPreferencesFragment extends PreferenceFragmentCompat
             implements Preference.OnPreferenceChangeListener {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-        }
-
-        public static void updateLanguage(Context context, String selectedLanguage) {
-            if (!"".equals(selectedLanguage)) {
-                Locale locale = new Locale(selectedLanguage);
-                Locale.setDefault(locale);
-                Configuration config = new Configuration();
-                config.locale = locale;
-                context.getResources().updateConfiguration(config, null);
-
-                // Persist user's language preference
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(context);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("language", selectedLanguage);
-                editor.apply();
-            }
         }
 
         @Override
@@ -168,20 +154,39 @@ public class MainSettingsManager extends AppCompatActivity
 
         }
 
-
         @Override
-        public void onCreatePreferences(Bundle bundle, String root_key) {
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             // Load the Preferences from the XML file
-            setPreferencesFromResource(R.xml.settings, root_key);
+            setPreferencesFromResource(R.xml.settings, rootKey);
 
+            // Find the ListPreference and set the change listener
+            ListPreference languagePref = findPreference("language");
+            if (languagePref != null) {
+                languagePref.setOnPreferenceChangeListener(this);
+            }
         }
 
         @Override
-        public boolean onPreferenceChange(Preference pref, Object newValue) {
-            if (pref.getKey().equals("app")) {
-
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            if (preference.getKey().equals("language")) {
+                String newLocale = (String) newValue;
+                updateLocale(newLocale);
+                return true;
             }
-            return true;
+            return false;
+        }
+
+        private void updateLocale(String languageCode) {
+            Locale locale = new Locale(languageCode);
+            Locale.setDefault(locale);
+            Configuration config = new Configuration();
+            config.setLocale(locale);
+
+            getResources().updateConfiguration(config, getResources().getDisplayMetrics());
+
+            MainActivity.activity.finish();
+            activity.finish();
+            startActivity(new Intent(activity, SplashActivity.class));
         }
 
     }
@@ -256,11 +261,11 @@ public class MainSettingsManager extends AppCompatActivity
 
             mHandler = new Handler();
 
-            Preference prefIfType = findPreference("ifType");
-            if (getArch(activity).equals("ARM64"))
-                if (prefIfType != null) {
-                    prefIfType.setVisible(false);
-                }
+            //Preference prefIfType = findPreference("ifType");
+            //if (getArch(activity).equals("ARM64"))
+                //if (prefIfType != null) {
+                    //prefIfType.setVisible(false);
+                //}
 
             Preference pref = findPreference("vmArch");
             if (pref != null) {
@@ -568,6 +573,31 @@ public class MainSettingsManager extends AppCompatActivity
         return prefs.getBoolean("customMemory", false);
     }
 
+    public static boolean autoCreateDisk(Activity activity) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        return prefs.getBoolean("autoCreateDisk", false);
+    }
+
+    public static boolean useDefaultBios(Activity activity) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        return prefs.getBoolean("useDefaultBios", true);
+    }
+
+    public static boolean useMemoryOvercommit(Activity activity) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        return prefs.getBoolean("useMemoryOvercommit", true);
+    }
+
+    public static boolean useLocalTime(Activity activity) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        return prefs.getBoolean("useLocalTime", true);
+    }
+
+    public static boolean copyFile(Activity activity) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        return prefs.getBoolean("copyFile", true);
+    }
+
     public static void setIfType(Activity activity, String type) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         SharedPreferences.Editor edit = prefs.edit();
@@ -601,7 +631,7 @@ public class MainSettingsManager extends AppCompatActivity
 
     public static String getVmUi(Activity activity) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-        return prefs.getString("vmUi", "VNC");
+        return prefs.getString("vmUi", "X11");
     }
 
     public static void setResolution(Activity activity, String RESOLUTION) {
@@ -664,6 +694,18 @@ public class MainSettingsManager extends AppCompatActivity
         return prefs.getString("vmArch", "X86_64");
     }
 
+    public static void setLang(Activity activity, String language) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putString("language", language);
+        edit.apply();
+    }
+
+    public static String getLang(Activity activity) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        return prefs.getString("language", "en");
+    }
+
     public static boolean isFirstLaunch(Activity activity) {
         PackageInfo pInfo = null;
 
@@ -706,6 +748,44 @@ public class MainSettingsManager extends AppCompatActivity
         edit.putBoolean("updateVersionPrompt", flag);
         edit.apply();
         // UIUtils.log("Setting First time: ");
+    }
+
+    public static boolean getcheckforupdatesfromthebetachannel(Activity activity) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        return prefs.getBoolean("checkforupdatesfromthebetachannel", false);
+    }
+
+
+    public static void setcheckforupdatesfromthebetachannel(Activity activity, boolean flag) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putBoolean("checkforupdatesfromthebetachannel", flag);
+        edit.apply();
+        // UIUtils.log("Setting First time: ");
+    }
+
+    public static void setsetUpWithManualSetupBefore(Context context, Boolean _boolean) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putBoolean("setUpWithManualSetupBefore", _boolean);
+        edit.commit();
+    }
+
+    public static Boolean getsetUpWithManualSetupBefore(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean("setUpWithManualSetupBefore", false);
+    }
+
+    public static void setSelectedMirror(Context context, int _int) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putInt("SelectedMirror", _int);
+        edit.commit();
+    }
+
+    public static int getSelectedMirror(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getInt("SelectedMirror", 0);
     }
 
 }

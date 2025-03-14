@@ -1,18 +1,13 @@
 package com.vectras.vm;
 
-import static androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -20,12 +15,12 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -45,7 +40,6 @@ import com.google.android.material.color.DynamicColors;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.vectras.qemu.MainSettingsManager;
-import com.vectras.vm.MainRoms.AdapterMainRoms;
 import com.vectras.vm.utils.FileUtils;
 import com.vectras.vterm.Terminal;
 
@@ -55,7 +49,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,7 +66,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VectrasApp extends Application {
@@ -443,16 +435,16 @@ public class VectrasApp extends Application {
 		} else {
 			if (request) {
 				AlertDialog alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-				alertDialog.setTitle("Allow permissions");
-				alertDialog.setMessage("You need to grant permission to access the storage before use.");
+				alertDialog.setTitle(activity.getResources().getString(R.string.allow_permissions));
+				alertDialog.setMessage(activity.getResources().getString(R.string.you_need_to_grant_permission_to_access_the_storage_before_use));
 				alertDialog.setCancelable(false);
-				alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Allow", new DialogInterface.OnClickListener() {
+				alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getResources().getString(R.string.allow), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						if (activity.shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 							Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
 							intent.setData(Uri.parse("package:" + activity.getPackageName()));
 							activity.startActivity(intent);
-							Toast.makeText(activity, "Find and allow access to storage in Settings.", Toast.LENGTH_LONG).show();
+							Toast.makeText(activity, activity.getResources().getString(R.string.find_and_allow_access_to_storage_in_settings), Toast.LENGTH_LONG).show();
 						} else {
 							ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1000);
 						}
@@ -507,7 +499,7 @@ public class VectrasApp extends Application {
 	}
 
 	public static boolean isFileExists(String filePath) {
-		File file = new File(filePath);
+		File file = new File(filePath.replaceAll("\n", ""));
 		return file.exists();
 	}
 
@@ -547,6 +539,12 @@ public class VectrasApp extends Application {
 		File _dir = new File(_pathToDelete);
 		if (_dir.isDirectory()) {
 			String[] children = _dir.list();
+
+			if (children == null) {
+				Log.e("ERROR", "Deletion failed. " + _dir);
+				return;
+			}
+
 			for (int i = 0; i < children.length; i++) {
 				File temp = new File(_dir, children[i]);
 				deleteDirectory(String.valueOf(temp));
@@ -617,12 +615,17 @@ public class VectrasApp extends Application {
 		}
 	}
 
+	public static void runACommand(String _command, Activity _activity) {
+		Terminal vterm = new Terminal(_activity);
+		vterm.executeShellCommand2(_command, false, _activity);
+	}
+
 	public static void killallqemuprocesses(Context context) {
 		Terminal vterm = new Terminal(context);
-		vterm.executeShellCommand("killall -9 qemu-system-i386", false, MainActivity.activity);
-		vterm.executeShellCommand("killall -9 qemu-system-x86_64", false, MainActivity.activity);
-		vterm.executeShellCommand("killall -9 qemu-system-aarch64", false, MainActivity.activity);
-		vterm.executeShellCommand("killall -9 qemu-system-ppc", false, MainActivity.activity);
+		vterm.executeShellCommand2("killall -9 qemu-system-i386", false, MainActivity.activity);
+		vterm.executeShellCommand2("killall -9 qemu-system-x86_64", false, MainActivity.activity);
+		vterm.executeShellCommand2("killall -9 qemu-system-aarch64", false, MainActivity.activity);
+		vterm.executeShellCommand2("killall -9 qemu-system-ppc", false, MainActivity.activity);
 	}
 
 	public static void killcurrentqemuprocess(Context context) {
@@ -642,7 +645,7 @@ public class VectrasApp extends Application {
 				env += "qemu-system-x86_64";
 				break;
 		}
-		vterm.executeShellCommand(env, false, MainActivity.activity);
+		vterm.executeShellCommand2(env, false, MainActivity.activity);
 	}
 
 	public static boolean isAppInstalled(String packagename, Context context) {
@@ -678,7 +681,7 @@ public class VectrasApp extends Application {
 
 	public static boolean isQemuRunning() {
 		Terminal vterm = new Terminal(MainActivity.activity);
-		vterm.executeShellCommand("ps -e", false, MainActivity.activity);
+		vterm.executeShellCommand2("ps -e", false, MainActivity.activity);
 		if (TerminalOutput.contains("qemu-system")) {
 			Log.d("VectrasApp.isQemuRunning", "Yes");
 			return true;
@@ -690,7 +693,7 @@ public class VectrasApp extends Application {
 
 	public static boolean isThisVMRunning(String intemExtra, String itemPath) {
 		Terminal vterm = new Terminal(MainActivity.activity);
-		vterm.executeShellCommand("ps -e", false, MainActivity.activity);
+		vterm.executeShellCommand2("ps -e", false, MainActivity.activity);
 		if (TerminalOutput.contains(intemExtra) && TerminalOutput.contains(itemPath)) {
 			Log.d("VectrasApp.isThisVMRunning", "Yes");
 			return true;
@@ -717,10 +720,25 @@ public class VectrasApp extends Application {
 		alertDialog.show();
 	}
 
+	public static void oneDialogWithContext(String _title, String _message, boolean _cancel, Context _context) {
+		AlertDialog alertDialog = new AlertDialog.Builder(_context, R.style.MainDialogTheme).create();
+		alertDialog.setTitle(_title);
+		alertDialog.setMessage(_message);
+		if (!_cancel) {
+			alertDialog.setCancelable(false);
+		}
+		alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+
+			}
+		});
+		alertDialog.show();
+	}
+
 	public static void prepareDataForAppConfig(Activity _activity) {
-		AppConfig.vectrasVersion = "2.9.1";
-		AppConfig.vectrasWebsite = "https://anbui2004.github.io/vectras/";
-		AppConfig.vectrasWebsiteRaw = "https://raw.githubusercontent.com/AnBui2004/Vectras-VM-Android/refs/heads/master/web/";
+		AppConfig.vectrasVersion = "2.9.4";
+		AppConfig.vectrasWebsite = "https://vectras.vercel.app/";
+		AppConfig.vectrasWebsiteRaw = "https://raw.githubusercontent.com/xoureldeen/Vectras-VM-Android/refs/heads/master/web/";
 		AppConfig.bootstrapfileslink = AppConfig.vectrasWebsiteRaw + "/data/setupfiles.json";
 		AppConfig.vectrasHelp = AppConfig.vectrasWebsite + "how.html";
 		AppConfig.community = AppConfig.vectrasWebsite + "community.html";
@@ -729,7 +747,7 @@ public class VectrasApp extends Application {
 		AppConfig.vectrasPrivacy = AppConfig.vectrasRaw + "PRIVACYANDPOLICY.md";
 		AppConfig.vectrasTerms = AppConfig.vectrasRaw + "TERMSOFSERVICE.md";
 		AppConfig.vectrasInfo = AppConfig.vectrasRaw + "info.md";
-		AppConfig.vectrasRepo = "https://github.com/AnBui2004/Vectras-VM-Android";
+		AppConfig.vectrasRepo = "https://github.com/xoureldeen/Vectras-VM-Android";
 		AppConfig.updateJson = AppConfig.vectrasRaw + "UpdateConfig.json";
 		AppConfig.blogJson = AppConfig.vectrasRaw + "news_list.json";
 		AppConfig.storeJson = AppConfig.vectrasWebsiteRaw + "store_list.json";
@@ -738,135 +756,439 @@ public class VectrasApp extends Application {
 		AppConfig.maindirpath = FileUtils.getExternalFilesDirectory(_activity).getPath() + "/";
 		AppConfig.sharedFolder = AppConfig.maindirpath + "SharedFolder/";
 		AppConfig.downloadsFolder = AppConfig.maindirpath + "Downloads/";
-		AppConfig.romsdatajson = Environment.getExternalStorageDirectory().toString() + "/Documents/VectrasVM/roms-data.json";
+		AppConfig.romsdatajson = AppConfig.maindirpath + "roms-data.json";
+		AppConfig.vmFolder = AppConfig.maindirpath + "roms/";
+		AppConfig.recyclebin = AppConfig.maindirpath + "recyclebin/";
 	}
-	public static String ramdomVMID() {
-		String addAdb = "";
-		Random random = new Random();
-		int randomAbc = random.nextInt(10);
-		if (randomAbc == 0) {
-			addAdb = "a";
-		} else if (randomAbc == 1) {
-			addAdb = "b";
-		} else if (randomAbc == 2) {
-			addAdb = "c";
-		} else if (randomAbc == 3) {
-			addAdb = "d";
-		} else if (randomAbc == 4) {
-			addAdb = "e";
-		} else if (randomAbc == 5) {
-			addAdb = "f";
-		} else if (randomAbc == 6) {
-			addAdb = "g";
-		} else if (randomAbc == 7) {
-			addAdb = "h";
-		} else if (randomAbc == 8) {
-			addAdb = "i";
-		}
-		return addAdb + String.valueOf((long)(random.nextInt(10001)));
-	}
-	public static void deleteVMWithName(String _vmName) {
-		String _romsdata = VectrasApp.readFile(AppConfig.maindirpath + "roms-data.json").replace("\\/", "/");
-		if (isFileExists(AppConfig.maindirpath + "roms/" + _vmName + "/vmID.txt")) {
-			String _vmID = readFile(AppConfig.maindirpath + "roms/" + _vmName + "/vmID.txt");
-			if (!_vmID.isEmpty()) {
-				int _startRepeat = 0;
-				ArrayList<String> _filelist = new ArrayList<>();
-				listDir(AppConfig.maindirpath + "roms/", _filelist);
-				if (!_filelist.isEmpty()) {
-					for (int _repeat = 0; _repeat < (int)(_filelist.size()); _repeat++) {
-						if (_startRepeat < _filelist.size()) {
-							if (isFileExists(_filelist.get((int)(_startRepeat)) + "/vmID.txt")) {
-								if (!readFile(_filelist.get((int)(_startRepeat)) + "/vmID.txt").isEmpty()) {
-									if (readFile(_filelist.get((int)(_startRepeat)) + "/vmID.txt").equals(_vmID)) {
-										if (!_romsdata.contains(_filelist.get((int)(_startRepeat)))) {
-											deleteDirectory(_filelist.get((int)(_startRepeat)));
-										} else {
-											AdapterMainRoms.isKeptSomeFiles = true;
-											deleteVMIDFileWithName(_vmName);
-										}
-									}
-								}
-							}
-						}
-						_startRepeat++;
-					}
-				}
-			}
+
+	public static PackageInfo getAppInfo(Context context) {
+		try {
+			return context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+		} catch (PackageManager.NameNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
-	public static void deleteVMIDFileWithName(String _vmName) {
-		if (isFileExists(AppConfig.maindirpath + "roms/" + _vmName + "/vmID.txt")) {
-			String _vmID = readFile(AppConfig.maindirpath + "roms/" + _vmName + "/vmID.txt");
-			if (!_vmID.isEmpty()) {
-				int _startRepeat = 0;
-				ArrayList<String> _filelist = new ArrayList<>();
-				listDir(AppConfig.maindirpath + "roms/", _filelist);
-				if (!_filelist.isEmpty()) {
-					for (int _repeat = 0; _repeat < (int)(_filelist.size()); _repeat++) {
-						if (_startRepeat < _filelist.size()) {
-							if (isFileExists(_filelist.get((int)(_startRepeat)) + "/vmID.txt")) {
-								if (!readFile(_filelist.get((int)(_startRepeat)) + "/vmID.txt").isEmpty()) {
-									if (readFile(_filelist.get((int)(_startRepeat)) + "/vmID.txt").equals(_vmID)) {
-										moveAFile(_filelist.get((int)(_startRepeat)) + "/vmID.txt", _filelist.get((int)(_startRepeat)) + "/vmID.old.txt");
-									}
-								}
-							}
-						}
-						_startRepeat++;
-					}
-				}
-			}
-		}
+	public static void setupMirrorListForListmap(ArrayList<HashMap<String, String>> listmapForSelectMirrors) {
+		HashMap<String, String> mapForAddItems = new HashMap<>();
+
+		mapForAddItems.put("location", "United States (Default)");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true, "dl-cdn.alpinelinux.org", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Australia");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(false,"mirror.aarnet.edu.au", "/pub/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Austria");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.alwyzon.net", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Bulgaria");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirrors.neterra.net", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Brazil");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.uepg.br", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Cambodia");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.sabay.com.kh", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Canada");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true, "mirror.csclub.uwaterloo.ca", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Chile");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"elmirror.cl", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "China");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true, "mirrors.tuna.tsinghua.edu.cn", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Czech Republic");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true, "mirror.fel.cvut.cz", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Denmark");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true, "mirrors.dotsrc.org", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Finland");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true, "mirror.5i.fi", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "France");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirrors.ircam.fr", "/pub/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Germany");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"ftp.halifax.rwth-aachen.de", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Hong Kong");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true, "mirror.xtom.com.hk", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Indonesia");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(false,"foobar.turbo.net.id", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Iran");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.bardia.tech", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Italy");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"alpinelinux.mirror.garr.it", ""));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Japan");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true, "repo.jing.rocks", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Kazakhstan");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.ps.kz", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Moldova");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.ihost.md", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Morocco");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true, "mirror.marwan.ma", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "New Caledonia");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.lagoon.nc", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "New Zealand");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.2degrees.nz", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Poland");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"ftp.icm.edu.pl", "/pub/Linux/distributions/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Portugal");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.leitecastro.com", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Romania");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirrors.hosterion.ro", "/alpinelinux"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Russia");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.hyperdedic.ru", "/alpinelinux"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Singapore");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.jingk.ai", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Slovenia");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.tux.si", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Spain");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.raiolanetworks.com", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Sweden");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true, "ftp.lysator.liu.se/pub", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Switzerland");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true, "pkg.adfinis.com", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Taiwan");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true, "mirror.twds.com.tw", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "Thailand");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"mirror.kku.ac.th", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "The Netherlands");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"alpine.mirror.wearetriple.com", ""));
+		listmapForSelectMirrors.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("location", "United Kingdom");
+		mapForAddItems.put("mirror", createCommandForSelectedMirror(true,"uk.alpinelinux.org", "/alpine"));
+		listmapForSelectMirrors.add(mapForAddItems);
 	}
 
-	public static String quickScanDiskFileInFolder(String _foderpath) {
-		if (!_foderpath.isEmpty()) {
-			int _startRepeat = 0;
-			ArrayList<String> _filelist = new ArrayList<>();
-			listDir(_foderpath, _filelist);
-			if (!_filelist.isEmpty()) {
-				for (int _repeat = 0; _repeat < (int)(_filelist.size()); _repeat++) {
-					if (_startRepeat < _filelist.size()) {
-						if (isADiskFile(_filelist.get((int)(_startRepeat)))) {
-							return _filelist.get((int)(_startRepeat));
-                        }
-					}
-					_startRepeat++;
-				}
-			}
-		}
-		return "";
+	public static String createCommandForSelectedMirror(boolean _https, String _url, String _beforemain) {
+		String command = "echo \"\" > /etc/apk/repositories && sed -i -e \"1ihttps://xssFjnj58Id/yttGkok69Je/edge/testing\" /etc/apk/repositories && sed -i -e \"1ihttps://xssFjnj58Id/alpine/v3.19/community\" /etc/apk/repositories && sed -i -e \"1ihttps://xssFjnj58Id/alpine/v3.19/main\" /etc/apk/repositories";
+		command = command.replaceAll("/yttGkok69Je", _beforemain);
+		if (!_https)
+			command = command.replaceAll("https://", "http://");
+		return command.replaceAll("xssFjnj58Id", _url);
 	}
 
-	public static void startCleanUp() {
-		String _romsdata = VectrasApp.readFile(AppConfig.maindirpath + "roms-data.json").replace("\\/", "/");
-		int _startRepeat = 0;
-		ArrayList<String> _filelist = new ArrayList<>();
-		listDir(AppConfig.maindirpath + "roms/", _filelist);
-		if (!_filelist.isEmpty()) {
-			for (int _repeat = 0; _repeat < (int)(_filelist.size()); _repeat++) {
-				if (_startRepeat < _filelist.size()) {
-					if (!isFileExists(_filelist.get((int)(_startRepeat)) + "/vmID.txt")) {
-						if (!_romsdata.contains(_filelist.get((int)(_startRepeat)))) {
-							deleteDirectory(_filelist.get((int)(_startRepeat)));
-						}
-					}
-				}
-				_startRepeat++;
-			}
-		}
-	}
+	public static void setupSendKeyListForListmap(ArrayList<HashMap<String, Object>> listmapForSendKey) {
+		HashMap<String, Object> mapForAddItems = new HashMap<>();
 
-	public static boolean isADiskFile (String _filepath) {
-		if (_filepath.contains(".")) {
-			String _getFileName = Objects.requireNonNull(Uri.parse(_filepath).getLastPathSegment()).toLowerCase();
-			String _getFileFormat = _getFileName.substring((int)(_getFileName.lastIndexOf(".") + 1), (int)(_getFileName.length()));
-			if ("qcow2,img,vhd,vhdx,vdi,qcow,vmdk,vpc".contains(_getFileFormat)){
-				return true;
-			}
-		}
-		return false;
+		mapForAddItems.put("keyname", "Ctrl + Alt + Del");
+		mapForAddItems.put("keycode", 0);
+		mapForAddItems.put("useKeyEvent", false);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "Esc");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_ESCAPE);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "Windows");
+		mapForAddItems.put("keycode", 91);
+		mapForAddItems.put("useKeyEvent", false);
+		mapForAddItems.put("useIcon", true);
+		mapForAddItems.put("rIcon", R.drawable.grid_view_24px);
+		listmapForSendKey.add(mapForAddItems);
+
+//		mapForAddItems = new HashMap<>();
+//		mapForAddItems.put("keyname", "Menu");
+//		mapForAddItems.put("keycode", 93);
+//		mapForAddItems.put("useKeyEvent", false);
+//		mapForAddItems.put("useIcon", true);
+//		mapForAddItems.put("rIcon", R.drawable.menu_24px);
+//		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "Backspace");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_DEL);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", true);
+		mapForAddItems.put("rIcon", R.drawable.backspace_24px);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "Enter");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_ENTER);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", true);
+		mapForAddItems.put("rIcon", R.drawable.keyboard_return_24px);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "Tab");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_TAB);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", true);
+		mapForAddItems.put("rIcon", R.drawable.sync_alt_24px);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "Up");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_DPAD_UP);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", true);
+		mapForAddItems.put("rIcon", R.drawable.arrow_upward_24px);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "Down");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_DPAD_DOWN);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", true);
+		mapForAddItems.put("rIcon", R.drawable.arrow_downward_24px);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "Left");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_DPAD_LEFT);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", true);
+		mapForAddItems.put("rIcon", R.drawable.arrow_back_24px);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "Left");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_DPAD_RIGHT);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", true);
+		mapForAddItems.put("rIcon", R.drawable.arrow_forward_24px);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "Home");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_MOVE_HOME);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", true);
+		mapForAddItems.put("rIcon", R.drawable.vertical_align_top_24px);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "End");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_MOVE_END);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", true);
+		mapForAddItems.put("rIcon", R.drawable.vertical_align_bottom_24px);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "End");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_PAGE_UP);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", true);
+		mapForAddItems.put("rIcon", R.drawable.arrow_warm_up_24px);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "End");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_PAGE_DOWN);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", true);
+		mapForAddItems.put("rIcon", R.drawable.arrow_cool_down_24px);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "End");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_INSERT);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", true);
+		mapForAddItems.put("rIcon", R.drawable.insert_text_24px);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "F1");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_F1);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "F2");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_F2);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "F3");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_F3);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "F4");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_F4);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "F5");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_F5);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "F6");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_F6);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "F7");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_F7);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "F8");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_F8);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "F9");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_F9);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "F10");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_F10);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "F11");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_F11);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
+
+		mapForAddItems = new HashMap<>();
+		mapForAddItems.put("keyname", "F12");
+		mapForAddItems.put("keycode", KeyEvent.KEYCODE_F12);
+		mapForAddItems.put("useKeyEvent", true);
+		mapForAddItems.put("useIcon", false);
+		mapForAddItems.put("rIcon", 0);
+		listmapForSendKey.add(mapForAddItems);
 	}
 }

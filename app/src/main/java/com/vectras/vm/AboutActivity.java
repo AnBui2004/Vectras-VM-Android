@@ -8,6 +8,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
@@ -16,6 +20,7 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.vectras.vm.adapters.GithubUserAdapter;
 import com.vectras.vm.utils.UIUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -33,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vectras.vm.R;
+import com.vectras.vterm.Terminal;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -41,7 +47,7 @@ import java.net.URL;
 
 public class AboutActivity extends AppCompatActivity implements View.OnClickListener{
 
-    Button btn_osl, btn_clog, btn_youtube, btn_github, btn_telegram, btn_instagram, btn_facebook;
+    Button btn_osl, btn_clog, btn_discord, btn_youtube, btn_github, btn_telegram, btn_instagram, btn_facebook;
     String appInfo;
 
     public String TAG = "AboutActivity";
@@ -61,6 +67,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         btn_github = (Button) findViewById(R.id.btn_github);
         btn_instagram = (Button) findViewById(R.id.btn_instagram);
         btn_facebook = (Button) findViewById(R.id.btn_facebook);
+        btn_discord = (Button) findViewById(R.id.btn_discord);
         btn_osl = (Button) findViewById(R.id.btn_osl);
         btn_clog = (Button) findViewById(R.id.btn_changelog);
         //onclicklistener
@@ -69,6 +76,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         btn_youtube.setOnClickListener(this);
         btn_instagram.setOnClickListener(this);
         btn_facebook.setOnClickListener(this);
+        btn_discord.setOnClickListener(this);
         btn_osl.setOnClickListener(this);
         btn_clog.setOnClickListener(this);
 
@@ -76,44 +84,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         //AdRequest adRequest = new AdRequest.Builder().build();
         //mAdView.loadAd(adRequest);
         VectrasApp.prepareDataForAppConfig(this);
-        new Thread(new Runnable(){
 
-            public void run(){
-
-                BufferedReader reader = null;
-                final StringBuilder builder = new StringBuilder();
-
-                try {
-                    // Create a URL for the desired page
-                    URL url = new URL(AppConfig.vectrasInfo); //My text file location
-                    //First open the connection
-                    HttpURLConnection conn=(HttpURLConnection) url.openConnection();
-                    conn.setConnectTimeout(60000); // timing out in a minute
-
-                    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-                    //t=(TextView)findViewById(R.id.TextView1); // ideally do this in onCreate()
-                    String str;
-                    while ((str = in.readLine()) != null) {
-                        builder.append(str);
-                    }
-                    in.close();
-                } catch (Exception e) {
-                    UIUtils.toastLong(AboutActivity.this, "check your internet connection");
-                    Log.d("VECTRAS",e.toString());
-                }
-
-                //since we are in background thread, to post results we have to go back to ui thread. do the following for that
-
-                runOnUiThread(new Runnable(){
-                    public void run(){
-                        appInfo = builder.toString(); // My TextFile has 3 lines
-
-                    }
-                });
-
-            }
-        }).start();
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,9 +131,32 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
             Log.d("TAG", "The interstitial ad wasn't ready yet.");
         }
 
-        TextView textversionname = findViewById(R.id.versionname);
-        PackageInfo pinfo = MainActivity.activity.getAppInfo(getApplicationContext());
-        textversionname.setText(pinfo.versionName);
+        //TextView textversionname = findViewById(R.id.versionname);
+        //PackageInfo pinfo = MainActivity.activity.getAppInfo(getApplicationContext());
+        //textversionname.setText(pinfo.versionName);
+        
+        RecyclerView recyclerView = findViewById(R.id.github_users_recycler_view);
+        String[] usernames = {"vectras-team", "xoureldeen", "ahmedbarakat2007", "anbui2004"};
+
+        GithubUserAdapter adapter = new GithubUserAdapter(this, usernames);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
+        TextView qemuVersion = findViewById(R.id.qemuVersion);
+
+        String command = "qemu-system-x86_64 --version";
+        new Terminal(this).extractQemuVersion(command, false, this, (output, errors) -> {
+            if (errors.isEmpty()) {
+                String versionStr = "Unknown";
+                if (output.equals("8.2.1"))
+                    versionStr = output + " - 3dfx";
+                Log.d(TAG, "QEMU Version: " + versionStr);
+                qemuVersion.setText(versionStr);
+            } else {
+                Log.e(TAG, "Errors: " + errors);
+            }
+        });
     }
 
     @Override
@@ -177,18 +171,19 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
     public static final int GT = R.id.btn_github;
     public static final int IG = R.id.btn_instagram;
     public static final int FB = R.id.btn_facebook;
+    public static final int DD = R.id.btn_discord;
     public static final int CL = R.id.btn_changelog;
     public static final int OSL = R.id.btn_osl;
     @Override
     public void onClick(View v) {
         int id = v.getId();
             if (id == TG) {
-                String tg = AppConfig.vectrasWebsite + "community.html";
+                String tg = "https://t.me/vectras_os";
                 Intent f = new Intent(Intent.ACTION_VIEW);
                 f.setData(Uri.parse(tg));
                 startActivity(f);
             } else if (id == YT) {
-                String tw = AppConfig.vectrasWebsite + "community.html";
+                String tw = "https://youtube.com/@xoureldeen";
                 Intent w = new Intent(Intent.ACTION_VIEW);
                 w.setData(Uri.parse(tw));
                 startActivity(w);
@@ -198,10 +193,15 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
                 g.setData(Uri.parse(gt));
                 startActivity(g);
             } else if (id == IG) {
-                String ig = AppConfig.vectrasWebsite + "community.html";
+                String ig = "https://vectras.vercel.app";
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(ig));
                 startActivity(i);
+            } else if (id == DD) {
+                String dd = "https://discord.gg/t8TACrKSk7";
+                Intent f = new Intent(Intent.ACTION_VIEW);
+                f.setData(Uri.parse(dd));
+                startActivity(f);
             } else if (id == FB) {
                 String fb = AppConfig.vectrasWebsite + "community.html";
                 Intent f = new Intent(Intent.ACTION_VIEW);

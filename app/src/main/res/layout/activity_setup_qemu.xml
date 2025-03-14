@@ -5,19 +5,50 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:animateLayoutChanges="true">
+    <LinearLayout
+        android:id="@+id/linearwelcome"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        android:orientation="vertical"
+        android:gravity="center">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/emoticon_96px" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/welcome"
+            android:textSize="18sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/welcome_to_vectras_vm_lets_get_started" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonletstart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="@string/letstart" />
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/linearload"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center">
-        <ProgressBar
+        <com.google.android.material.progressindicator.CircularProgressIndicator
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:indeterminate="false"
-            style="?android:progressBarStyle" />
+            android:indeterminate="true"
+            app:showAnimationBehavior="inward"/>
         <TextView
             android:id="@+id/textviewconnecting"
             android:layout_width="wrap_content"
@@ -83,14 +114,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:text="Start setup"
+                    android:text="@string/start_setup"
                     android:textSize="18sp" />
                 <TextView
                     android:id="@+id/textview3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:text="Do you want to set it up automatically or select the bootstrap file manually\?" />
+                    android:text="@string/do_you_want_to_set_it_up_automatically_or_select_the_bootstrap_file_manually" />
                 <LinearLayout
                     android:id="@+id/linear5"
                     android:layout_width="match_parent"
@@ -105,14 +136,40 @@
                         android:layout_marginRight="4dp"
                         android:padding="8dp"
                         android:gravity="center_horizontal|center_vertical"
-                        android:text="Auto setup" />
+                        android:text="@string/auto_setup" />
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/buttonmanualsetup"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="8dp"
                         android:gravity="center_horizontal|center_vertical"
-                        android:text="Manual" />
+                        android:text="@string/manual" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/linear6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="20dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/do_you_want_to_change_the_mirror_before_setting_up_the_current_mirror_is" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/backgroud_stroke_for_spinner">
+                        <Spinner
+                            android:id="@+id/spinnerselectmirror"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:spinnerMode="dialog"
+                            tools:listitem="@layout/simple_layout_for_spiner"/>
+                    </LinearLayout>
+
                 </LinearLayout>
             </LinearLayout>
             <LinearLayout
@@ -123,20 +180,20 @@
                 android:gravity="center_horizontal|center_vertical"
                 android:orientation="vertical"
                 android:visibility="gone">
-                <ProgressBar
+                <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/progressbar1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:indeterminate="false"
-                    style="?android:progressBarStyle" />
+                    android:indeterminate="true"
+                    app:showAnimationBehavior="inward"/>
                 <TextView
                     android:id="@+id/textviewsettingup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
                     android:gravity="center"
-                    android:text="Getting ready for you..." />
+                    android:text="@string/getting_ready_for_you" />
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/linearsetupfailed"
@@ -150,14 +207,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:text="Failed!"
+                    android:text="@string/failed"
                     android:textSize="18sp" />
                 <TextView
                     android:id="@+id/textview6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:text="Something went wrong during setup. Would you like to try again\?" />
+                    android:text="@string/something_went_wrong_during_setup_would_you_like_to_try_again" />
                 <LinearLayout
                     android:id="@+id/linear8"
                     android:layout_width="match_parent"
@@ -172,14 +229,14 @@
                         android:layout_marginRight="4dp"
                         android:padding="8dp"
                         android:gravity="center_horizontal|center_vertical"
-                        android:text="Try again" />
+                        android:text="@string/try_again" />
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/buttonsetupshowlog"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="8dp"
                         android:gravity="center_horizontal|center_vertical"
-                        android:text="Show log" />
+                        android:text="@string/show_log" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -194,7 +251,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="Show advanced setup" />
+                android:text="@string/show_advanced_setup" />
         </LinearLayout>
     </LinearLayout>
 <androidx.cardview.widget.CardView
@@ -203,17 +260,13 @@
     android:layout_height="match_parent"
     android:layout_margin="18dp">
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:scaleY="4"
         android:indeterminate="true"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:showAnimationBehavior="inward"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -271,7 +324,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"/>
+                    android:orientation="vertical"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnInstall"
@@ -279,6 +332,13 @@
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     android:text="@string/try_again" />
+                <TextView
+                    android:id="@+id/textviewhideadvancedsetup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dp"
+                    android:text="@string/hide_advanced_setup"
+                    android:gravity="center" />
 
             </LinearLayout>
         </LinearLayout>

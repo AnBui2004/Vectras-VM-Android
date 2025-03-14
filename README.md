@@ -1,88 +1,90 @@
-#Note:
+<p align="center">
+  <img src="resources/vectrasvm.png" style="width: 30%;" />
+</p>
 
-This is not the official Vectras VM repository, this repository was created to suit users on YouTube channel Nguyen Bao An Bui. And this is the official Vectras VM repository: https://github.com/xoureldeen/Vectras-VM-Android
+# Vectras VM
+[![Ceasefire Now](https://badge.techforpalestine.org/default)](https://techforpalestine.org/learn-more)
 
-#What's new?
+[![Telegram Channel][ico-telegram]][link-telegram]
+[![Discord][ico-discord]][link-discord]
+[![Latest Version][ico-version]][link-releases]
+[![Software License][ico-license]](LICENSE)
 
-- It is no longer required to select ROM ICON and ROM DRIVE.
-- Connect to the new server to use AUTO SETUP.
-- The store is supported.
-- The message dialog says there is no support for 32-bit.
-- Store items are downloaded through the browser.
-- Fixed a bug where nothing happened when tapping the Create button.
-- Added the virtual machine list data error dialog is corrupted.
-- Added the dialog suggests creating a new virtual machine when the virtual machine list is empty.
-- Tap the thumbnail in the virtual machine creation interface to change the image.
-- Select thumbnails with more formats.
-- Fixed the first time virtual machine creation failure.
-- Fixed the Save Changes button being disabled when editing virtual machine information.
-- Do not automatically restart the app when creating a new virtual machine.
-- Fixed black screen when using PowerPC.
-- Added small note about adding ROM and CDROM.
-- No need to switch architecture.
-- Improved stability when creating new virtual machines.
-- Added dialog about CPU missing necessary instructions.
-- Added dialog asking for permission to access storage.
-- Added UEFI for qemu-system-aarch64.
-- Added a button to completely shutdown Vectras VM.
-- Don't auto-open VNC when qemu is stopped.
-- Don't auto-close VNC when the OS is booting.
-- Added tap and hold shut down button to temporarily exit VNC activity.
-- Change the Vectras VM shutdown button to kill all Qemu processes.
-- The Shut down button in VNC activity will kill current Qemu processes.
-- 32bit support.
-- Added warning dialog if your device does not support 64bit.
-- AUTO SETUP will directly install qemu instead of spending extra time downloading bootstrap file.
-- Added VNC screen open button.
-- Fixed keyboard not showing up in VNC activity.
-- Audio support with Termux.
-- Automatically disallow virtual machines from running when your device does not support Multi-threaded TCG.
-- If you do not set a thumbnail for the virtual machine, the thumbnail will be automatically selected to match the virtual machine name.
-- Fixed an issue where the ADD button would be disabled after selecting ROM DRIVE or CDROM.
-- If you click the ADD button while you have not added a hard drive or storage device to the virtual machine, a warning dialog will appear.
-- New setup method.
-- More stable VNC display.
-- Automatically suggest using Single-threaded TCG if your device is not eligible for Multi-threaded TCG.
-- Do not start the VM when it is detected that it is already running.
-- Removed "-nodefault" to fix audio device error.
-- New update check method.
-- The default name of the new VM is "New VM".
-- Fixed a bug where the file containing the virtual machine list data could not be created.
-- New simple setup interface.
-- Allow landscape rotation on setup screen.
-- Only detect issue when clicking ADD button on new virtual machine creation screen.
-- New Qemu params editing screen for easier editing.
-- Changed some icons to match the feature.
-- Changed location to create new qcow2 file.
-- Screen suggests to create new virtual machine if no virtual machine in list.
-- Added option to delete all virtual machines.
-- New Gilroy font.
-- Added Arabic language support for some features.
-- Support creating virtual machines with Create command (https://play.google.com/store/apps/details?id=com.anbui.cqcm.app).
-- ROM Store is back.
-- Improved interface for ROM Store.
-- Vectras VM will now connect to this GitHub repository for online operations.
-- Improved stability for ROM Store.
-- Allows you to choose to keep ROM files and CD ROMs when deleting a virtual machine.
-- Automatically exits ROM Store when you're done creating a virtual machine.
-- Added a dialog warning of a fatal error that occurred in Setup.
-- Fixed cvbi file import.
-- ROM Store now supports cvbi.
-- Automatically use default Qemu params if ROM Store does not provide Qemu params information.
-- New folder location to store ROMs.
-- Added error dialog about cvbi.
-- Automatically search and add disk file if cvbi does not contain file containing information.
-- Added ID for VM.
-- Better delete all related files when choosing not to keep files when deleting VM with VM ID.
-- Automatically retain files needed by other virtual machines when you choose not to retain files when deleting a virtual machine.
-- Automatically add information if cvbi file does not contain information from ROM Store.
-- Added cleanup feature.
-- Added Go to ROM store button on main screen when no virtual machine is created.
-- Changed interface on architecture selection screen.
-- Add Default option for hard drive type.
-- Fix black screen when using hard drive with ARM64.
-- Automatically change hard drive type to match when using with ARM64.
-- Automatically change CDROM to USB Storage when using with ARM64.
-- Flexible conversion of CDROM usage according to the selected hard drive type.
-- Automatically detect hard drive files with incorrect format.
-- Automatically show Nothing here after deleting all virtual machines.
+Welcome to Vectras VM! A virtual machine app for Android based on QEMU that lets you emulate various OSes including Windows, macOS, Linux, and Android.
+
+If you need help, check out [our documentation](https://vectras.vercel.app/how.html). For quick answers, join the [Vectras Telegram group](http://t.me/vectras_vm_discussion).
+
+[![Video Thumbnail](https://img.youtube.com/vi/AlNbverd0xE/0.jpg)](https://www.youtube.com/watch?v=AlNbverd0xE)
+
+## Device Compatibility
+
+Works fine on devices manufactured in 2021 or later and devices equipped with Snapdragon 855 CPU or better. Here are the devices tested:
+
+### Works well
+
+- **Samsung**
+- **Google Pixel**
+- **Xiaomi**
+- **RedMagic**
+
+### Unstable
+
+- **Oppo**
+- **Realme**
+- **Huawei**
+- **Honor**
+- **Vivo**
+
+You can try running Vectras VM on unsupported devices, but we cannot guarantee stability or support.
+
+# Installation
+
+You can download Vectras VM from the [releases](https://github.com/xoureldeen/Vectras-VM-Android/releases) page or the [official website](https://vectras.vercel.app/download.html).
+
+or
+
+
+[![OpenAPK](https://www.openapk.net/images/openapk-badge.png)](https://www.openapk.net/vectras-vm/com.vectras.vm/)
+
+
+### Minimum System Requirements
+- Android 6.0 and up.
+- 3GB RAM (1GB of free RAM).
+- A good processor.
+
+### Recommended System Requirements
+- Android 8.1 and up.
+- 8GB RAM (3GB of free RAM).
+- CPU and Android OS support 64-bit.
+- Snapdragon 855 CPU or better.
+- Integrated or removable cooling system (if running operating systems from 2010 to present).
+> [!TIP]
+> If the OS you are trying to emulate crashes, try using an older version.
+
+# Donate
+Help support the project by contributing!
+
+[![Buy Me A Coffee][ico-buymeacoffee]][link-buymeacoffee]
+[![Buy Me a Coffee at ko-fi.com][ico-ko-fi]][link-ko-fi]
+[![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dendel%26type%3Dpatrons&style=flat)](https://patreon.com/VectrasTeam)
+
+# Thanks to
+- [QEMU](https://github.com/qemu/qemu)
+- [3DFX QEMU PATCH](https://github.com/kjliew/qemu-3dfx)
+- [PROOT](https://proot-me.github.io/)
+- [Alpine Linux](https://www.alpinelinux.org/)
+- [Termux](https://github.com/termux)
+
+[ico-telegram]: https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white
+[ico-discord]: https://img.shields.io/badge/Discord-%235865F2.svg?&logo=discord&logoColor=white
+[ico-version]: https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white
+[ico-license]: https://img.shields.io/badge/License-GPL_v2-blue.svg
+[ico-buymeacoffee]: https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?&logo=buy-me-a-coffee&logoColor=black
+[ico-ko-fi]: https://img.shields.io/badge/Ko--fi-FF5E5B?logo=ko-fi&logoColor=white
+
+[link-discord]: https://discord.gg/t8TACrKSk7
+[link-telegram]: https://t.me/vectras_os
+[link-repo]: https://github.com/xoureldeen/Vectras-VM-Android/
+[link-releases]: https://github.com/xoureldeen/Vectras-VM-Android/releases/
+[link-buymeacoffee]: https://www.buymeacoffee.com/vectrasvm
+[link-ko-fi]: https://ko-fi.com/vectrasvm

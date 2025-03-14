@@ -13,21 +13,23 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.File;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class CqcmActivity extends AppCompatActivity {
 
     private Intent gotoActivity = new Intent();
     private Intent openURL = new Intent();
-    private String contentJson = "";
-    private String contentJsonNow = "";
     private Button buttonallow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         VectrasApp.prepareDataForAppConfig(this);
-        Log.d("CqcmActivity", "Start creating...");
         if(!VectrasApp.checkpermissionsgranted(this,false)) {
             setContentView(R.layout.activity_cqcm);
             buttonallow = findViewById(R.id.buttonallow);
@@ -38,7 +40,7 @@ public class CqcmActivity extends AppCompatActivity {
                         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                         intent.setData(Uri.parse("package:" + getPackageName()));
                         startActivity(intent);
-                        Toast.makeText(getApplicationContext(), "Find and allow access to storage in Settings.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.find_and_allow_access_to_storage_in_settings), Toast.LENGTH_LONG).show();
                     } else {
                         ActivityCompat.requestPermissions(CqcmActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1000);
                     }
@@ -50,46 +52,99 @@ public class CqcmActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        Log.i("CqcmActivity", "Checking access to storage...");
         if(VectrasApp.checkpermissionsgranted(this,false)) {
-            File vDir = new File(AppConfig.maindirpath);
-            if (!vDir.exists()) {
-                vDir.mkdirs();
-            }
-            if (!VectrasApp.isFileExists(AppConfig.romsdatajson)) {
-                VectrasApp.writeToFile(AppConfig.maindirpath, "roms-data.json", "[]");
-            }
-            if (getIntent().hasExtra("content")) {
-                contentJson = VectrasApp.readFile(AppConfig.romsdatajson);
-                if (contentJson.isEmpty()) {
-                    contentJson = "[]";
-                }
-                if (VectrasApp.checkJSONIsNormalFromString(contentJson)) {
-                    if (contentJson.contains("}")) {
-                        contentJsonNow = contentJson.replaceAll("]", "," + getIntent().getStringExtra("content"));
-                    } else {
-                        contentJsonNow = contentJson.replaceAll("]", getIntent().getStringExtra("content"));
-                    }
-
-                    if (VectrasApp.checkJSONIsNormalFromString(contentJsonNow)) {
-                        VectrasApp.writeToFile(AppConfig.maindirpath, "roms-data.json", contentJsonNow);
-                    } else {
-                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.cannot_create_VM_at_this_time), Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.cannot_create_VM_at_this_time), Toast.LENGTH_LONG).show();
-                }
+            if (getIntent().hasExtra("command")) {
+                runCommand(getIntent().getStringExtra("command"));
             } else {
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_data), Toast.LENGTH_LONG).show();
+                startAdd();
             }
-            if(!MainActivity.isActivate) {
-                gotoActivity.setClass(getApplicationContext(), SplashActivity.class);
-                startActivity(gotoActivity);
-            } else {
-                openURL.setAction(Intent.ACTION_VIEW);
-                openURL.setData(Uri.parse("android-app://com.vectras.vm"));
-                startActivity(openURL);
-            }
-            finish();
         }
+
+    }
+    private void startAdd() {
+        HashMap<String, Object> mapForCreateNewVM = new HashMap<>();
+        String _map;
+        String imgName = "";
+        String imgIcon = "";
+        String imgPath = "";
+        String imgArch = "";
+        String imgCdrom = "";
+        String imgExtra = "";
+        String vmID = VMManager.idGenerator();
+
+        if (!VectrasApp.isFileExists(AppConfig.romsdatajson)) {
+            VectrasApp.writeToFile(AppConfig.maindirpath, "roms-data.json", "[]");
+        }
+
+        if (VectrasApp.checkJSONIsNormal(AppConfig.romsdatajson)) {
+            if (getIntent().hasExtra("content")) {
+                if (Objects.requireNonNull(getIntent().getStringExtra("content")).endsWith("}]")) {
+                    _map = Objects.requireNonNull(getIntent().getStringExtra("content")).substring((int) 0, (int)(Objects.requireNonNull(getIntent().getStringExtra("content")).length() - 1));
+                } else {
+                    _map = Objects.requireNonNull(getIntent().getStringExtra("content"));
+                }
+                if (VectrasApp.checkJSONMapIsNormalFromString(_map)) {
+                    mapForCreateNewVM = new Gson().fromJson(_map, new TypeToken<HashMap<String, Object>>(){}.getType());
+                    if (mapForCreateNewVM.containsKey("imgName")) {
+                        imgName = Objects.requireNonNull(mapForCreateNewVM.get("imgName")).toString();
+                    }
+                    if (mapForCreateNewVM.containsKey("imgIcon")) {
+                        imgIcon = Objects.requireNonNull(mapForCreateNewVM.get("imgIcon")).toString();
+                    }
+                    if (mapForCreateNewVM.containsKey("imgPath")) {
+                        imgPath = Objects.requireNonNull(mapForCreateNewVM.get("imgPath")).toString();
+                    }
+                    if (mapForCreateNewVM.containsKey("imgArch")) {
+                        imgArch = Objects.requireNonNull(mapForCreateNewVM.get("imgArch")).toString();
+                    }
+                    if (mapForCreateNewVM.containsKey("imgCdrom")) {
+                        imgCdrom = Objects.requireNonNull(mapForCreateNewVM.get("imgCdrom")).toString();
+                    }
+                    if (mapForCreateNewVM.containsKey("imgExtra")) {
+                        imgExtra = Objects.requireNonNull(mapForCreateNewVM.get("imgExtra")).toString();
+                    }
+                    VMManager.createNewVM(imgName, imgIcon, imgPath, imgArch, imgCdrom, imgExtra, vmID, VMManager.startRandomPort());
+                } else {
+                    Toast.makeText(getApplicationContext(), "The data for the new virtual machine is corrupted and cannot be created.", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "There is no data about the new virtual machine to create.", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "The virtual machine list data is corrupted and new virtual machines cannot be added right now.", Toast.LENGTH_LONG).show();
+        }
+        if(!MainActivity.isActivate) {
+            Log.i("CqcmActivity", "Vectras VM is not opening.");
+            gotoActivity.setClass(getApplicationContext(), SplashActivity.class);
+            startActivity(gotoActivity);
+            Log.i("CqcmActivity", "Opened SplashActivity");
+        } else {
+            Log.i("CqcmActivity", "Vectras VM is opening.");
+            openURL.setAction(Intent.ACTION_VIEW);
+            openURL.setData(Uri.parse("android-app://com.vectras.vm"));
+            startActivity(openURL);
+            Log.i("CqcmActivity", "Opened Vectras VM using URL.");
+        }
+        finish();
+    }
+
+    private void runCommand(String _command) {
+        VectrasApp.prepareDataForAppConfig(CqcmActivity.this);
+        AppConfig.pendingCommand = _command;
+
+        if(!MainActivity.isActivate) {
+            Log.i("CqcmActivity", "Vectras VM is not opening.");
+            gotoActivity.setClass(getApplicationContext(), SplashActivity.class);
+            startActivity(gotoActivity);
+            Log.i("CqcmActivity", "Opened SplashActivity");
+        } else {
+            Log.i("CqcmActivity", "Vectras VM is opening.");
+            openURL.setAction(Intent.ACTION_VIEW);
+            openURL.setData(Uri.parse("android-app://com.vectras.vm"));
+            startActivity(openURL);
+            Log.i("CqcmActivity", "Opened Vectras VM using URL.");
+        }
+        finish();
     }
 }

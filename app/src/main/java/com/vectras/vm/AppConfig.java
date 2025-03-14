@@ -19,9 +19,9 @@ import java.util.Objects;
 public class AppConfig {
 
     // App Config
-    public static String vectrasVersion = "2.9.1";
-    public static String vectrasWebsite = "https://anbui2004.github.io/vectrasvm/";
-    public static String vectrasWebsiteRaw = "https://raw.githubusercontent.com/AnBui2004/Vectras-VM-Android/refs/heads/master/web/";
+    public static String vectrasVersion = "2.9.4";
+    public static String vectrasWebsite = "https://vectras.vercel.app/";
+    public static String vectrasWebsiteRaw = "https://raw.githubusercontent.com/xoureldeen/Vectras-VM-Android/refs/heads/master/web/";
     public static String bootstrapfileslink = vectrasWebsite + "/data/setupfiles.json";
     public static String vectrasHelp = vectrasWebsite + "how.html";
     public static String community = vectrasWebsite + "community.html";
@@ -30,7 +30,7 @@ public class AppConfig {
     public static String vectrasPrivacy = vectrasRaw + "PRIVACYANDPOLICY.md";
     public static String vectrasTerms = vectrasRaw + "TERMSOFSERVICE.md";
     public static String vectrasInfo = vectrasRaw + "info.md";
-    public static String vectrasRepo = "https://github.com/AnBui2004/Vectras-VM-Android";
+    public static String vectrasRepo = "https://github.com/xoureldeen/Vectras-VM-Android";
     public static String updateJson = vectrasRaw + "UpdateConfig.json";
     public static String blogJson = vectrasRaw + "news_list.json";
     // public static final String storeJson = vectrasRaw + "store_list.json";
@@ -65,10 +65,20 @@ public class AppConfig {
     }
     public static String basefiledir = "";
     public static String maindirpath = "";
+    public static String recyclebin = "";
     //public static String basefiledir = datadirpath(SplashActivity.activity) + "/.qemu/";
     //public static String maindirpath = FileUtils.getExternalFilesDirectory(SplashActivity.activity).getPath() + "/";
     public static String sharedFolder = maindirpath + "SharedFolder/";
     public static String downloadsFolder = maindirpath + "Downloads/";
-    public static String romsdatajson = Environment.getExternalStorageDirectory().toString() + "/Documents/VectrasVM/roms-data.json";
+    public static String romsdatajson = maindirpath + "roms-data.json";
+    public static String vmFolder = maindirpath + "roms/";
+    public static String pendingCommand = "";
+
+    public static String neededPkgs = "tar dwm xfce4-terminal libslirp libslirp-dev pulseaudio-dev glib-dev pixman-dev zlib-dev spice-dev" +
+            " libusbredirparser usbredir-dev libiscsi-dev  sdl2 sdl2-dev libepoxy-dev virglrenderer-dev rdma-core" +
+            " libusb ncurses-libs curl libnfs sdl2 gtk+3.0 fuse libpulse libseccomp jack pipewire liburing" +
+            " mesa-dri-gallium mesa-vulkan-swrast vulkan-loader mesa-utils mesa-egl mesa-gbm mesa-vulkan-ati mesa-vulkan-broadcom mesa-vulkan-freedreno mesa-vulkan-panfrost";
+
+    public static boolean needreinstallsystem = false;
 
 }

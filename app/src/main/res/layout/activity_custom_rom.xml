@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:animateLayoutChanges="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -16,18 +17,17 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize" />
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/loadingPb"
-            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:indeterminate="true"
+            app:showAnimationBehavior="inward"
             android:visibility="gone" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/container_main_roms" />
-
     <FrameLayout
+        android:id="@+id/mainlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -41,6 +41,81 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:padding="8dp">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cdItem"
+                    style="@style/CardViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    app:cardCornerRadius="10dp"
+                    app:cardUseCompatPadding="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            android:layout_width="142dp"
+                            android:layout_height="match_parent" >
+                            <ImageView
+                                android:id="@+id/ivIcon"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                app:srcCompat="@drawable/no_machine_image" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="bottom|right">
+                                <ImageView
+                                    android:id="@+id/ivAddThubnail"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:padding="4dp"
+                                    app:tint="@android:color/white"
+                                    app:srcCompat="@drawable/round_add_24"
+                                    android:background="@drawable/backgroud_round_only_left_25_black_50_style"/>
+                            </LinearLayout>
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="bottom"
+                                android:maxLines="1"
+                                android:padding="8dp"
+                                android:singleLine="true"
+                                android:text="Title"
+                                android:textSize="25sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/textArch"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="top"
+                                android:gravity="left"
+                                android:maxLines="1"
+                                android:padding="8dp"
+                                android:singleLine="true"
+                                android:text="arch"
+                                android:textAlignment="gravity"
+                                android:textColor="?attr/colorPrimary"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/titleField"
@@ -66,7 +141,8 @@
                     android:clickable="true"
                     android:hint="@string/rom_icon"
                     android:theme="@style/AppTheme.TextInput"
-                    app:startIconDrawable="@drawable/round_image_24">
+                    app:startIconDrawable="@drawable/round_image_24"
+                    android:visibility="gone" >
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/icon"
@@ -87,10 +163,10 @@
                     android:clickable="true"
                     android:hint="@string/rom_drive_qcow2_img_etc"
                     android:theme="@style/AppTheme.TextInput"
+                    app:endIconContentDescription="@string/make_image"
+                    app:endIconDrawable="@drawable/more_vert_24px"
                     app:endIconMode="custom"
-                    app:startIconDrawable="@drawable/round_storage_24"
-                    app:endIconDrawable="@drawable/round_add_24"
-                    app:endIconContentDescription="@string/make_image">
+                    app:startIconDrawable="@drawable/round_storage_24">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/drive"
@@ -111,7 +187,8 @@
                     android:clickable="true"
                     android:hint="CDROM (iso only)"
                     android:theme="@style/AppTheme.TextInput"
-                    app:startIconDrawable="@drawable/round_album_24">
+                    app:startIconDrawable="@drawable/round_album_24"
+                    app:endIconDrawable="@drawable/close_24px">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/cdrom"
@@ -131,10 +208,10 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/qemu_params"
                     android:theme="@style/AppTheme.TextInput"
-                    app:startIconDrawable="@drawable/ic_qemu"
-                    app:endIconMode="custom"
+                    app:endIconContentDescription="@string/qemu_create_cmd"
                     app:endIconDrawable="@drawable/cqcm48"
-                    app:endIconContentDescription="@string/qemu_create_cmd">
+                    app:endIconMode="custom"
+                    app:startIconDrawable="@drawable/ic_qemu">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/qemu"
@@ -148,7 +225,8 @@
                     android:id="@+id/addRomBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/add" />
+                    android:text="@string/add"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/textview1"
@@ -176,4 +254,23 @@
                 app:adUnitId="ca-app-pub-3568137780412047/8936512089" />
         </LinearLayout>
     </FrameLayout>
+    <LinearLayout
+        android:id="@+id/linearload"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:indeterminate="true"
+            app:showAnimationBehavior="inward"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:gravity="center"
+            android:text="@string/processing_this_may_take_a_few_minutes" />
+    </LinearLayout>
 </LinearLayout>

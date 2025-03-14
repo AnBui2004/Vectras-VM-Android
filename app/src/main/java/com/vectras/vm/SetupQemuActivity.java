@@ -3,8 +3,10 @@ package com.vectras.vm;
 import static android.content.Intent.ACTION_OPEN_DOCUMENT;
 import static android.content.Intent.ACTION_VIEW;
 
+import com.termux.app.TermuxService;
 import static com.vectras.vm.utils.UIUtils.UIAlert;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -19,14 +21,20 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.Settings;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
+import android.widget.BaseAdapter;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -54,7 +62,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class SetupQemuActivity extends AppCompatActivity implements View.OnClickListener {
     Activity activity;
@@ -77,6 +87,10 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
     MaterialButton buttonsetuptryagain;
     MaterialButton buttonsetupshowlog;
     TextView textviewshowadvancedsetup;
+    TextView textviewhideadvancedsetup;
+    Spinner spinnerselectmirror;
+    LinearLayout linearwelcome;
+    Button buttonletstart;
 
     AlertDialog alertDialog;
     private boolean settingup = false;
@@ -87,6 +101,9 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
     private String contentJSON = "";
     private HashMap<String, Object> mmap = new HashMap<>();
     private String bootstrapfilelink = "";
+    private ArrayList<HashMap<String, String>> listmapForSelectMirrors = new ArrayList<>();
+    private String selectedMirrorCommand = "";
+    private String selectedMirrorLocation = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +124,10 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         buttonsetuptryagain = findViewById(R.id.buttonsetuptryagain);
         buttonsetupshowlog = findViewById(R.id.buttonsetupshowlog);
         textviewshowadvancedsetup = findViewById(R.id.textviewshowadvancedsetup);
+        textviewhideadvancedsetup = findViewById(R.id.textviewhideadvancedsetup);
+        spinnerselectmirror = findViewById(R.id.spinnerselectmirror);
+        linearwelcome = findViewById(R.id.linearwelcome);
+        buttonletstart = findViewById(R.id.buttonletstart);
 
         buttontryconnectagain.setOnClickListener(this);
         buttonautosetup.setOnClickListener(this);
@@ -114,6 +135,8 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         buttonsetuptryagain.setOnClickListener(this);
         buttonsetupshowlog.setOnClickListener(this);
         textviewshowadvancedsetup.setOnClickListener(this);
+        textviewhideadvancedsetup.setOnClickListener(this);
+        buttonletstart.setOnClickListener(this);
 
         progressBar = findViewById(R.id.progressBar);
 
@@ -122,9 +145,24 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         inBtn = findViewById(R.id.btnInstall);
         title = findViewById(R.id.title);
         inBtn.setOnClickListener(this);
+        setupSpiner();
 
         tarPath = getExternalFilesDir("data") + "/data.tar.gz";
         VectrasApp.prepareDataForAppConfig(activity);
+
+        spinnerselectmirror.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedMirrorCommand = Objects.requireNonNull(listmapForSelectMirrors.get(position).get("mirror"));
+                selectedMirrorLocation = Objects.requireNonNull(listmapForSelectMirrors.get(position).get("location"));
+                MainSettingsManager.setSelectedMirror(activity, position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         net = new RequestNetwork(this);
         _net_request_listener = new RequestNetwork.RequestListener() {
@@ -143,6 +181,20 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                         }
                         linearcannotconnecttoserver.setVisibility(View.GONE);
                     }
+                    if (AppConfig.needreinstallsystem) {
+                        AppConfig.needreinstallsystem = false;
+                        if (!MainSettingsManager.getsetUpWithManualSetupBefore(SetupQemuActivity.this)) {
+                            if (AppConfig.getSetupFiles().contains("arm64-v8a") || AppConfig.getSetupFiles().contains("x86_64")) {
+                                setupVectras64();
+                            } else {
+                                setupVectras32();
+                            }
+                            textviewsettingup.setText(getResources().getString(R.string.reinstalling));
+                            simpleSetupUIControler(1);
+                        }
+                    }
+                } else {
+                    linearload.setVisibility(View.GONE);
                 }
             }
 
@@ -151,7 +203,116 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 linearload.setVisibility(View.GONE);
             }
         };
-        net.startRequestNetwork(RequestNetworkController.GET,AppConfig.bootstrapfileslink,"anbui",_net_request_listener);
+        
+        String filesDir = activity.getFilesDir().getAbsolutePath();
+        File distroDir = new File(filesDir + "/distro");
+        File binDir = new File(distroDir + "/bin");
+        if (!binDir.exists()) {
+            extractBootstraps();
+
+        }
+    }
+
+    public void extractBootstraps() {
+        String filesDir = getFilesDir().getAbsolutePath();
+        String abi = getDeviceAbi();
+        String assetPath = "bootstrap/" + abi + ".tar";
+        String extractedFilePath = filesDir + "/" + abi + ".tar";
+
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Extracting data...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        new AsyncTask<Void, Void, Boolean>() {
+            String errorMessage = null;
+
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                // Step 1: Copy asset to filesDir
+                if (!copyAssetToFile(assetPath, extractedFilePath)) {
+                    errorMessage = "Failed to copy asset file.";
+                    return false;
+                }
+
+                // Step 2: Run tar extraction
+                String[] cmdline = {"tar", "xf", extractedFilePath, "-C", filesDir};
+                Process process = null;
+                try {
+                    process = Runtime.getRuntime().exec(cmdline);
+
+                    // Capture standard error output (stderr)
+                    BufferedReader errorReader =
+                            new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                    StringBuilder errorOutput = new StringBuilder();
+                    String line;
+                    while ((line = errorReader.readLine()) != null) {
+                        errorOutput.append(line).append("\n");
+                    }
+                    errorReader.close();
+
+                    // Wait for the process to complete
+                    int exitCode = process.waitFor();
+
+                    // If there was any output in stderr, treat it as an error
+                    if (exitCode != 0 || errorOutput.length() > 0) {
+                        errorMessage =
+                                errorOutput.toString().isEmpty()
+                                        ? "Unknown error"
+                                        : errorOutput.toString();
+                        return false;
+                    }
+                    return true;
+                } catch (IOException | InterruptedException e) {
+                    errorMessage = e.getMessage();
+                    return false;
+                } finally {
+                    if (process != null) {
+                        process.destroy();
+                    }
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean success) {
+                progressDialog.dismiss();
+                if (success) {
+                    Toast.makeText(
+                                    getApplicationContext(),
+                                    R.string.extraction_complete,
+                                    Toast.LENGTH_SHORT)
+                            .show();
+                } else {
+                    new AlertDialog.Builder(activity)
+                            .setTitle("Extraction Failed")
+                            .setMessage("Error: " + errorMessage)
+                            .setPositiveButton("OK", null)
+                            .show();
+                }
+            }
+        }.execute();
+    }
+
+    /** Copies the specified asset to the given file path. */
+    private boolean copyAssetToFile(String assetPath, String outputPath) {
+        try (InputStream in = getAssets().open(assetPath);
+                OutputStream out = new FileOutputStream(outputPath)) {
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            out.flush();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /** Determines the ABI of the device. */
+    private String getDeviceAbi() {
+        return Build.SUPPORTED_ABIS[0];
     }
 
     @Override
@@ -199,12 +360,19 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         } else if (id == R.id.buttontryconnectagain) {
             linearload.setVisibility(View.VISIBLE);
             net.startRequestNetwork(RequestNetworkController.GET,AppConfig.bootstrapfileslink,"anbui",_net_request_listener);
+        } else if (id == R.id.textviewhideadvancedsetup) {
+            linearsimplesetupui.setVisibility(View.VISIBLE);
+            alertDialog.dismiss();
+        } else if (id == R.id.buttonletstart) {
+            linearwelcome.setVisibility(View.GONE);
+            net.startRequestNetwork(RequestNetworkController.GET,AppConfig.bootstrapfileslink,"anbui",_net_request_listener);
         }
     }
 
     String tarPath;
 
     // Function to append text and automatically scroll to bottom
+    @SuppressLint("SetTextI18n")
     private void appendTextAndScroll(String textToAdd) {
         ScrollView scrollView = findViewById(R.id.scrollView);
 
@@ -212,7 +380,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         vterm.append(textToAdd);
 
         if (textToAdd.contains("xssFjnj58Id")) {
-            startActivity(new Intent(this, SplashActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
             finish();
         } else if (textToAdd.contains("libproot.so --help")){
             libprooterror = true;
@@ -220,29 +388,32 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
 
         if (textToAdd.contains("Starting setup...")) {
             title.setText("Getting ready for you...");
-            textviewsettingup.setText("Getting ready for you...\nPlease don't disconnect the network.");
+            textviewsettingup.setText(R.string.getting_ready_for_you_please_don_t_disconnect_the_network);
+        } else if (textToAdd.contains("fetch http")) {
+            title.setText(getString(R.string.connecting_to_mirror_in) + "\n" + selectedMirrorLocation + "...");
+            textviewsettingup.setText(getString(R.string.connecting_to_mirror_in) + "\n" + selectedMirrorLocation + "...");
         } else if (textToAdd.contains("Installing packages...")) {
-            title.setText("It won't take long...");
-            textviewsettingup.setText("Completed 10%\nIt won't take long...");
+            title.setText(R.string.it_won_t_take_long);
+            textviewsettingup.setText(R.string.completed_10_it_won_t_take_long);
         } else if (textToAdd.contains("(50/")) {
-            textviewsettingup.setText("Completed 20%\nIt won't take long...");
+            textviewsettingup.setText(R.string.completed_20_it_won_t_take_long);
         } else if (textToAdd.contains("100/")) {
-            textviewsettingup.setText("Completed 30%\nIt won't take long...");
+            textviewsettingup.setText(R.string.completed_30_it_won_t_take_long);
         } else if (textToAdd.contains("150/")) {
-            textviewsettingup.setText("Completed 40%\nIt won't take long...");
+            textviewsettingup.setText(R.string.completed_40_it_won_t_take_long);
         } else if (textToAdd.contains("200/")) {
-            textviewsettingup.setText("Completed 50%\nIt won't take long...");
+            textviewsettingup.setText(R.string.completed_50_it_won_t_take_long);
         } else if (textToAdd.contains("Downloading Qemu...")) {
-            title.setText("Don't disconnect...");
-            textviewsettingup.setText("Completed 75%\nDon't disconnect...");
+            title.setText(R.string.don_t_disconnect);
+            textviewsettingup.setText(R.string.completed_75_don_t_disconnect);
         } else if (textToAdd.contains("Installing Qemu...")) {
-            title.setText("Keep it up...");
-            textviewsettingup.setText("Completed 80%\nKeep it up...");
+            title.setText(R.string.keep_it_up);
+            textviewsettingup.setText(R.string.completed_80_keep_it_up);
         } else if (textToAdd.contains("qemu-system")) {
-            textviewsettingup.setText("Completed 95%\nKeep it up...");
+            textviewsettingup.setText(R.string.completed_95_keep_it_up);
         } else if (textToAdd.contains("Just a sec...")) {
-            title.setText("Almost there.");
-            textviewsettingup.setText("Almost there.");
+            title.setText(R.string.almost_there);
+            textviewsettingup.setText(getString(R.string.almost_there));
         }
 
         // Scroll to the bottom
@@ -270,13 +441,11 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 String filesDir = activity.getFilesDir().getAbsolutePath();
                 String nativeLibDir = activity.getApplicationInfo().nativeLibraryDir;
 
-                File tmpDir = new File(activity.getFilesDir(), "tmp");
+                File tmpDir = new File(activity.getFilesDir(), "usr/tmp");
 
                 // Setup environment for the PRoot process
                 processBuilder.environment().put("PROOT_TMP_DIR", tmpDir.getAbsolutePath());
-                processBuilder.environment().put("PROOT_LOADER", nativeLibDir + "/libproot-loader.so");
-                processBuilder.environment().put("PROOT_LOADER_32", nativeLibDir + "/libproot-loader32.so");
-
+                
                 processBuilder.environment().put("HOME", "/root");
                 processBuilder.environment().put("USER", "root");
                 processBuilder.environment().put("PATH", "/bin:/usr/bin:/sbin:/usr/sbin");
@@ -285,7 +454,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                 processBuilder.environment().put("SHELL", "/bin/sh");
 
                 String[] prootCommand = {
-                        nativeLibDir + "/libproot.so", // PRoot binary path
+                        TermuxService.PREFIX_PATH + "/bin/proot", // PRoot binary path
                         "--kill-on-exit",
                         "--link2symlink",
                         "-0",
@@ -491,16 +660,18 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         inBtn.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         String filesDir = activity.getFilesDir().getAbsolutePath();
+        String neededPkgs = AppConfig.neededPkgs;
+        if (!AppConfig.getSetupFiles().contains("64")) {
+            neededPkgs.replaceAll(" mesa-vulkan-broadcom mesa-vulkan-freedreno mesa-vulkan-panfrost", "");
+        }
         String cmd = "";
-        cmd += "echo \"http://dl-cdn.alpinelinux.org/alpine/edge/testing\" >> /etc/apk/repositories;";
+        cmd += selectedMirrorCommand + ";";
         executeShellCommand(cmd);
         executeShellCommand("set -e;" +
                 " echo \"Starting setup...\";" +
                 " apk update;" +
                 " echo \"Installing packages...\";" +
-                " apk add tar libslirp libslirp-dev pulseaudio-dev glib-dev pixman-dev zlib-dev spice-dev" +
-                " libusbredirparser usbredir-dev libiscsi-dev  sdl2 sdl2-dev libepoxy-dev virglrenderer-dev rdma-core" +
-                " libusb ncurses-libs curl libnfs sdl2 gtk+3.0 fuse libpulse libseccomp jack pipewire liburing;" +
+                " apk add " + neededPkgs + ";" +
                 " echo \"Installing Qemu...\";" +
                 " tar -xzvf " + tarPath + " -C /;" +
                 " rm " + tarPath + ";" +
@@ -516,18 +687,16 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         progressBar.setVisibility(View.VISIBLE);
         String filesDir = activity.getFilesDir().getAbsolutePath();
         String cmd = "";
-        cmd += "echo \"http://dl-cdn.alpinelinux.org/alpine/edge/testing\" >> /etc/apk/repositories;";
+        cmd += selectedMirrorCommand + ";";
         executeShellCommand(cmd);
         executeShellCommand("set -e;" +
                 " echo \"Starting setup...\";" +
                 " apk update;" +
                 " echo \"Installing packages...\";" +
-                " apk add tar libslirp libslirp-dev pulseaudio-dev glib-dev pixman-dev zlib-dev spice-dev" +
-                " libusbredirparser usbredir-dev libiscsi-dev  sdl2 sdl2-dev libepoxy-dev virglrenderer-dev rdma-core" +
-                " libusb ncurses-libs curl libnfs sdl2 gtk+3.0 fuse libpulse libseccomp jack pipewire liburing;" +
+                " apk add " + AppConfig.neededPkgs.replaceAll(" mesa-vulkan-broadcom mesa-vulkan-freedreno mesa-vulkan-panfrost", "") + ";" +
                 //" tar -xzvf " + tarPath + " -C /;" +
                 " echo \"Installing Qemu...\";" +
-                " apk add qemu-system-x86_64 qemu-system-ppc qemu-system-i386 qemu-system-aarch64 qemu-pr-helper qemu-img qemu-audio-sdl pulseaudio;" +
+                " apk add qemu-system-x86_64 qemu-system-ppc qemu-system-i386 qemu-system-aarch64 qemu-pr-helper qemu-img qemu-audio-sdl pulseaudio mesa-dri-gallium;" +
                 " echo \"Just a sec...\";" +
                 " echo export PULSE_SERVER=127.0.0.1 >> /etc/profile;" +
                 //" rm " + tarPath + ";" +
@@ -540,15 +709,13 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         progressBar.setVisibility(View.VISIBLE);
         String filesDir = activity.getFilesDir().getAbsolutePath();
         String cmd = "";
-        cmd += "echo \"http://dl-cdn.alpinelinux.org/alpine/edge/testing\" >> /etc/apk/repositories;";
+        cmd += selectedMirrorCommand + ";";
         executeShellCommand(cmd);
         executeShellCommand("set -e;" +
                 " echo \"Starting setup...\";" +
                 " apk update;" +
                 " echo \"Installing packages...\";" +
-                " apk add tar libslirp libslirp-dev pulseaudio-dev glib-dev pixman-dev zlib-dev spice-dev" +
-                " libusbredirparser usbredir-dev libiscsi-dev  sdl2 sdl2-dev libepoxy-dev virglrenderer-dev rdma-core" +
-                " libusb ncurses-libs curl libnfs sdl2 gtk+3.0 fuse libpulse libseccomp jack pipewire liburing;" +
+                " apk add " + AppConfig.neededPkgs + ";" +
                 " echo \"Downloading Qemu...\";" +
                 " curl -o setup.tar.gz -L " + bootstrapfilelink + ";" +
                 " echo \"Installing Qemu...\";" +
@@ -562,46 +729,43 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void checkabi() {
-        if (AppConfig.getSetupFiles().contains("arm64-v8a") && Build.SUPPORTED_ABIS.length == 1 ) {
-            VectrasApp.oneDialog(getResources().getString(R.string.oops), getResources().getString(R.string.cpu_does_not_have_the_necessary_instructions), false, true, activity);
-        } else {
-            if (!AppConfig.getSetupFiles().contains("arm64-v8a")) {
-                if (!AppConfig.getSetupFiles().contains("x86_64")) {
-                    VectrasApp.oneDialog(getResources().getString(R.string.warning), getResources().getString(R.string.cpu_not_support_64), true, false, activity);
-                }
+        if (!AppConfig.getSetupFiles().contains("arm64-v8a")) {
+            if (!AppConfig.getSetupFiles().contains("x86_64")) {
+                VectrasApp.oneDialog(getResources().getString(R.string.warning), getResources().getString(R.string.cpu_not_support_64), true, false, activity);
             }
-
-            alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
-            alertDialog.setTitle("BOOTSTRAP REQUIRED!");
-            alertDialog.setMessage("You can choose between auto download and setup or manual setup by choosing bootstrap file.");
-            alertDialog.setCancelable(false);
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "AUTO SETUP", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    //startDownload();
-                    if (AppConfig.getSetupFiles().contains("arm64-v8a") || AppConfig.getSetupFiles().contains("x86_64")) {
-                        setupVectras64();
-                    } else {
-                        setupVectras32();
-                    }
-                    return;
-                }
-            });
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "MANUAL SETUP", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    intent.setType("*/*");
-
-                    // Optionally, specify a URI for the file that should appear in the
-                    // system file picker when it loads.
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.DIRECTORY_DOWNLOADS);
-                    }
-
-                    startActivityForResult(intent, 1001);
-                }
-            });
         }
+
+        alertDialog = new AlertDialog.Builder(activity, R.style.MainDialogTheme).create();
+        alertDialog.setTitle(getString(R.string.bootstrap_required));
+        alertDialog.setMessage(getString(R.string.you_can_choose_between_auto_download_and_setup_or_manual_setup_by_choosing_bootstrap_file));
+        alertDialog.setCancelable(false);
+        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.auto_setup), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                //startDownload();
+                if (AppConfig.getSetupFiles().contains("arm64-v8a") || AppConfig.getSetupFiles().contains("x86_64")) {
+                    setupVectras64();
+                } else {
+                    setupVectras32();
+                }
+                simpleSetupUIControler(1);
+                return;
+            }
+        });
+        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.manual_setup), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("*/*");
+
+                // Optionally, specify a URI for the file that should appear in the
+                // system file picker when it loads.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Environment.DIRECTORY_DOWNLOADS);
+                }
+
+                startActivityForResult(intent, 1001);
+            }
+        });
     }
 
     private void checkpermissions() {
@@ -681,6 +845,7 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
                                         loading.setVisibility(View.GONE);
                                         alertDialog.dismiss();
                                         setupVectras();
+                                        MainSettingsManager.setsetUpWithManualSetupBefore(SetupQemuActivity.this, true);
                                     }
                                 };
                                 activity.runOnUiThread(runnable);
@@ -707,6 +872,52 @@ public class SetupQemuActivity extends AppCompatActivity implements View.OnClick
         } else
         if (linearsimplesetupui.getVisibility() == View.GONE) {
             alertDialog.show();
+        }
+    }
+
+    private void setupSpiner() {
+        VectrasApp.setupMirrorListForListmap(listmapForSelectMirrors);
+
+        spinnerselectmirror.setAdapter(new SpinnerSelectMirrorAdapter(listmapForSelectMirrors));
+        spinnerselectmirror.setSelection(MainSettingsManager.getSelectedMirror(activity));
+    }
+
+    public class SpinnerSelectMirrorAdapter extends BaseAdapter {
+
+        ArrayList<HashMap<String, String>> _data;
+
+        public SpinnerSelectMirrorAdapter(ArrayList<HashMap<String, String>> _arr) {
+            _data = _arr;
+        }
+
+        @Override
+        public int getCount() {
+            return _data.size();
+        }
+
+        @Override
+        public HashMap<String, String> getItem(int _index) {
+            return _data.get(_index);
+        }
+
+        @Override
+        public long getItemId(int _index) {
+            return _index;
+        }
+
+        @Override
+        public View getView(final int _position, View _v, ViewGroup _container) {
+            LayoutInflater _inflater = getLayoutInflater();
+            View _view = _v;
+            if (_view == null) {
+                _view = _inflater.inflate(R.layout.simple_layout_for_spiner, null);
+            }
+
+            final TextView textViewLocation = _view.findViewById(R.id.textViewLocation);
+
+            textViewLocation.setText(Objects.requireNonNull(_data.get((int) _position).get("location")));
+
+            return _view;
         }
     }
 }
